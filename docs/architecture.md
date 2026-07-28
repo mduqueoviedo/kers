@@ -41,7 +41,7 @@ The conventional directory responsibilities are:
 - `resources/` contains CSS, JavaScript, Blade views, layouts, and Livewire
   single-file components.
 - `routes/` declares web, settings, and console routes.
-- `tests/` contains Pest feature and unit tests.
+- `tests/` contains Pest feature tests.
 
 No custom domain layer, repository abstraction, or generic service layer is
 present.
