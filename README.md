@@ -47,14 +47,15 @@ sudo -u postgres psql
 Create a local application role and separate development and test databases:
 
 ```sql
-CREATE ROLE kers WITH LOGIN PASSWORD 'kers-local';
+CREATE ROLE kers WITH LOGIN PASSWORD 'your-local-password';
 CREATE DATABASE kers OWNER kers;
 CREATE DATABASE kers_testing OWNER kers;
 \q
 ```
 
-Update the `DB_*` values in `.env` if your local PostgreSQL host, port,
-username, or password differs from these local-only defaults.
+Set `DB_PASSWORD` in `.env` to the password selected above. Update the other
+`DB_*` values if your local PostgreSQL host, port, database, or username differs
+from the provided defaults.
 
 Run the development database migrations:
 
