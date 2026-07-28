@@ -100,6 +100,8 @@ npm run build
 ## Documentation
 
 - [Project instructions](AGENTS.md)
-
-The detailed product, technical, roadmap, architecture, and workflow documents
-will be added incrementally as focused foundation iterations.
+- [Product requirements](docs/product-requirements.md)
+- [Technical requirements](docs/technical-requirements.md)
+- [Roadmap](docs/roadmap.md)
+- [Architecture](docs/architecture.md)
+- [Workflows](docs/workflows.md)
