@@ -1,23 +1,26 @@
 <?php
 
 use App\Models\Kaiju;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 new #[Title('Kaiju catalogue')] class extends Component {
+    use WithPagination;
+
     /**
-     * Get the current kaiju catalogue.
+     * Get the current page of the kaiju catalogue.
      *
-     * @return Collection<int, Kaiju>
+     * @return LengthAwarePaginator<int, Kaiju>
      */
     #[Computed]
-    public function kaijus(): Collection
+    public function kaijus(): LengthAwarePaginator
     {
         return Kaiju::query()
             ->orderBy('name')
-            ->get();
+            ->paginate(9);
     }
 }; ?>
 
@@ -33,7 +36,7 @@ new #[Title('Kaiju catalogue')] class extends Component {
         </flux:button>
     </header>
 
-    @if ($this->kaijus->isEmpty())
+    @if ($this->kaijus->total() === 0)
         <div class="rounded-xl border border-dashed border-zinc-300 px-6 py-12 text-center dark:border-zinc-700">
             <flux:heading size="lg">{{ __('No kaijus have been catalogued.') }}</flux:heading>
             <flux:text class="mt-2">{{ __('Known creatures will appear here once they are registered.') }}</flux:text>
@@ -55,5 +58,11 @@ new #[Title('Kaiju catalogue')] class extends Component {
                 </article>
             @endforeach
         </div>
+
+        @if ($this->kaijus->hasPages())
+            <div>
+                {{ $this->kaijus->links() }}
+            </div>
+        @endif
     @endif
 </section>

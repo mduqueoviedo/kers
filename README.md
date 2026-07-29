@@ -69,6 +69,9 @@ Optionally seed representative local data:
 php artisan db:seed
 ```
 
+The deterministic seed catalogue contains 12 kaijus, enough to exercise both
+pages of the initial catalogue pagination.
+
 ### Reset local data
 
 Rebuild the development database with empty tables:

@@ -70,10 +70,11 @@ Editing and the remaining domain workflows are not implemented yet.
 ## Livewire
 
 Single-file components colocate a Livewire anonymous component class and its
-Blade template. The public Kaiju catalogue exposes its ordered Eloquent query
-through a computed property. The registration component holds form state,
-validates it, creates a Kaiju through Eloquent, dispatches toast feedback, and
-redirects to the catalogue.
+Blade template. The public Kaiju catalogue uses Livewire's `WithPagination`
+trait and exposes an ordered Eloquent paginator through a computed property.
+The current page is represented in the URL and contains at most nine records.
+The registration component holds form state, validates it, creates a Kaiju
+through Eloquent, dispatches toast feedback, and redirects to the catalogue.
 
 ## Database
 
@@ -97,10 +98,10 @@ The `Kaiju` Eloquent model casts its stored category string to the
 categories to the enum's current values and threat levels to the range 1–5. A
 unique index prevents exact duplicate names. Livewire validates these rules
 before persistence so users receive form errors instead of database exceptions.
-`KaijuFactory` generates valid test records, while `KaijuSeeder` maintains a
-small deterministic local catalogue covering every category. The root database
-seeder is safe to repeat without duplicating that catalogue. Incident and
-response-team tables do not exist yet.
+`KaijuFactory` generates valid test records, while `KaijuSeeder` maintains 12
+deterministic local records covering every category and both initial catalogue
+pages. The root database seeder is safe to repeat without duplicating that
+catalogue. Incident and response-team tables do not exist yet.
 
 ## Authentication
 
@@ -128,9 +129,9 @@ Feature tests use Laravel's `RefreshDatabase` trait. PHPUnit forces the
 `pgsql` connection and `kers_testing` database, preventing tests from targeting
 the development database.
 
-The current suite covers authentication, root redirection, the public catalogue,
-and Kaiju registration, plus persistence, enum casting, database constraints,
-factory states, and repeatable seeding.
+The current suite covers authentication, root redirection, the paginated public
+catalogue, and Kaiju registration, plus persistence, enum casting, database
+constraints, factory states, and repeatable seeding.
 
 ## Quality and CI
 
