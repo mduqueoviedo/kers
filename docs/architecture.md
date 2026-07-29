@@ -102,8 +102,8 @@ The `Kaiju` Eloquent model casts its stored category string to the
 categories to the enum's current values and threat levels to the range 1–5.
 `KaijuFactory` generates valid test records, while `KaijuSeeder` maintains a
 small deterministic local catalogue covering every category. The root database
-seeder is safe to repeat without duplicating that catalogue or its local test
-user. Incident and response-team tables do not exist yet.
+seeder is safe to repeat without duplicating that catalogue. Incident and
+response-team tables do not exist yet.
 
 ## Authentication
 
