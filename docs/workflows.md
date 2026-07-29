@@ -94,6 +94,22 @@ Open the public Kaiju registration form
 Names must be unique using exact PostgreSQL string comparison. Category and
 threat-level rules are enforced both before persistence and by the database.
 
+### Edit a kaiju
+
+```text
+Open a Kaiju detail page
+→ follow its edit link
+→ Laravel resolves the Kaiju route parameter
+→ Livewire prefills scalar form state from the Eloquent model
+→ change the known details
+→ Livewire validates and Eloquent updates the Kaiju
+→ redirect to the updated detail page with confirmation feedback
+```
+
+The current Kaiju is excluded from the unique-name check, so its name may
+remain unchanged. An exact name already used by another Kaiju is rejected.
+Eloquent preserves `created_at` and updates `updated_at` automatically.
+
 The following authentication workflows remain as a technical foundation. They
 are not exposed in the current navigation and are not yet the final KERS role
 and authorization model.
