@@ -89,19 +89,20 @@ criteria, testing expectations, dependencies, priority, and notes.
 | AUT-004 — Authorize team and assignment actions | Planned | Apply roles consistently to team management and assignments. | Policies and Livewire authorization checks. | Operators may assign teams but only admins manage team records; authorization tests pass. | AUT-003, ASN-004; High. |
 | AUT-005 — Verify the complete access model | Planned | Close authorization gaps across routes, navigation, and actions. | Middleware/policy integration and UI visibility. | Direct requests and Livewire calls cannot bypass policy decisions; email verification behavior is tested where enabled. | AUT-004; High. |
 
-## Phase 8 — Dashboard and visual refinement
+## Phase 8 — Dashboard, localization, and visual refinement
 
 | ID and title | Status | Objective and user value | Concepts and scope | Acceptance and testing | Dependencies, priority, and notes |
 | --- | --- | --- | --- | --- | --- |
 | UI-001 — Add operational dashboard summaries | Planned | Provide a concise view of kaijus, incident status, and team capacity. | Eloquent aggregates and derived Livewire state. | Counts and recent records are accurate without N+1 queries; feature and database tests pass. | AUT-005; Medium. |
 | UI-002 — Improve navigation and shared states | Planned | Make completed workflows coherent and accessible. | Reusable Blade/Livewire components, empty/loading/success states. | Navigation reflects authorization and common states are consistent, responsive, and keyboard accessible; relevant rendering tests pass. | UI-001; Medium. |
-| UI-003 — Apply restrained visual refinement | Planned | Give KERS a readable command-centre identity. | Tailwind composition, responsive and dark-mode review. | Core pages are visually consistent and accessible without complex charts; frontend build and manual responsive review pass. | UI-002; Low. |
+| UI-003 — Internationalize the interface | Planned | Make KERS usable in selected locales without duplicating screens. | Laravel localization files, locale selection and persistence, and fallback behavior. | User-facing copy changes with the selected locale, invalid or unavailable locales fall back to English, and feature and Livewire tests cover selection and persistence. | UI-002; Low; target locales and any required exception to the repository language policy must be approved with the implementation proposal. |
+| UI-004 — Apply restrained visual refinement | Planned | Give KERS a readable command-centre identity. | Tailwind composition, responsive and dark-mode review. | Core pages are visually consistent and accessible without complex charts; frontend build and manual responsive review pass. | UI-003; Low. |
 
 ## Phase 9 — Deployment
 
 | ID and title | Status | Objective and user value | Concepts and scope | Acceptance and testing | Dependencies, priority, and notes |
 | --- | --- | --- | --- | --- | --- |
-| DEP-001 — Select a hosting provider | Planned | Choose a current, affordable, portable Laravel/PostgreSQL target. | Operational requirements and provider evaluation. | Cost, Laravel support, PostgreSQL, logs, runtime processes, and demo reliability are compared and the decision is documented. | UI-003; Low; requires current research. |
+| DEP-001 — Select a hosting provider | Planned | Choose a current, affordable, portable Laravel/PostgreSQL target. | Operational requirements and provider evaluation. | Cost, Laravel support, PostgreSQL, logs, runtime processes, and demo reliability are compared and the decision is documented. | UI-004; Low; requires current research. |
 | DEP-002 — Configure and deploy KERS | Planned | Produce a repeatable production deployment. | Production environment, build/start commands, migrations, optional Docker if justified. | Secrets are external, assets build, PostgreSQL migrations run safely, and the deployed application opens reliably. | DEP-001; Low. |
 | DEP-003 — Add operational documentation | Planned | Make the demo supportable and recoverable. | Health checks, logs, deployment and rollback workflow. | Health endpoint, log access, deployment verification, and rollback steps are documented and tested. | DEP-002; Low. |
 
