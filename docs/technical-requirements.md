@@ -57,6 +57,7 @@ or repeated.
 - Foreign keys and database-level constraints enforce durable invariants.
 - Kaiju names use an exact unique constraint.
 - Kaiju deletion cascades to associated incidents.
+- Incident occurrence times use UTC throughout the application.
 - Response-team capacity is enforced using current incident state.
 - USGS source identifiers use an appropriate uniqueness constraint.
 - Indexes support actual search, filtering, relationships, and uniqueness
