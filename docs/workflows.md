@@ -132,6 +132,22 @@ Kaiju and its incidents. Deletion is currently permanent and public,
 consistently with the other Kaiju workflows. Role-based authorization will be
 added in its later roadmap phase.
 
+### Create a manual incident
+
+```text
+Open the public Incident form from the Kaiju catalogue
+→ select one known Kaiju
+→ enter required incident details and a UTC occurrence time
+→ Livewire validates the submitted state
+→ Eloquent creates the Incident through the Kaiju relationship
+→ redirect to that Kaiju's detail page with confirmation feedback
+```
+
+Opening the same form from a Kaiju detail page adds its identifier to the URL
+and preselects that Kaiju while leaving the selector editable. The submitted
+identifier is still validated. If no Kaijus exist, the page explains the
+dependency and links to Kaiju registration instead of showing an unusable form.
+
 The following authentication workflows remain as a technical foundation. They
 are not exposed in the current navigation and are not yet the final KERS role
 and authorization model.
@@ -167,17 +183,6 @@ Local mail uses the configured log driver unless another mailer is selected.
 ## Planned product workflows
 
 The following workflows are requirements, not implemented behavior.
-
-### Create a manual incident
-
-```text
-Open the incident form
-→ select one known kaiju
-→ enter incident details and occurrence time
-→ Livewire validates input
-→ Eloquent stores the incident relationship
-→ show the incident
-```
 
 ### Change incident status
 

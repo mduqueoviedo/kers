@@ -76,6 +76,10 @@ new #[Title('Kaiju details')] class extends Component {
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
+                <flux:button :href="route('incidents.create', ['kaiju' => $kaiju->id])" variant="outline" wire:navigate>
+                    {{ __('Record incident') }}
+                </flux:button>
+
                 <flux:button :href="route('kaijus.edit', $kaiju)" variant="primary" wire:navigate>
                     {{ __('Edit kaiju') }}
                 </flux:button>

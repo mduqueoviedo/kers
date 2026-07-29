@@ -103,9 +103,15 @@ new #[Title('Kaiju catalogue')] class extends Component {
             <flux:text>{{ __('Known creatures monitored by the Kaiju Emergency Response System.') }}</flux:text>
         </div>
 
-        <flux:button :href="route('kaijus.create')" variant="primary" wire:navigate>
-            {{ __('Register kaiju') }}
-        </flux:button>
+        <div class="flex flex-wrap items-center gap-2">
+            <flux:button :href="route('incidents.create')" variant="outline" wire:navigate>
+                {{ __('Record incident') }}
+            </flux:button>
+
+            <flux:button :href="route('kaijus.create')" variant="primary" wire:navigate>
+                {{ __('Register kaiju') }}
+            </flux:button>
+        </div>
     </header>
 
     <div class="grid gap-4 rounded-xl border border-zinc-200 p-5 md:grid-cols-3 dark:border-zinc-700">

@@ -64,9 +64,9 @@ The starter UI uses:
 - Vite 8
 - Shared Blade layouts and components
 
-The Kaiju catalogue, registration form, detail view, edit form, and confirmed
-deletion action are the first KERS domain interfaces. The remaining domain
-workflows are not implemented yet.
+The Kaiju catalogue, management forms, detail view, confirmed deletion action,
+and manual Incident form are the first KERS domain interfaces. Incident
+listing and details and the remaining domain workflows are not implemented yet.
 
 ## Livewire
 
@@ -92,6 +92,14 @@ modal does not change persistence, and the Eloquent delete action is guarded by
 that state before redirecting to the catalogue. The modal uses a computed
 relationship count and Laravel pluralization to state the exact number of
 incidents affected before PostgreSQL performs its cascade.
+
+The public Incident creation component loads known Kaijus alphabetically,
+validates all submitted state, converts its timezone-free form value explicitly
+to UTC, and creates the record through `Kaiju::incidents()`. Its Kaiju selection
+is synchronized with the `kaiju` query parameter. The general catalogue link
+opens an unselected form, while a Kaiju detail link opens that same route with
+its Kaiju preselected. The query parameter remains untrusted and must pass both
+Livewire existence validation and the PostgreSQL foreign key.
 
 ## Database
 
@@ -164,8 +172,8 @@ The current suite covers authentication, root redirection, the paginated public
 catalogue with combined search and filters, Kaiju registration, route-bound
 details, editing, and confirmed deletion, plus persistence, enum casting,
 database constraints, Incident relationships and cascade behavior, factory
-states for both current domain models, repeatable related seeding, and exact
-cascade-warning counts.
+states for both current domain models, repeatable related seeding, exact
+cascade-warning counts, and manual Incident creation with validation.
 
 ## Quality and CI
 
