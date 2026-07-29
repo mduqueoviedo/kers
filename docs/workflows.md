@@ -55,8 +55,19 @@ Open or update a pull request
 
 ## Current user workflows
 
-These workflows come from the starter authentication scaffold. They are not
-yet the final KERS role and authorization model.
+### Browse the kaiju catalogue
+
+```text
+Open the public kaiju catalogue
+→ Livewire queries known kaijus through Eloquent
+→ display an empty state or the ordered catalogue
+→ show each category, threat level, and description
+```
+
+No authentication is required.
+
+The following authentication workflows come from the starter scaffold. They
+are not yet the final KERS role and authorization model.
 
 ### Register and authenticate
 
