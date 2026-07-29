@@ -15,23 +15,9 @@ criteria, testing expectations, dependencies, priority, and notes.
 
 ## Current delivery priority
 
-The temporary technical demo changes the immediate delivery order:
-
-1. Preserve the usable application state completed through manual Incident
-   creation.
-2. Deploy that current application and PostgreSQL in one Railway project.
-3. Verify the public environment and automatic deployment from `main`.
-4. Continue the highest-priority product features, incorporating production
-   findings.
-5. Prepare realistic demo data and refine only the workflows needed for the
-   demonstration.
-6. Perform a final production and demo review, then retire the temporary
-   services after approximately one week.
-
-The Railway work is one focused pull request containing its planning
-documentation, any minimal repository changes found necessary by the readiness
-audit, service configuration, and deployment verification. It does not require
-the complete product roadmap to be implemented.
+The temporary Railway deployment checkpoint is complete. Product delivery has
+returned to Phase 3, beginning with the Incident catalogue while the deployed
+environment continues to follow merged changes from `main`.
 
 ## Phase 1 — Project foundations and documentation
 
@@ -65,10 +51,11 @@ the complete product roadmap to be implemented.
 | INC-002A — Add the incident factory | Completed | Produce valid related incidents for focused tests without persistent development data. | Related Eloquent factory, automatic Kaiju creation, explicit existing-Kaiju association, lifecycle states, and UTC dates. | Default records satisfy database constraints; `for($kaiju)` reuses the selected Kaiju; open, contained, and closed states produce the requested enum; factory tests pass. | INC-001, KAI-002; Medium; merged in PR #17. |
 | INC-002B — Seed incidents safely | Completed | Supply repeatable incident histories for development without hiding cascade impact. | Deterministic relationship seeding, status coverage, computed relationship count, pluralized deletion warning, and database cascade. | Repeated seeding produces exactly nine UTC incidents across all statuses; the Kaiju deletion confirmation reports zero, one, or multiple incidents before the cascade; cancellation and unrelated records remain safe. | INC-002A, KAI-006; Medium; merged in PR #18. |
 | INC-003 — Create incidents | Completed | Record a manual incident for an existing kaiju from a general or preselected entry point. | Single-file Livewire form, URL-backed preselection, enum and existence validation, UTC parsing, and relationship persistence. | Valid incidents persist through the selected Kaiju relationship; catalogue access starts unselected, Kaiju-detail access preselects its record, empty dependencies and invalid fields are explained, and Livewire/database tests pass. | INC-002B; High; merged in PR #19. |
-| INC-004 — List, paginate, and view incidents | Planned | Review incidents and their associated kaijus. | Eager loading, pagination, details, date formatting. | Lists avoid relationship query repetition, paginate, and link to correct details; feature tests pass. | INC-003; High. |
-| INC-005 — Edit incidents and change status | Planned | Correct incident data and manage its lifecycle. | Enum validation, Livewire update actions, date casting. | Edits and valid status transitions persist; invalid values fail; observable behavior is tested. | INC-004; High. |
+| INC-004A — List and paginate incidents | In review | Review recorded incidents and their associated kaijus. | Public single-file Livewire catalogue, eager loading, configurable pagination, UTC date formatting, and navigation. | Incidents appear newest first with status, location, date, and Kaiju; empty and paginated states work; relationship queries do not repeat; feature and Livewire tests pass. | INC-003; High; split from INC-004 to keep listing separate from route model binding and details. |
+| INC-004B — View incident details | Planned | Inspect one recorded incident before managing it. | Livewire page route, route model binding, detail rendering, and catalogue-to-detail navigation. | Each catalogue record links to the correct detail page; current Incident and Kaiju fields render; missing records return 404; feature and Livewire tests pass. | INC-004A; High. |
+| INC-005 — Edit incidents and change status | Planned | Correct incident data and manage its lifecycle. | Enum validation, Livewire update actions, date casting. | Edits and valid status transitions persist; invalid values fail; observable behavior is tested. | INC-004B; High. |
 | INC-006 — Delete incidents safely | Planned | Delete an incident only after confirmation. | Confirmation state and Eloquent deletion. | Cancellation preserves data and confirmation deletes only the selected incident; Livewire and database tests pass. | INC-005; High. |
-| INC-007 — Search, filter, and order incidents | Planned | Locate relevant incidents efficiently. | Conditional queries, query strings, and occurrence ordering. | Title/location search, status/kaiju filters, and ordering combine correctly; tests cover representative combinations. | INC-004; Medium. |
+| INC-007 — Search, filter, and order incidents | Planned | Locate relevant incidents efficiently. | Conditional queries, query strings, and occurrence ordering. | Title/location search, status/kaiju filters, and ordering combine correctly; tests cover representative combinations. | INC-004A; Medium. |
 | INC-008 — Show incident history on kaiju details | Planned | Review a Kaiju's incidents from its existing detail page. | Eager loading, occurrence ordering, and relationship rendering. | Kaiju details show the correct incidents in occurrence order without repeated relationship queries; feature tests cover populated and empty histories. | INC-007, INC-002B; High; the cascade constraint is covered by INC-001 and its exact warning is brought forward to INC-002B. |
 
 ## Priority checkpoint — Temporary Railway demo
