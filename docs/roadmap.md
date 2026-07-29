@@ -13,6 +13,26 @@ For each table, the section supplies the phase. Combined columns retain the
 required objective, user value, Laravel concepts, expected scope, acceptance
 criteria, testing expectations, dependencies, priority, and notes.
 
+## Current delivery priority
+
+The temporary technical demo changes the immediate delivery order:
+
+1. Preserve the usable application state completed through manual Incident
+   creation.
+2. Deploy that current application and PostgreSQL in one Railway project.
+3. Verify the public environment and automatic deployment from `main`.
+4. Continue the highest-priority product features, incorporating production
+   findings.
+5. Prepare realistic demo data and refine only the workflows needed for the
+   demonstration.
+6. Perform a final production and demo review, then retire the temporary
+   services after approximately one week.
+
+The Railway work is one focused pull request containing its planning
+documentation, any minimal repository changes found necessary by the readiness
+audit, service configuration, and deployment verification. It does not require
+the complete product roadmap to be implemented.
+
 ## Phase 1 — Project foundations and documentation
 
 | ID and title | Status | Objective and user value | Concepts and scope | Acceptance and testing | Dependencies, priority, and notes |
@@ -44,12 +64,18 @@ criteria, testing expectations, dependencies, priority, and notes.
 | INC-001 — Add the Incident model | Completed | Persist incidents belonging to known kaijus. | Status enum, migration, foreign key, cascade, Eloquent relationships, and immutable UTC date cast. | Required fields, enum and date casts, both relationship directions, foreign-key integrity, and database cascade behavior are verified against PostgreSQL. | KAI-001; High; merged in PR #16. |
 | INC-002A — Add the incident factory | Completed | Produce valid related incidents for focused tests without persistent development data. | Related Eloquent factory, automatic Kaiju creation, explicit existing-Kaiju association, lifecycle states, and UTC dates. | Default records satisfy database constraints; `for($kaiju)` reuses the selected Kaiju; open, contained, and closed states produce the requested enum; factory tests pass. | INC-001, KAI-002; Medium; merged in PR #17. |
 | INC-002B — Seed incidents safely | Completed | Supply repeatable incident histories for development without hiding cascade impact. | Deterministic relationship seeding, status coverage, computed relationship count, pluralized deletion warning, and database cascade. | Repeated seeding produces exactly nine UTC incidents across all statuses; the Kaiju deletion confirmation reports zero, one, or multiple incidents before the cascade; cancellation and unrelated records remain safe. | INC-002A, KAI-006; Medium; merged in PR #18. |
-| INC-003 — Create incidents | In review | Record a manual incident for an existing kaiju from a general or preselected entry point. | Single-file Livewire form, URL-backed preselection, enum and existence validation, UTC parsing, and relationship persistence. | Valid incidents persist through the selected Kaiju relationship; catalogue access starts unselected, Kaiju-detail access preselects its record, empty dependencies and invalid fields are explained, and Livewire/database tests pass. | INC-002B; High; this pull request. |
+| INC-003 — Create incidents | Completed | Record a manual incident for an existing kaiju from a general or preselected entry point. | Single-file Livewire form, URL-backed preselection, enum and existence validation, UTC parsing, and relationship persistence. | Valid incidents persist through the selected Kaiju relationship; catalogue access starts unselected, Kaiju-detail access preselects its record, empty dependencies and invalid fields are explained, and Livewire/database tests pass. | INC-002B; High; merged in PR #19. |
 | INC-004 — List, paginate, and view incidents | Planned | Review incidents and their associated kaijus. | Eager loading, pagination, details, date formatting. | Lists avoid relationship query repetition, paginate, and link to correct details; feature tests pass. | INC-003; High. |
 | INC-005 — Edit incidents and change status | Planned | Correct incident data and manage its lifecycle. | Enum validation, Livewire update actions, date casting. | Edits and valid status transitions persist; invalid values fail; observable behavior is tested. | INC-004; High. |
 | INC-006 — Delete incidents safely | Planned | Delete an incident only after confirmation. | Confirmation state and Eloquent deletion. | Cancellation preserves data and confirmation deletes only the selected incident; Livewire and database tests pass. | INC-005; High. |
 | INC-007 — Search, filter, and order incidents | Planned | Locate relevant incidents efficiently. | Conditional queries, query strings, and occurrence ordering. | Title/location search, status/kaiju filters, and ordering combine correctly; tests cover representative combinations. | INC-004; Medium. |
 | INC-008 — Show incident history on kaiju details | Planned | Review a Kaiju's incidents from its existing detail page. | Eager loading, occurrence ordering, and relationship rendering. | Kaiju details show the correct incidents in occurrence order without repeated relationship queries; feature tests cover populated and empty histories. | INC-007, INC-002B; High; the cascade constraint is covered by INC-001 and its exact warning is brought forward to INC-002B. |
+
+## Priority checkpoint — Temporary Railway demo
+
+| ID and title | Status | Objective and user value | Concepts and scope | Acceptance and testing | Dependencies, priority, and notes |
+| --- | --- | --- | --- | --- | --- |
+| DEP-001 — Deploy the current KERS demo to Railway | Completed | Make the current locally tested application publicly accessible before continuing lower-priority features. | Minimal `railway.json`; GitHub-connected Railway application and PostgreSQL services; private `DB_URL`; native Railpack build and start; explicit non-interactive pre-deploy migration and repeatable seeding; trusted HTTPS proxy headers; `/up` healthcheck; public URL and automatic `main` deployments. | Railway builds successfully; Vite assets load; PostgreSQL migrations and seeders succeed; the application and Kaiju catalogue respond publicly over HTTPS; Laravel trusts Railway's reverse proxy; `/up` succeeds. | INC-003; High; completed in PR #20. Temporary demo: https://kers-production.up.railway.app/kaijus. Review usage and remove the services after approximately one week. |
 
 ## Phase 4 — Response team management
 
@@ -100,13 +126,13 @@ criteria, testing expectations, dependencies, priority, and notes.
 | UI-003 — Internationalize the interface | Planned | Make KERS usable in selected locales without duplicating screens. | Laravel localization files, locale selection and persistence, and fallback behavior. | User-facing copy changes with the selected locale, invalid or unavailable locales fall back to English, and feature and Livewire tests cover selection and persistence. | UI-002; Low; target locales and any required exception to the repository language policy must be approved with the implementation proposal. |
 | UI-004 — Apply restrained visual refinement | Planned | Give KERS a readable command-centre identity. | Tailwind composition, responsive and dark-mode review. | Core pages are visually consistent and accessible without complex charts; frontend build and manual responsive review pass. | UI-003; Low. |
 
-## Phase 9 — Deployment
+## Phase 9 — Post-demo deployment follow-up
 
 | ID and title | Status | Objective and user value | Concepts and scope | Acceptance and testing | Dependencies, priority, and notes |
 | --- | --- | --- | --- | --- | --- |
-| DEP-001 — Select a hosting provider | Planned | Choose a current, affordable, portable Laravel/PostgreSQL target. | Operational requirements and provider evaluation. | Cost, Laravel support, PostgreSQL, logs, runtime processes, and demo reliability are compared and the decision is documented. | UI-004; Low; requires current research. |
-| DEP-002 — Configure and deploy KERS | Planned | Produce a repeatable production deployment. | Production environment, build/start commands, migrations, optional Docker if justified. | Secrets are external, assets build, PostgreSQL migrations run safely, and the deployed application opens reliably. | DEP-001; Low. |
-| DEP-003 — Add operational documentation | Planned | Make the demo supportable and recoverable. | Health checks, logs, deployment and rollback workflow. | Health endpoint, log access, deployment verification, and rollback steps are documented and tested. | DEP-002; Low. |
+| DEP-002 — Perform the final production and demo review | Planned | Confirm the public environment reliably demonstrates the selected current workflows. | Public smoke test, representative data review, asset and log checks, CI and automatic-deployment verification. | Current demo flows work through the public URL, representative data is safe and understandable, assets load, no production error is visible, GitHub Actions passes, and the latest `main` revision is deployed. | DEP-001 and selected product work; High before the demonstration. |
+| DEP-003 — Retire the temporary Railway environment | Planned | Avoid leaving unnecessary services or trial usage active after the demo. | Usage review and explicit stop or removal of the application and database services. | Railway usage is reviewed after approximately one week and both services are stopped or removed when no longer needed. | DEP-002; High operational priority after the demonstration. |
+| DEP-004 — Evaluate long-term hosting if requested | Optional | Select a sustainable provider only if KERS needs a persistent public environment. | Current provider comparison, support, cost, rollback, and operational requirements. | A new proposal compares current options and documents the selected long-term architecture. | DEP-003; Low; the temporary Railway decision does not select permanent hosting. |
 
 ## Optional work
 

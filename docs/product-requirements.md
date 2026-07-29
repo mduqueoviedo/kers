@@ -167,6 +167,9 @@ does not require advanced analytics or complex charts.
 
 - Domain functionality is introduced incrementally in reviewable iterations.
 - Manual kaiju and incident workflows precede USGS integration.
+- A temporary Railway deployment follows the first usable manual Incident flow
+  so the current local behavior can be exercised through a public demo URL.
+- Production findings may influence the remaining product sequence.
 - Authentication follows the main public domain functionality.
 - Visual refinement follows the domain, integration, and authorization work.
 - PostgreSQL is used for development, testing, and deployment.
@@ -184,6 +187,8 @@ does not require advanced analytics or complex charts.
 - Configurable permission matrices
 - User-management screens
 - Complex charts
-- Provider-specific deployment design before the deployment phase
+- Infrastructure beyond the needs of the temporary technical demo
+- Redis, queues, workers, custom domains, external storage, or advanced
+  observability for the initial Railway deployment
 
 Optional extensions may be considered only after the core roadmap is stable.

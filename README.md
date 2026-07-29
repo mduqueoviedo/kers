@@ -1,8 +1,17 @@
 # KERS
 
+[![tests](https://github.com/mduqueoviedo/kers/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/mduqueoviedo/kers/actions/workflows/tests.yml)
+
 KERS (Kaiju Emergency Response System) is a Laravel learning project for
 managing fictional kaijus, their incidents, and the response teams assigned to
 them.
+
+## Live demo
+
+[Open the KERS live demo](https://kers-production.up.railway.app/kaijus)
+
+This temporary production-like environment was created for the technical demo
+and may be removed after the review period.
 
 ## Technology
 
@@ -97,6 +106,18 @@ Start the Laravel application and frontend development server:
 ```bash
 composer dev
 ```
+
+## Deployment status
+
+A minimal temporary Railway deployment is the current delivery priority. It is
+intended to expose the same KERS behavior already verified locally, not the
+complete planned product.
+
+The confirmed architecture, environment variables, manual dashboard steps, and
+acceptance criteria are maintained in the
+[architecture](docs/architecture.md), [technical requirements](docs/technical-requirements.md),
+[roadmap](docs/roadmap.md), and [workflows](docs/workflows.md). Do not infer
+production values from the local `.env` file.
 
 ## Quality checks
 
