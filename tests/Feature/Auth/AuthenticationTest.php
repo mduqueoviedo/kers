@@ -18,7 +18,7 @@ test('users can authenticate using the login screen', function () {
 
     $response
         ->assertSessionHasNoErrors()
-        ->assertRedirect(route('dashboard', absolute: false));
+        ->assertRedirect(route('kaijus.index', absolute: false));
 
     $this->assertAuthenticated();
 });
