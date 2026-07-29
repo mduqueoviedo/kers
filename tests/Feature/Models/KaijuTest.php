@@ -67,3 +67,11 @@ test('the database rejects a threat level outside the allowed range', function (
     'below the minimum' => 0,
     'above the maximum' => 6,
 ]);
+
+test('the database rejects an exact duplicate kaiju name', function () {
+    Kaiju::factory()->create(['name' => 'Leviathan']);
+
+    expect(fn () => Kaiju::factory()->create([
+        'name' => 'Leviathan',
+    ]))->toThrow(QueryException::class);
+});

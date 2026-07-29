@@ -22,9 +22,15 @@ new #[Title('Kaiju catalogue')] class extends Component {
 }; ?>
 
 <section class="mx-auto flex w-full max-w-6xl flex-col gap-6">
-    <header class="space-y-2">
-        <flux:heading size="xl">{{ __('Kaiju catalogue') }}</flux:heading>
-        <flux:text>{{ __('Known creatures monitored by the Kaiju Emergency Response System.') }}</flux:text>
+    <header class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div class="space-y-2">
+            <flux:heading size="xl">{{ __('Kaiju catalogue') }}</flux:heading>
+            <flux:text>{{ __('Known creatures monitored by the Kaiju Emergency Response System.') }}</flux:text>
+        </div>
+
+        <flux:button :href="route('kaijus.create')" variant="primary" wire:navigate>
+            {{ __('Register kaiju') }}
+        </flux:button>
     </header>
 
     @if ($this->kaijus->isEmpty())

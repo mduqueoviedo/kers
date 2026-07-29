@@ -67,6 +67,19 @@ Open the public kaiju catalogue
 
 No authentication is required.
 
+### Register a kaiju
+
+```text
+Open the public Kaiju registration form
+→ enter name, category, threat level, and optional description
+→ Livewire validates the submitted state
+→ Eloquent stores the Kaiju
+→ redirect to the catalogue with confirmation feedback
+```
+
+Names must be unique using exact PostgreSQL string comparison. Category and
+threat-level rules are enforced both before persistence and by the database.
+
 The following authentication workflows remain as a technical foundation. They
 are not exposed in the current navigation and are not yet the final KERS role
 and authorization model.
@@ -102,16 +115,6 @@ Local mail uses the configured log driver unless another mailer is selected.
 ## Planned product workflows
 
 The following workflows are requirements, not implemented behavior.
-
-### Create a kaiju
-
-```text
-Open the kaiju form
-→ enter identity, category, threat level, and optional description
-→ Livewire validates input
-→ Eloquent stores the kaiju
-→ show the created record or catalogue
-```
 
 ### Create a manual incident
 

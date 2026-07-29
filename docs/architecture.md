@@ -64,16 +64,16 @@ The starter UI uses:
 - Vite 8
 - Shared Blade layouts and components
 
-The Kaiju catalogue is the first KERS domain page. Creation and the remaining
-domain workflows are not implemented yet.
+The Kaiju catalogue and registration form are the first KERS domain pages.
+Editing and the remaining domain workflows are not implemented yet.
 
 ## Livewire
 
 Single-file components colocate a Livewire anonymous component class and its
-Blade template. The public Kaiju catalogue is the current example and exposes
-its ordered Eloquent query through a computed property. Form state, validation,
-actions, redirects, and toast feedback will be introduced with the first write
-workflow.
+Blade template. The public Kaiju catalogue exposes its ordered Eloquent query
+through a computed property. The registration component holds form state,
+validates it, creates a Kaiju through Eloquent, dispatches toast feedback, and
+redirects to the catalogue.
 
 ## Database
 
@@ -94,7 +94,9 @@ The current schema contains:
 
 The `Kaiju` Eloquent model casts its stored category string to the
 `KaijuCategory` PHP enum. PostgreSQL check constraints independently restrict
-categories to the enum's current values and threat levels to the range 1–5.
+categories to the enum's current values and threat levels to the range 1–5. A
+unique index prevents exact duplicate names. Livewire validates these rules
+before persistence so users receive form errors instead of database exceptions.
 `KaijuFactory` generates valid test records, while `KaijuSeeder` maintains a
 small deterministic local catalogue covering every category. The root database
 seeder is safe to repeat without duplicating that catalogue. Incident and
@@ -111,7 +113,7 @@ starter dashboard or account-settings UI.
 The Fortify email-verification feature is configured. The application has not
 yet activated the product's final authentication and authorization model:
 
-- Domain routes do not exist yet.
+- Current domain routes remain public.
 - `operator` and `admin` roles do not exist.
 - No domain policies or gates exist.
 - The user model does not currently opt into the `MustVerifyEmail` contract.
@@ -126,9 +128,9 @@ Feature tests use Laravel's `RefreshDatabase` trait. PHPUnit forces the
 `pgsql` connection and `kers_testing` database, preventing tests from targeting
 the development database.
 
-The current suite covers authentication, root redirection, and the public
-catalogue, plus Kaiju persistence, enum casting, database constraints, factory
-states, and repeatable seeding.
+The current suite covers authentication, root redirection, the public catalogue,
+and Kaiju registration, plus persistence, enum casting, database constraints,
+factory states, and repeatable seeding.
 
 ## Quality and CI
 

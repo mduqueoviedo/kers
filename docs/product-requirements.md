@@ -53,7 +53,8 @@ Fields:
 - timestamps
 
 Categories are `aquatic`, `terrestrial`, `aerial`, `amphibious`, and
-`unknown`. Threat level is an integer from 1 to 5. Description is optional.
+`unknown`. Names are unique using exact PostgreSQL string comparison. Threat
+level is an integer from 1 to 5. Description is optional.
 
 A kaiju has many incidents. Deleting a kaiju must cascade to its incidents at
 the database level. The confirmation must state how many incidents will also
