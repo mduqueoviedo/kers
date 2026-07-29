@@ -3,7 +3,7 @@
 ## Status
 
 This document describes the architecture present after adding the first KERS
-domain model and its development data. Domain Livewire pages, incidents,
+domain model, its development data, and its public catalogue. Incidents,
 response teams, capacity rules, USGS integration, roles, policies, and the
 operational dashboard are not implemented yet.
 
@@ -40,7 +40,7 @@ The conventional directory responsibilities are:
 - `database/` contains migrations, factories, and seeders.
 - `resources/` contains CSS, JavaScript, Blade views, layouts, and Livewire
   single-file components.
-- `routes/` declares web, settings, and console routes.
+- `routes/` declares web and console routes.
 - `tests/` contains Pest feature tests.
 
 No custom domain layer, repository abstraction, or generic service layer is
@@ -48,14 +48,13 @@ present.
 
 ## HTTP and UI
 
-The public home route renders the starter welcome Blade view. The public
-`/kaijus` Livewire page queries and renders the current Kaiju catalogue.
+The root route redirects to the public `/kaijus` catalogue. That Livewire page
+queries and renders the current Kaiju records.
 
-The dashboard renders a Blade view and currently requires the `auth` and
-`verified` middleware aliases. Settings routes use authenticated single-file
-Livewire components for profile, appearance, security, and account deletion.
-The shared application sidebar conditionally renders user controls so public
-domain pages do not require authentication.
+The shared application layout provides a small top navigation with the KERS
+name and catalogue link. The generated welcome page, sidebar, dashboard, user
+menus, and account settings UI have been removed so the visible application
+only represents implemented KERS functionality.
 
 The starter UI uses:
 
@@ -71,18 +70,10 @@ domain workflows are not implemented yet.
 ## Livewire
 
 Single-file components colocate a Livewire anonymous component class and its
-Blade template. Current examples live under `resources/views/pages/settings/`
-and demonstrate:
-
-- Public component properties
-- `mount()` initialization
-- Validation
-- Livewire actions
-- Computed properties
-- Redirects and toast feedback
-
-The public Kaiju catalogue follows this pattern and exposes its ordered Eloquent
-query through a computed property.
+Blade template. The public Kaiju catalogue is the current example and exposes
+its ordered Eloquent query through a computed property. Form state, validation,
+actions, redirects, and toast feedback will be introduced with the first write
+workflow.
 
 ## Database
 
@@ -112,8 +103,10 @@ response-team tables do not exist yet.
 ## Authentication
 
 Laravel Fortify provides registration, login, logout, password reset, and email
-verification routes and actions. The starter `User` model, factory, profile
-settings, and security settings are present.
+verification routes and actions. The `User` model, factory, and authentication
+views remain as the foundation for the later authentication phase. Successful
+authentication redirects to the public Kaiju catalogue; there is no temporary
+starter dashboard or account-settings UI.
 
 The Fortify email-verification feature is configured. The application has not
 yet activated the product's final authentication and authorization model:
@@ -133,9 +126,9 @@ Feature tests use Laravel's `RefreshDatabase` trait. PHPUnit forces the
 `pgsql` connection and `kers_testing` database, preventing tests from targeting
 the development database.
 
-The current suite covers starter authentication, dashboard, profile, security,
-and home-page behavior, plus Kaiju persistence, enum casting, and database
-constraints, factory states, and repeatable seeding.
+The current suite covers authentication, root redirection, and the public
+catalogue, plus Kaiju persistence, enum casting, database constraints, factory
+states, and repeatable seeding.
 
 ## Quality and CI
 

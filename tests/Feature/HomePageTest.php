@@ -1,7 +1,6 @@
 <?php
 
-test('home page can be rendered', function () {
-    $response = $this->get(route('home'));
-
-    $response->assertOk();
+test('home redirects to the kaiju catalogue', function () {
+    $this->get(route('home'))
+        ->assertRedirect(route('kaijus.index'));
 });

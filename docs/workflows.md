@@ -28,6 +28,7 @@ Run composer dev
 → Laravel development processes start
 → Vite serves frontend assets
 → open the configured APP_URL
+→ the root URL redirects to the Kaiju catalogue
 ```
 
 ### Run automated tests
@@ -66,8 +67,9 @@ Open the public kaiju catalogue
 
 No authentication is required.
 
-The following authentication workflows come from the starter scaffold. They
-are not yet the final KERS role and authorization model.
+The following authentication workflows remain as a technical foundation. They
+are not exposed in the current navigation and are not yet the final KERS role
+and authorization model.
 
 ### Register and authenticate
 
@@ -77,12 +79,12 @@ Open registration
 → Fortify validates the request
 → create the user through CreateNewUser
 → authenticate the new user
-→ redirect to the dashboard
+→ redirect to the Kaiju catalogue
 ```
 
 Existing users submit the login form, Fortify validates their credentials, and
-successful authentication redirects to the dashboard. Logout invalidates the
-session and redirects to the public home page.
+successful authentication redirects to the Kaiju catalogue. Logout invalidates
+the session and redirects through the root URL to the catalogue.
 
 ### Reset a password
 
@@ -96,20 +98,6 @@ Request a password-reset link
 ```
 
 Local mail uses the configured log driver unless another mailer is selected.
-
-### Update profile and security settings
-
-```text
-Open authenticated settings
-→ Livewire initializes state from the current user
-→ submit profile or password changes
-→ Livewire validates input
-→ Eloquent persists the user
-→ render validation or success feedback
-```
-
-Account deletion requires the current password, deletes the user, logs out the
-session, and redirects home.
 
 ## Planned product workflows
 
