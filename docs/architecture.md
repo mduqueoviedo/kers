@@ -2,10 +2,10 @@
 
 ## Status
 
-This document describes the architecture present after the first KERS domain
-model iteration. Domain Livewire pages, incidents, response teams, capacity
-rules, USGS integration, roles, policies, and the operational dashboard are
-not implemented yet.
+This document describes the architecture present after adding the first KERS
+domain model and its development data. Domain Livewire pages, incidents,
+response teams, capacity rules, USGS integration, roles, policies, and the
+operational dashboard are not implemented yet.
 
 Update this document when architecture actually changes; do not treat planned
 roadmap items as current components.
@@ -100,7 +100,10 @@ The current schema contains:
 The `Kaiju` Eloquent model casts its stored category string to the
 `KaijuCategory` PHP enum. PostgreSQL check constraints independently restrict
 categories to the enum's current values and threat levels to the range 1–5.
-Incident and response-team tables do not exist yet.
+`KaijuFactory` generates valid test records, while `KaijuSeeder` maintains a
+small deterministic local catalogue covering every category. The root database
+seeder is safe to repeat without duplicating that catalogue or its local test
+user. Incident and response-team tables do not exist yet.
 
 ## Authentication
 
@@ -128,7 +131,7 @@ the development database.
 
 The current suite covers starter authentication, dashboard, profile, security,
 and home-page behavior, plus Kaiju persistence, enum casting, and database
-constraints.
+constraints, factory states, and repeatable seeding.
 
 ## Quality and CI
 

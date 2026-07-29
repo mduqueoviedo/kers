@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,11 +16,19 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $this->call(KaijuSeeder::class);
 
-        User::factory()->create([
-            'name' => 'Test User',
+        $user = User::query()->firstOrNew([
             'email' => 'test@example.com',
         ]);
+
+        $user->name = 'Test User';
+
+        if (! $user->exists) {
+            $user->password = 'password';
+            $user->email_verified_at = Carbon::now();
+        }
+
+        $user->save();
     }
 }

@@ -63,6 +63,12 @@ Run the development database migrations:
 php artisan migrate
 ```
 
+Optionally seed representative local data:
+
+```bash
+php artisan db:seed
+```
+
 ## Development
 
 Start the Laravel application and frontend development server:
