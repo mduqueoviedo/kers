@@ -37,7 +37,7 @@ Run php artisan test
 → PHPUnit applies the testing environment
 → Laravel connects to kers_testing
 → RefreshDatabase prepares schema state
-→ Pest executes feature and unit tests
+→ Pest executes feature tests
 → the development database remains untouched
 ```
 

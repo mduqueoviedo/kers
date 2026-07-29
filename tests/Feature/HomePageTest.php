@@ -1,6 +1,6 @@
 <?php
 
-test('returns a successful response', function () {
+test('home page can be rendered', function () {
     $response = $this->get(route('home'));
 
     $response->assertOk();
