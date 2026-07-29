@@ -27,10 +27,9 @@ Browser
 There is no separate frontend application, API service, worker service, or
 external integration process.
 
-## Target Railway deployment
+## Railway deployment
 
-Status: repository configuration added for the temporary technical demo;
-Railway services are not yet created or verified.
+Status: deployed and verified for the temporary technical demo.
 
 ```text
 GitHub repository
@@ -38,7 +37,7 @@ GitHub repository
 └── main branch → Railway observes changes → application build and deployment
 
 Browser
-→ public Railway URL
+→ https://kers-production.up.railway.app/kaijus
 → Railway Laravel application service
 → private Railway connection
 → Railway PostgreSQL service
@@ -52,10 +51,9 @@ GitHub Actions remains the validation system. It does not initially publish or
 deploy artifacts. Railway connects directly to the repository, observes
 `main`, and automatically rebuilds and deploys after merged changes.
 
-The target exists only to reproduce the current locally verified application
-behavior in a public, production-like environment. It does not require the
-remaining product roadmap, additional runtime services, or a permanent hosting
-decision.
+The public environment reproduces the current locally verified application
+behavior. It does not require the remaining product roadmap, additional
+runtime services, or a permanent hosting decision.
 
 Railpack detects the Laravel application, installs Composer and npm
 dependencies, builds Vite assets, and serves the application without a custom
@@ -72,8 +70,13 @@ seeding during startup. The current seeders use `updateOrCreate`: redeployments
 do not delete unrelated data, but may restore the canonical values of
 predefined demo records.
 
-Docker remains a fallback only if the first Railway build exposes a problem
-that Railpack cannot resolve reliably.
+Laravel trusts Railway's reverse proxy and its standard forwarded headers,
+including `X-Forwarded-Proto`, so generated asset URLs retain the public HTTPS
+scheme. The Railway build, Vite assets, PostgreSQL migrations and seeders,
+public catalogue, reverse-proxy handling, and `/up` healthcheck have been
+verified successfully.
+
+Docker was not required.
 
 ## Application framework
 

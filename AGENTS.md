@@ -1320,15 +1320,13 @@ Do not start implementing the entire roadmap.
 
 First:
 
-1. Keep the initial Railway deployment limited to `railway.json`, the documented
-   environment variables, and manual Railway dashboard configuration.
-2. Do not add custom build or start commands, Docker, dependency declarations,
-   deployment-specific tests, or CI deployment steps unless an actual Railway
-   failure demonstrates that they are required.
-3. Create the application and PostgreSQL services, configure variables, enable
-   `Wait for CI`, generate the public domain, and select `main` manually in the
-   Railway dashboard when that external work is explicitly requested.
-4. Validate deployments through Railway build and deployment logs plus public
-   smoke tests of the current Kaiju and Incident flows.
-5. Do not continue lower-priority roadmap features until the deployment
-   checkpoint has been reviewed.
+1. Treat the initial Railway deployment as completed and verified at
+   `https://kers-production.up.railway.app/kaijus`.
+2. Do not recreate or expand the temporary infrastructure unless explicitly
+   requested.
+3. Preserve the minimal Railpack, PostgreSQL, trusted-proxy, healthcheck, and
+   pre-deploy configuration while continuing product work.
+4. Review Railway usage and stop or remove both services after the temporary
+   demonstration period.
+5. Use `docs/roadmap.md` to propose the next focused product iteration and wait
+   for approval before implementation.

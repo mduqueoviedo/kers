@@ -54,12 +54,13 @@ Open or update a pull request
 → Pest runs against the CI test database
 ```
 
-## Planned deployment workflow
+## Current deployment workflow
 
 ### Deploy the current application to Railway
 
-The repository configuration for this workflow exists, but the manual Railway
-services and first deployment are not yet created or verified.
+The temporary environment is deployed at:
+
+[Open the KERS live demo](https://kers-production.up.railway.app/kaijus)
 
 ```text
 Complete the deployment-readiness audit
@@ -94,10 +95,9 @@ The seeders are repeatable and preserve unrelated records. A redeployment may
 restore canonical values for predefined demo records because the seeders use
 `updateOrCreate`.
 
-The following steps remain manual in the Railway dashboard:
+The Railway dashboard configuration remains manual:
 
-1. Create a project from the GitHub repository and select the deployment
-   branch.
+1. Connect the application service to the GitHub repository and `main`.
 2. Add PostgreSQL to the same project.
 3. Add the documented Laravel variables, generate `APP_KEY`, and reference the
    PostgreSQL `DATABASE_URL` as `DB_URL`.
@@ -105,8 +105,16 @@ The following steps remain manual in the Railway dashboard:
 5. Enable automatic deployments and `Wait for CI`.
 6. Inspect the build, pre-deploy, and runtime logs.
 7. Smoke-test the current public Kaiju and Incident workflows.
-8. After review, select `main` as the deployment branch and verify a later
-   merge deploys automatically.
+
+The initial deployment verified:
+
+- Railway builds the Laravel application successfully.
+- Vite assets build and load over HTTPS.
+- PostgreSQL migrations and repeatable seeders complete successfully.
+- The public Kaiju catalogue is accessible.
+- Laravel uses Railway's forwarded proxy headers for the correct HTTPS scheme.
+- The `/up` healthcheck succeeds.
+- Changes from the connected GitHub branch deploy automatically.
 
 ### Verify and retire the temporary demo
 

@@ -1,8 +1,17 @@
 # KERS
 
+[![tests](https://github.com/mduqueoviedo/kers/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/mduqueoviedo/kers/actions/workflows/tests.yml)
+
 KERS (Kaiju Emergency Response System) is a Laravel learning project for
 managing fictional kaijus, their incidents, and the response teams assigned to
 them.
+
+## Live demo
+
+[Open the KERS live demo](https://kers-production.up.railway.app/kaijus)
+
+This temporary production-like environment was created for the technical demo
+and may be removed after the review period.
 
 ## Technology
 
