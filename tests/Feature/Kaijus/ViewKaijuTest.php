@@ -2,14 +2,20 @@
 
 use App\Enums\KaijuCategory;
 use App\Models\Kaiju;
+use Illuminate\Support\Carbon;
 use Livewire\Livewire;
 
 test('guests can view the correct kaiju details', function () {
+    $createdAt = Carbon::parse('2026-01-15 14:30:00');
+    $updatedAt = Carbon::parse('2026-02-20 09:45:00');
+
     $kaiju = Kaiju::factory()->create([
         'name' => 'Leviathan',
         'category' => KaijuCategory::Aquatic,
         'threat_level' => 5,
         'description' => 'A colossal creature detected beneath the Atlantic.',
+        'created_at' => $createdAt,
+        'updated_at' => $updatedAt,
     ]);
 
     Kaiju::factory()->create([
@@ -22,6 +28,12 @@ test('guests can view the correct kaiju details', function () {
         ->assertSee('Aquatic')
         ->assertSee('Level 5 of 5')
         ->assertSee('A colossal creature detected beneath the Atlantic.')
+        ->assertSee($createdAt->isoFormat('LLL'))
+        ->assertSee($updatedAt->isoFormat('LLL'))
+        ->assertSee($createdAt->toIso8601String())
+        ->assertSee($updatedAt->toIso8601String())
+        ->assertDontSee($createdAt->toDateTimeString())
+        ->assertDontSee($updatedAt->toDateTimeString())
         ->assertDontSee('Stormwing');
 });
 

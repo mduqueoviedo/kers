@@ -47,5 +47,25 @@ new #[Title('Kaiju details')] class extends Component {
             <flux:heading size="lg">{{ __('Description') }}</flux:heading>
             <flux:text>{{ $kaiju->description ?? __('No description provided.') }}</flux:text>
         </div>
+
+        <dl class="grid gap-4 border-t border-zinc-200 pt-6 sm:grid-cols-2 dark:border-zinc-700">
+            <div class="space-y-1">
+                <dt class="text-sm font-medium text-zinc-500 dark:text-zinc-400">{{ __('Created at') }}</dt>
+                <dd class="text-zinc-900 dark:text-white">
+                    <time datetime="{{ $kaiju->created_at?->toIso8601String() }}">
+                        {{ $kaiju->created_at?->isoFormat('LLL') }}
+                    </time>
+                </dd>
+            </div>
+
+            <div class="space-y-1">
+                <dt class="text-sm font-medium text-zinc-500 dark:text-zinc-400">{{ __('Updated at') }}</dt>
+                <dd class="text-zinc-900 dark:text-white">
+                    <time datetime="{{ $kaiju->updated_at?->toIso8601String() }}">
+                        {{ $kaiju->updated_at?->isoFormat('LLL') }}
+                    </time>
+                </dd>
+            </div>
+        </dl>
     </article>
 </section>

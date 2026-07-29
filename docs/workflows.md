@@ -75,7 +75,7 @@ No authentication is required.
 Follow a detail link from the public catalogue
 → Laravel resolves the Kaiju route parameter
 → Livewire receives the Eloquent model in mount()
-→ display its category, threat level, and description
+→ display its category, threat level, description, and friendly timestamps
 → return to the catalogue
 ```
 
