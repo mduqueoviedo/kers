@@ -126,8 +126,10 @@ Kaijus' incidents untouched. Eloquent casts status to the `IncidentStatus` enum
 and occurrence time to the application's configured immutable Carbon date
 class. `occurred_at` is a timezone-free PostgreSQL timestamp whose value is
 always interpreted as UTC; the Laravel application timezone is also UTC.
-Incident factories, seed data, routes, and user interfaces are not implemented
-yet.
+`IncidentFactory` creates valid related records, can reuse an explicit Kaiju
+through Laravel's `for()` factory method, and provides open, contained, and
+closed states. Incident seed data, routes, and user interfaces are not
+implemented yet.
 
 ## Authentication
 
@@ -159,7 +161,7 @@ The current suite covers authentication, root redirection, the paginated public
 catalogue with combined search and filters, Kaiju registration, route-bound
 details, editing, and confirmed deletion, plus persistence, enum casting,
 database constraints, Incident relationships and cascade behavior, factory
-states, and repeatable seeding.
+states for both current domain models, and repeatable Kaiju seeding.
 
 ## Quality and CI
 
