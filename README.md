@@ -69,6 +69,24 @@ Optionally seed representative local data:
 php artisan db:seed
 ```
 
+### Reset local data
+
+Rebuild the development database with empty tables:
+
+```bash
+php artisan migrate:fresh
+```
+
+Rebuild it with the representative demo catalogue:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+Both commands delete all data in the configured database before running the
+migrations. Use them only for local development and confirm that `.env` points
+to the intended `kers` database first.
+
 ## Development
 
 Start the Laravel application and frontend development server:

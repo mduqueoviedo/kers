@@ -48,11 +48,14 @@ present.
 
 ## HTTP and UI
 
-The public home route renders the starter welcome Blade view.
+The public home route renders the starter welcome Blade view. The public
+`/kaijus` Livewire page queries and renders the current Kaiju catalogue.
 
 The dashboard renders a Blade view and currently requires the `auth` and
 `verified` middleware aliases. Settings routes use authenticated single-file
 Livewire components for profile, appearance, security, and account deletion.
+The shared application sidebar conditionally renders user controls so public
+domain pages do not require authentication.
 
 The starter UI uses:
 
@@ -62,7 +65,8 @@ The starter UI uses:
 - Vite 8
 - Shared Blade layouts and components
 
-KERS domain navigation and pages have not been added.
+The Kaiju catalogue is the first KERS domain page. Creation and the remaining
+domain workflows are not implemented yet.
 
 ## Livewire
 
@@ -77,8 +81,8 @@ and demonstrate:
 - Computed properties
 - Redirects and toast feedback
 
-Domain pages will follow this existing project choice when their roadmap items
-are approved.
+The public Kaiju catalogue follows this pattern and exposes its ordered Eloquent
+query through a computed property.
 
 ## Database
 
