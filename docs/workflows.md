@@ -60,9 +60,11 @@ Open or update a pull request
 
 ```text
 Open the public kaiju catalogue
-→ Livewire queries known kaijus through Eloquent
+→ Livewire reads the requested page from the URL
+→ Eloquent queries nine known kaijus in alphabetical order
 → display an empty state or the ordered catalogue
 → show each category, threat level, and description
+→ navigate between pages without a full browser reload
 ```
 
 No authentication is required.
