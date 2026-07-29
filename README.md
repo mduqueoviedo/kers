@@ -69,8 +69,8 @@ Optionally seed representative local data:
 php artisan db:seed
 ```
 
-The deterministic seed catalogue contains 12 kaijus, enough to exercise both
-pages of the initial catalogue pagination.
+The deterministic demo data contains 12 kaijus and 9 related incidents. It
+covers both catalogue pages, every Kaiju category, and every Incident status.
 
 ### Reset local data
 
@@ -80,7 +80,7 @@ Rebuild the development database with empty tables:
 php artisan migrate:fresh
 ```
 
-Rebuild it with the representative demo catalogue:
+Rebuild it with the representative demo data:
 
 ```bash
 php artisan migrate:fresh --seed

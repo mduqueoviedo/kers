@@ -89,7 +89,9 @@ only the current model, allowing an unchanged name while continuing to reject
 another Kaiju's exact name. The detail component also owns a boolean
 confirmation state for permanent deletion. Opening or cancelling its Flux
 modal does not change persistence, and the Eloquent delete action is guarded by
-that state before redirecting to the catalogue.
+that state before redirecting to the catalogue. The modal uses a computed
+relationship count and Laravel pluralization to state the exact number of
+incidents affected before PostgreSQL performs its cascade.
 
 ## Database
 
@@ -116,8 +118,10 @@ unique index prevents exact duplicate names. Livewire validates these rules
 before persistence so users receive form errors instead of database exceptions.
 `KaijuFactory` generates valid test records, while `KaijuSeeder` maintains 12
 deterministic local records covering every category and both initial catalogue
-pages. The root database seeder is safe to repeat without duplicating that
-catalogue.
+pages. `IncidentSeeder` maintains nine deterministic UTC incidents associated
+with those Kaijus and covering every lifecycle status. The root database seeder
+runs the Kaiju seeder first and is safe to repeat without duplicating either
+dataset.
 
 Each `Incident` belongs to one `Kaiju`, and a Kaiju has many incidents.
 PostgreSQL rejects unknown Kaiju references and invalid status values. Its
@@ -128,8 +132,7 @@ class. `occurred_at` is a timezone-free PostgreSQL timestamp whose value is
 always interpreted as UTC; the Laravel application timezone is also UTC.
 `IncidentFactory` creates valid related records, can reuse an explicit Kaiju
 through Laravel's `for()` factory method, and provides open, contained, and
-closed states. Incident seed data, routes, and user interfaces are not
-implemented yet.
+closed states. Incident routes and user interfaces are not implemented yet.
 
 ## Authentication
 
@@ -161,7 +164,8 @@ The current suite covers authentication, root redirection, the paginated public
 catalogue with combined search and filters, Kaiju registration, route-bound
 details, editing, and confirmed deletion, plus persistence, enum casting,
 database constraints, Incident relationships and cascade behavior, factory
-states for both current domain models, and repeatable Kaiju seeding.
+states for both current domain models, repeatable related seeding, and exact
+cascade-warning counts.
 
 ## Quality and CI
 

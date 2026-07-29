@@ -119,14 +119,18 @@ Eloquent preserves `created_at` and updates `updated_at` automatically.
 Open a Kaiju detail page
 → request deletion
 → Livewire opens a permanent-deletion confirmation
+→ count and display the associated incidents
 → cancel and preserve the Kaiju, or explicitly confirm
 → Eloquent deletes the selected Kaiju
+→ PostgreSQL cascades deletion to its incidents
 → redirect to the catalogue with confirmation feedback
 ```
 
-The delete action ignores calls made before confirmation. Deletion is currently
-permanent and public, consistently with the other Kaiju workflows. Role-based
-authorization will be added in its later roadmap phase.
+The warning distinguishes zero, one, and multiple incidents. The delete action
+ignores calls made before confirmation, and cancellation preserves both the
+Kaiju and its incidents. Deletion is currently permanent and public,
+consistently with the other Kaiju workflows. Role-based authorization will be
+added in its later roadmap phase.
 
 The following authentication workflows remain as a technical foundation. They
 are not exposed in the current navigation and are not yet the final KERS role
@@ -194,17 +198,6 @@ Open an incident
 → validate active capacity
 → persist the assignment
 → show updated workload
-```
-
-### Delete a kaiju and its incidents
-
-```text
-Request kaiju deletion
-→ count associated incidents
-→ display the permanent cascade warning
-→ explicitly confirm
-→ delete the kaiju
-→ PostgreSQL cascades deletion to its incidents
 ```
 
 ### Create incidents from USGS events

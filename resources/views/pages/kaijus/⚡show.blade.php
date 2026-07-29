@@ -2,6 +2,7 @@
 
 use App\Models\Kaiju;
 use Flux\Flux;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
@@ -16,6 +17,15 @@ new #[Title('Kaiju details')] class extends Component {
     public function mount(Kaiju $kaiju): void
     {
         $this->kaiju = $kaiju;
+    }
+
+    /**
+     * Count incidents that would be deleted with this Kaiju.
+     */
+    #[Computed]
+    public function incidentCount(): int
+    {
+        return $this->kaiju->incidents()->count();
     }
 
     /**
@@ -120,6 +130,23 @@ new #[Title('Kaiju details')] class extends Component {
         <div class="space-y-6">
             <div class="space-y-2">
                 <flux:heading size="lg">{{ __('Delete kaiju?') }}</flux:heading>
+                <flux:text>
+                    {{ trans_choice(
+                        'This kaiju has :count associated incident.|This kaiju has :count associated incidents.',
+                        $this->incidentCount,
+                        ['count' => $this->incidentCount],
+                    ) }}
+                </flux:text>
+
+                @if ($this->incidentCount > 0)
+                    <flux:text>
+                        {{ trans_choice(
+                            'Deleting it will also permanently delete that incident.|Deleting it will also permanently delete those incidents.',
+                            $this->incidentCount,
+                        ) }}
+                    </flux:text>
+                @endif
+
                 <flux:text>
                     {{ __('Are you sure you want to delete :name? This action cannot be undone.', ['name' => $kaiju->name]) }}
                 </flux:text>
