@@ -3,12 +3,14 @@
 ## Status
 
 This document describes the architecture present after adding the Kaiju
-management flow and the foundational Incident model. Incident interfaces and
-development data, response teams, capacity rules, USGS integration, roles,
-policies, and the operational dashboard are not implemented yet.
+management flow and manual Incident creation. Incident listing and management,
+response teams, capacity rules, USGS integration, roles, policies, and the
+operational dashboard are not implemented yet.
 
 Update this document when architecture actually changes; do not treat planned
-roadmap items as current components.
+roadmap items as current components. The Railway section below records a
+confirmed target architecture and remains explicitly marked as not yet
+implemented.
 
 ## System shape
 
@@ -24,6 +26,54 @@ Browser
 
 There is no separate frontend application, API service, worker service, or
 external integration process.
+
+## Target Railway deployment
+
+Status: repository configuration added for the temporary technical demo;
+Railway services are not yet created or verified.
+
+```text
+GitHub repository
+├── pull requests and main → GitHub Actions → tests and validation
+└── main branch → Railway observes changes → application build and deployment
+
+Browser
+→ public Railway URL
+→ Railway Laravel application service
+→ private Railway connection
+→ Railway PostgreSQL service
+```
+
+The application and PostgreSQL run as separate services in the same Railway
+project. Database traffic uses Railway's private service connection, while only
+the application receives a public demo URL.
+
+GitHub Actions remains the validation system. It does not initially publish or
+deploy artifacts. Railway connects directly to the repository, observes
+`main`, and automatically rebuilds and deploys after merged changes.
+
+The target exists only to reproduce the current locally verified application
+behavior in a public, production-like environment. It does not require the
+remaining product roadmap, additional runtime services, or a permanent hosting
+decision.
+
+Railpack detects the Laravel application, installs Composer and npm
+dependencies, builds Vite assets, and serves the application without a custom
+build or start command. `railway.json` configures `/up` as the deployment
+healthcheck and runs this explicit pre-deploy command:
+
+```text
+php artisan migrate --force --no-interaction && php artisan db:seed --force --no-interaction
+```
+
+The Railway application service must set
+`RAILPACK_SKIP_MIGRATIONS=true` so Railpack does not repeat migration and
+seeding during startup. The current seeders use `updateOrCreate`: redeployments
+do not delete unrelated data, but may restore the canonical values of
+predefined demo records.
+
+Docker remains a fallback only if the first Railway build exposes a problem
+that Railpack cannot resolve reliably.
 
 ## Application framework
 
@@ -104,7 +154,7 @@ Livewire existence validation and the PostgreSQL foreign key.
 ## Database
 
 PostgreSQL 18 is the project database for local development, automated tests,
-CI, and future deployment.
+CI, and the target Railway deployment.
 
 Database selection flows from environment variables through
 `config/database.php`. The development database is `kers`; PHPUnit selects the
@@ -140,7 +190,8 @@ class. `occurred_at` is a timezone-free PostgreSQL timestamp whose value is
 always interpreted as UTC; the Laravel application timezone is also UTC.
 `IncidentFactory` creates valid related records, can reuse an explicit Kaiju
 through Laravel's `for()` factory method, and provides open, contained, and
-closed states. Incident routes and user interfaces are not implemented yet.
+closed states. The manual creation route is implemented; other Incident pages
+are not.
 
 ## Authentication
 
@@ -216,12 +267,19 @@ introduced only in response to implemented complexity.
 
 ### Portability
 
-Configuration uses environment variables, secrets remain outside Git, and no
-provider-specific deployment or persistent local-disk assumption exists.
+Configuration uses environment variables and secrets remain outside Git. The
+temporary Railway architecture keeps the application and PostgreSQL together
+for operational simplicity while continuing to use standard Laravel and
+PostgreSQL configuration.
+
+Railway storage is treated as ephemeral. The initial demo does not add uploads,
+external storage, Redis, queues, workers, custom domains, or advanced
+observability. Both Railway services should be stopped or removed after the
+approximately one-week demo period when they are no longer needed.
 
 ## Planned but not implemented
 
-The product requirements anticipate Eloquent domain models, relationships,
-enums, policies, USGS HTTP mapping, capacity validation, and dashboard
+The product requirements anticipate further Eloquent domain models,
+relationships, policies, USGS HTTP mapping, capacity validation, and dashboard
 aggregates. Their architecture will be documented here only after the
 corresponding roadmap items are implemented.

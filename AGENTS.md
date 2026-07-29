@@ -876,47 +876,85 @@ The final visual style may suggest an emergency command center, but it must rema
 
 ## 21. Deployment principles
 
-Deployment is the final core phase and has low priority compared with application development.
+An initial Railway deployment is the next high-priority checkpoint after the
+minimal Incident creation flow. It must be completed before lower-priority
+product work so that production findings can influence later development.
 
-Do not choose a provider yet.
+This deployment is a temporary, production-like environment for a technical
+demo. It only needs to expose the same application behavior currently verified
+in local development. It is expected to remain active for approximately one
+week and to use Railway trial credit with an expected cost of zero.
 
-Keep the application portable and compatible with possible providers such as:
+The confirmed initial architecture is:
 
-* Laravel Cloud
-* Railway
-* Koyeb
-* Render
-* Other suitable services available when deployment begins
+* Railway connected directly to the GitHub repository
+* One Railway application service
+* One Railway PostgreSQL service in the same project
+* A private connection from the application to PostgreSQL
+* A public Railway URL for the application
+* Automatic Railway builds and deployments after merges into `main`
+* GitHub Actions continuing to run tests and validation without deploying
 
-Until the final phase:
+Keep the first deployment intentionally minimal:
 
-* Use environment variables for configuration
-* Keep secrets out of the repository
-* Maintain `.env.example`
-* Use PostgreSQL
-* Avoid relying on persistent local disk
-* Avoid provider-specific services
-* Keep migration, build and startup commands documented
-* Do not add provider-specific configuration
-* Do not add Docker prematurely
+* Use production-safe Laravel environment variables
+* Generate `APP_KEY` outside the repository
+* Keep every secret out of Git
+* Let Railpack install dependencies, build Vite assets, and serve Laravel
+  without custom build or start commands
+* Set `RAILPACK_SKIP_MIGRATIONS=true`
+* Use the `railway.json` pre-deploy command to run `migrate --force` and the
+  current repeatable demo seeder non-interactively
+* Never reset the production database
+* Treat the Railway filesystem as ephemeral
+* Avoid local file uploads unless that demo limitation is explicitly accepted
+* Do not add Redis, queues, workers, custom domains, external storage, advanced
+  observability, or other infrastructure that the current application does not
+  need
 
-Provider selection will be made during the deployment phase based on:
+Do not add Docker unless the repository audit shows that Railway cannot deploy
+the application reliably without it. Do not add paid infrastructure for this
+temporary environment.
 
-* Current cost
-* Free or low-cost availability
-* Laravel support
-* PostgreSQL support
-* Ease of deployment
-* Demo reliability
-* Support for any required runtime processes
+The required Railway application variables are:
 
-Docker may be introduced during the deployment phase if it improves portability.
+```text
+APP_NAME=KERS
+APP_ENV=production
+APP_DEBUG=false
+APP_KEY=<generated Laravel key>
+APP_URL=https://${{RAILWAY_PUBLIC_DOMAIN}}
+DB_CONNECTION=pgsql
+DB_URL=${{Postgres.DATABASE_URL}}
+LOG_CHANNEL=stderr
+LOG_LEVEL=info
+SESSION_DRIVER=database
+SESSION_SECURE_COOKIE=true
+CACHE_STORE=database
+QUEUE_CONNECTION=sync
+FILESYSTEM_DISK=local
+RAILPACK_SKIP_MIGRATIONS=true
+```
+
+The current seeders use `updateOrCreate`. They do not delete unrelated data,
+but each redeployment may restore the canonical values of predefined demo
+records.
+
+After the demo, review Railway usage and stop or remove both services when they
+are no longer needed. This temporary Railway decision does not select a
+permanent hosting provider for a later long-lived deployment.
 
 ---
 
 ## 22. Core roadmap
 
 The roadmap must be broken down into small pull requests. The following phases describe direction, not permission to implement everything at once.
+
+The initial Railway deployment is a temporary priority checkpoint immediately
+after Phase 3's minimal Incident creation flow and before continuing with Phase
+4. Its planning documentation, minimal repository changes, Railway setup, and
+verification belong to one focused pull request. The detailed and current
+sequence is maintained in `docs/roadmap.md`.
 
 ### Phase 1 — Project foundations and documentation
 
@@ -1127,25 +1165,19 @@ Potential Laravel concepts:
 * Derived UI state
 * Avoiding N+1 queries
 
-### Phase 9 — Deployment
+### Phase 9 — Long-term deployment follow-up
 
 Suggested progression:
 
-1. Review current hosting options.
-2. Select a provider.
-3. Document production requirements.
-4. Add production configuration.
-5. Add Docker only if appropriate.
-6. Provision PostgreSQL.
-7. Configure environment variables.
-8. Run migrations safely.
-9. Deploy the application.
-10. Add a health check.
-11. Verify logs.
-12. Document deployment and rollback procedures.
-13. Confirm the demo can be opened reliably.
+1. Review the temporary Railway deployment and demo findings.
+2. Stop or remove temporary services after the demo.
+3. Decide whether a long-lived deployment is needed.
+4. Evaluate current hosting options only if a long-lived environment is
+   requested.
+5. Document any production support and rollback requirements justified by that
+   environment.
 
-Deployment remains the final core phase.
+The initial Railway demo deployment is not deferred to this phase.
 
 ---
 
@@ -1209,7 +1241,7 @@ Avoid:
 * Adding USGS fields before the approved integration work
 * Adding queues, events or notifications speculatively
 * Polishing the full UI during early CRUD work
-* Adding deployment files early
+* Adding deployment infrastructure outside the approved Railway checkpoint
 * Installing packages proactively
 * Performing broad cleanup unrelated to the feature
 
@@ -1288,10 +1320,15 @@ Do not start implementing the entire roadmap.
 
 First:
 
-1. Inspect the current repository and existing Laravel scaffold.
-2. Review existing configuration, tests, authentication scaffold and frontend setup.
-3. Compare the repository with these instructions.
-4. Propose the first small pull request.
-5. The first proposal should focus on project foundations and documentation without becoming a large setup PR.
-6. Explain what should be included now and what should be deferred.
-7. Wait for explicit approval before creating a branch or changing files.
+1. Keep the initial Railway deployment limited to `railway.json`, the documented
+   environment variables, and manual Railway dashboard configuration.
+2. Do not add custom build or start commands, Docker, dependency declarations,
+   deployment-specific tests, or CI deployment steps unless an actual Railway
+   failure demonstrates that they are required.
+3. Create the application and PostgreSQL services, configure variables, enable
+   `Wait for CI`, generate the public domain, and select `main` manually in the
+   Railway dashboard when that external work is explicitly requested.
+4. Validate deployments through Railway build and deployment logs plus public
+   smoke tests of the current Kaiju and Incident flows.
+5. Do not continue lower-priority roadmap features until the deployment
+   checkpoint has been reviewed.

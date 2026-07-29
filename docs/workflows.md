@@ -54,6 +54,73 @@ Open or update a pull request
 → Pest runs against the CI test database
 ```
 
+## Planned deployment workflow
+
+### Deploy the current application to Railway
+
+The repository configuration for this workflow exists, but the manual Railway
+services and first deployment are not yet created or verified.
+
+```text
+Complete the deployment-readiness audit
+→ connect Railway directly to the GitHub repository
+→ create one Laravel application service
+→ create PostgreSQL in the same Railway project
+→ configure production-safe Laravel environment variables and APP_KEY
+→ connect Laravel to PostgreSQL over Railway's private network
+→ set RAILPACK_SKIP_MIGRATIONS=true
+→ let Railpack install dependencies, build Vite, and serve Laravel
+→ railway.json runs migrations and the demo seeder during pre-deploy
+→ expose and smoke-test the public Railway URL
+→ merge a later change into main
+→ verify Railway automatically deploys that revision
+```
+
+GitHub Actions continues to run the test and quality pipeline. Railway observes
+`main` directly; GitHub Actions does not initially deploy the application.
+
+The deployment must not copy local `.env` values, commit secrets, reset the
+production database, or depend on persistent local files. It does not add
+Redis, queues, workers, custom domains, external storage, or advanced
+observability.
+
+The explicit pre-deploy command is:
+
+```text
+php artisan migrate --force --no-interaction && php artisan db:seed --force --no-interaction
+```
+
+The seeders are repeatable and preserve unrelated records. A redeployment may
+restore canonical values for predefined demo records because the seeders use
+`updateOrCreate`.
+
+The following steps remain manual in the Railway dashboard:
+
+1. Create a project from the GitHub repository and select the deployment
+   branch.
+2. Add PostgreSQL to the same project.
+3. Add the documented Laravel variables, generate `APP_KEY`, and reference the
+   PostgreSQL `DATABASE_URL` as `DB_URL`.
+4. Generate a public Railway domain for the application service.
+5. Enable automatic deployments and `Wait for CI`.
+6. Inspect the build, pre-deploy, and runtime logs.
+7. Smoke-test the current public Kaiju and Incident workflows.
+8. After review, select `main` as the deployment branch and verify a later
+   merge deploys automatically.
+
+### Verify and retire the temporary demo
+
+```text
+Open the public URL
+→ confirm APP_ENV is production and debug mode is disabled
+→ exercise the same Kaiju and Incident creation flows used locally
+→ verify representative demo data and static assets
+→ confirm GitHub Actions and the latest Railway deployment are successful
+→ keep the environment available for the demonstration period
+→ review usage after approximately one week
+→ stop or remove both Railway services when no longer needed
+```
+
 ## Current user workflows
 
 ### Browse the kaiju catalogue

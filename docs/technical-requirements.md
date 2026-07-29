@@ -184,15 +184,81 @@ testing, review guide, documentation impact, and roadmap status.
 
 ## Portability and deployment
 
-Deployment remains the final core phase. Until then:
+Railway is the confirmed provider for the initial temporary technical demo.
+This is a high-priority delivery checkpoint rather than the final product
+deployment. It does not select a provider for any future long-lived
+environment.
 
-- Use environment variables for all environment-specific configuration.
-- Keep `.env.example` current.
-- Use PostgreSQL.
-- Avoid provider-specific files and services.
-- Avoid relying on persistent local disk.
-- Document migration, build, test, and startup commands.
-- Add Docker only if it improves deployment portability during that phase.
+The initial deployment uses one Railway project containing:
 
-Provider selection is deferred until current cost, PostgreSQL support, Laravel
-support, operational simplicity, and demo reliability can be evaluated.
+- A Laravel application service connected directly to this GitHub repository
+- A Railway PostgreSQL service
+- Railway's private service connection for application database traffic
+- A public Railway URL for the current application
+
+Railway observes `main` and automatically builds and deploys after merges.
+GitHub Actions remains an independent validation gate and does not initially
+deploy the application. Railway's `Wait for CI` option is enabled manually.
+
+Railpack handles dependency installation, the Vite build, and the Laravel web
+server automatically. The repository does not define custom build or start
+commands. `railway.json` adds only the explicit pre-deploy lifecycle command,
+the `/up` healthcheck, and a limited restart policy.
+
+Production configuration must:
+
+- Set `APP_ENV=production` and disable debug mode.
+- Generate and configure `APP_KEY` outside the repository.
+- Provide database and other environment-specific values through Railway.
+- Keep secrets and real credentials out of Git and `.env.example`.
+- Use PostgreSQL without a SQLite fallback.
+- Install production Composer dependencies and build Vite assets.
+- Set `RAILPACK_SKIP_MIGRATIONS=true` to disable Railpack's implicit migration
+  and seeding startup behavior.
+- Run `php artisan migrate --force --no-interaction` followed by
+  `php artisan db:seed --force --no-interaction` in the pre-deploy phase.
+- Never run `migrate:fresh`, database resets, or destructive seed behavior
+  during deployment.
+- Populate only a small, production-safe demonstration dataset.
+- Treat the application filesystem as ephemeral.
+- Avoid local uploads unless losing them is an explicitly accepted demo
+  limitation.
+
+The environment is expected to remain active for approximately one week. Its
+expected cost is zero through Railway trial credit. Usage must be reviewed
+after the demo, and the application and database services must then be stopped
+or removed when no longer needed.
+
+The initial scope excludes Redis, queues, workers, custom domains, external
+storage, advanced observability, and other unnecessary infrastructure. Docker
+is permitted only if the repository audit demonstrates that Railway cannot
+deploy the application reliably without it.
+
+The required Railway application-service variables are:
+
+```text
+APP_NAME=KERS
+APP_ENV=production
+APP_DEBUG=false
+APP_KEY=<generated Laravel key>
+APP_URL=https://${{RAILWAY_PUBLIC_DOMAIN}}
+DB_CONNECTION=pgsql
+DB_URL=${{Postgres.DATABASE_URL}}
+LOG_CHANNEL=stderr
+LOG_LEVEL=info
+SESSION_DRIVER=database
+SESSION_SECURE_COOKIE=true
+CACHE_STORE=database
+QUEUE_CONNECTION=sync
+FILESYSTEM_DISK=local
+RAILPACK_SKIP_MIGRATIONS=true
+```
+
+`APP_KEY` is generated outside Git and stored only as a Railway secret.
+`DB_URL` references the PostgreSQL service inside the same Railway project.
+The local `.env` file is never copied to Railway.
+
+The current seeders are acceptable for the temporary demo because they use
+`updateOrCreate` and do not delete unrelated records. Since they run during
+every pre-deploy phase, a redeployment may restore canonical field values for
+the predefined Kaijus and Incidents.
