@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use App\Enums\KaijuCategory;
+use Database\Factories\KaijuFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
@@ -19,6 +21,9 @@ use Illuminate\Support\Carbon;
 #[Fillable(['name', 'category', 'threat_level', 'description'])]
 class Kaiju extends Model
 {
+    /** @use HasFactory<KaijuFactory> */
+    use HasFactory;
+
     /**
      * Get the attributes that should be cast.
      *
