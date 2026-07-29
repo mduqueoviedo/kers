@@ -5,8 +5,10 @@ namespace App\Models;
 use App\Enums\KaijuCategory;
 use Database\Factories\KaijuFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -17,12 +19,23 @@ use Illuminate\Support\Carbon;
  * @property string|null $description
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read Collection<int, Incident> $incidents
  */
 #[Fillable(['name', 'category', 'threat_level', 'description'])]
 class Kaiju extends Model
 {
     /** @use HasFactory<KaijuFactory> */
     use HasFactory;
+
+    /**
+     * Get the incidents involving this Kaiju.
+     *
+     * @return HasMany<Incident, $this>
+     */
+    public function incidents(): HasMany
+    {
+        return $this->hasMany(Incident::class);
+    }
 
     /**
      * Get the attributes that should be cast.

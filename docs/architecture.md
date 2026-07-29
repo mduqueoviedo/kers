@@ -2,10 +2,10 @@
 
 ## Status
 
-This document describes the architecture present after adding the first KERS
-domain model, its development data, and its public catalogue. Incidents,
-response teams, capacity rules, USGS integration, roles, policies, and the
-operational dashboard are not implemented yet.
+This document describes the architecture present after adding the Kaiju
+management flow and the foundational Incident model. Incident interfaces and
+development data, response teams, capacity rules, USGS integration, roles,
+policies, and the operational dashboard are not implemented yet.
 
 Update this document when architecture actually changes; do not treat planned
 roadmap items as current components.
@@ -106,6 +106,7 @@ The current schema contains:
 - Cache and cache locks
 - Jobs, job batches, and failed jobs
 - Kaijus with category and threat-level constraints
+- Incidents belonging to known Kaijus with status and foreign-key constraints
 - Laravel's migration history
 
 The `Kaiju` Eloquent model casts its stored category string to the
@@ -116,7 +117,17 @@ before persistence so users receive form errors instead of database exceptions.
 `KaijuFactory` generates valid test records, while `KaijuSeeder` maintains 12
 deterministic local records covering every category and both initial catalogue
 pages. The root database seeder is safe to repeat without duplicating that
-catalogue. Incident and response-team tables do not exist yet.
+catalogue.
+
+Each `Incident` belongs to one `Kaiju`, and a Kaiju has many incidents.
+PostgreSQL rejects unknown Kaiju references and invalid status values. Its
+foreign key cascades deletion from a Kaiju to its incidents while leaving other
+Kaijus' incidents untouched. Eloquent casts status to the `IncidentStatus` enum
+and occurrence time to the application's configured immutable Carbon date
+class. `occurred_at` is a timezone-free PostgreSQL timestamp whose value is
+always interpreted as UTC; the Laravel application timezone is also UTC.
+Incident factories, seed data, routes, and user interfaces are not implemented
+yet.
 
 ## Authentication
 
@@ -147,7 +158,8 @@ the development database.
 The current suite covers authentication, root redirection, the paginated public
 catalogue with combined search and filters, Kaiju registration, route-bound
 details, editing, and confirmed deletion, plus persistence, enum casting,
-database constraints, factory states, and repeatable seeding.
+database constraints, Incident relationships and cascade behavior, factory
+states, and repeatable seeding.
 
 ## Quality and CI
 

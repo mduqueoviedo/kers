@@ -78,7 +78,9 @@ Fields:
 - timestamps
 
 Statuses are `open`, `contained`, and `closed`. Location begins as free text.
-Every initial incident belongs to a known kaiju.
+Title, description, location, status, occurrence time, and kaiju are required.
+Every initial incident belongs to a known kaiju. Occurrence times are stored
+and interpreted in UTC.
 
 Incidents support creation, listing, pagination, detail views, editing,
 deletion with confirmation, status changes, title or location search, status
