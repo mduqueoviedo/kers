@@ -39,7 +39,7 @@ new #[Title('Kaiju details')] class extends Component {
      */
     public function deleteKaiju(): void
     {
-        if (! $this->confirmingDeletion) {
+        if (!$this->confirmingDeletion) {
             return;
         }
 
