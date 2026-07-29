@@ -104,3 +104,189 @@ test('the current catalogue page is synchronized with the url', function () {
         ->assertDontSee('Kaiju 09')
         ->assertSee('Kaiju 10');
 });
+
+test('the catalogue can be searched by a partial case-insensitive name', function () {
+    Kaiju::factory()->create(['name' => 'Abyssal Maw']);
+    Kaiju::factory()->create(['name' => 'Stormwing']);
+
+    Livewire::test('pages::kaijus.index')
+        ->set('search', 'MAW')
+        ->assertSee('Abyssal Maw')
+        ->assertDontSee('Stormwing');
+});
+
+test('the catalogue can be filtered by category', function () {
+    Kaiju::factory()->create([
+        'name' => 'Stormwing',
+        'category' => KaijuCategory::Aerial,
+    ]);
+    Kaiju::factory()->create([
+        'name' => 'Abyssal Maw',
+        'category' => KaijuCategory::Aquatic,
+    ]);
+
+    Livewire::test('pages::kaijus.index')
+        ->set('category', KaijuCategory::Aerial->value)
+        ->assertSee('Stormwing')
+        ->assertDontSee('Abyssal Maw');
+});
+
+test('the catalogue can be filtered by threat level', function () {
+    Kaiju::factory()->create([
+        'name' => 'Stormwing',
+        'threat_level' => 3,
+    ]);
+    Kaiju::factory()->create([
+        'name' => 'Abyssal Maw',
+        'threat_level' => 5,
+    ]);
+
+    Livewire::test('pages::kaijus.index')
+        ->set('threatLevel', '5')
+        ->assertSee('Abyssal Maw')
+        ->assertDontSee('Stormwing');
+});
+
+test('search and filters combine while preserving alphabetical order', function () {
+    Kaiju::factory()->create([
+        'name' => 'Groundwing',
+        'category' => KaijuCategory::Terrestrial,
+        'threat_level' => 4,
+    ]);
+    Kaiju::factory()->create([
+        'name' => 'Stormwing',
+        'category' => KaijuCategory::Aerial,
+        'threat_level' => 4,
+    ]);
+    Kaiju::factory()->create([
+        'name' => 'Skywing',
+        'category' => KaijuCategory::Aerial,
+        'threat_level' => 4,
+    ]);
+    Kaiju::factory()->create([
+        'name' => 'Cloudtalon',
+        'category' => KaijuCategory::Aerial,
+        'threat_level' => 3,
+    ]);
+
+    Livewire::test('pages::kaijus.index')
+        ->set('search', 'wing')
+        ->set('category', KaijuCategory::Aerial->value)
+        ->set('threatLevel', '4')
+        ->assertSeeInOrder(['Skywing', 'Stormwing'])
+        ->assertDontSee('Groundwing')
+        ->assertDontSee('Cloudtalon');
+});
+
+test('catalogue criteria are restored from the url', function () {
+    Kaiju::factory()->create([
+        'name' => 'Stormwing',
+        'category' => KaijuCategory::Aerial,
+        'threat_level' => 3,
+    ]);
+    Kaiju::factory()->create([
+        'name' => 'Stormcrawler',
+        'category' => KaijuCategory::Terrestrial,
+        'threat_level' => 3,
+    ]);
+    Kaiju::factory()->create([
+        'name' => 'Skybreaker',
+        'category' => KaijuCategory::Aerial,
+        'threat_level' => 4,
+    ]);
+
+    $this->get(route('kaijus.index', [
+        'q' => 'storm',
+        'category' => KaijuCategory::Aerial->value,
+        'threat' => 3,
+    ]))
+        ->assertOk()
+        ->assertSee('Stormwing')
+        ->assertDontSee('Stormcrawler')
+        ->assertDontSee('Skybreaker');
+});
+
+test('changing catalogue criteria resets pagination', function () {
+    config()->set('kers.pagination.kaijus_per_page', 2);
+
+    Kaiju::factory()->create([
+        'name' => 'Aerial One',
+        'category' => KaijuCategory::Aerial,
+    ]);
+    Kaiju::factory()->create([
+        'name' => 'Aerial Two',
+        'category' => KaijuCategory::Aerial,
+    ]);
+    Kaiju::factory()->create([
+        'name' => 'Terrestrial One',
+        'category' => KaijuCategory::Terrestrial,
+    ]);
+    Kaiju::factory()->create([
+        'name' => 'Terrestrial Two',
+        'category' => KaijuCategory::Terrestrial,
+    ]);
+
+    Livewire::test('pages::kaijus.index')
+        ->call('setPage', 2)
+        ->assertSee('Terrestrial One')
+        ->set('category', KaijuCategory::Aerial->value)
+        ->assertSeeInOrder(['Aerial One', 'Aerial Two']);
+});
+
+test('pagination retains active catalogue filters', function () {
+    config()->set('kers.pagination.kaijus_per_page', 2);
+
+    foreach (['Aerial One', 'Aerial Two', 'Aerial Three'] as $name) {
+        Kaiju::factory()->create([
+            'name' => $name,
+            'category' => KaijuCategory::Aerial,
+        ]);
+    }
+
+    Kaiju::factory()->create([
+        'name' => 'Terrestrial One',
+        'category' => KaijuCategory::Terrestrial,
+    ]);
+
+    Livewire::test('pages::kaijus.index')
+        ->set('category', KaijuCategory::Aerial->value)
+        ->assertSeeInOrder(['Aerial One', 'Aerial Three'])
+        ->assertDontSee('Aerial Two')
+        ->call('nextPage')
+        ->assertSee('Aerial Two')
+        ->assertDontSee('Terrestrial One')
+        ->assertSet('category', KaijuCategory::Aerial->value);
+});
+
+test('catalogue filters can be cleared together', function () {
+    Kaiju::factory()->create([
+        'name' => 'Stormwing',
+        'category' => KaijuCategory::Aerial,
+        'threat_level' => 3,
+    ]);
+    Kaiju::factory()->create([
+        'name' => 'Abyssal Maw',
+        'category' => KaijuCategory::Aquatic,
+        'threat_level' => 5,
+    ]);
+
+    Livewire::test('pages::kaijus.index')
+        ->set('search', 'storm')
+        ->set('category', KaijuCategory::Aerial->value)
+        ->set('threatLevel', '3')
+        ->call('clearFilters')
+        ->assertSet('search', '')
+        ->assertSet('category', '')
+        ->assertSet('threatLevel', '')
+        ->assertSeeInOrder(['Abyssal Maw', 'Stormwing']);
+});
+
+test('the catalogue displays a distinct empty state when criteria have no matches', function () {
+    Kaiju::factory()->create(['name' => 'Stormwing']);
+
+    Livewire::test('pages::kaijus.index')
+        ->set('search', 'Leviathan')
+        ->assertSee('No kaijus match the current search and filters.')
+        ->assertSee('Try different criteria or clear the current filters.')
+        ->assertDontSee('No kaijus have been catalogued.');
+});

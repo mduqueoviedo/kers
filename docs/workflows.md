@@ -61,13 +61,16 @@ Open or update a pull request
 ```text
 Open the public kaiju catalogue
 → Livewire reads the requested page from the URL
-→ Eloquent queries nine known kaijus in alphabetical order
-→ display an empty state or the ordered catalogue
+→ optionally search by name and filter by category or threat level
+→ Eloquent combines active criteria and queries matching kaijus
+→ display a catalogue page or the appropriate empty state
 → show each category, threat level, and description
 → navigate between pages without a full browser reload
 ```
 
-No authentication is required.
+Criteria are synchronized with the URL and can be combined or cleared
+together. Changing any criterion returns pagination to its first page. Name
+search is partial and case-insensitive. No authentication is required.
 
 ### View a kaiju
 

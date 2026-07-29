@@ -1,14 +1,69 @@
 <?php
 
+use App\Enums\KaijuCategory;
 use App\Models\Kaiju;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 new #[Title('Kaiju catalogue')] class extends Component {
     use WithPagination;
+
+    #[Url(as: 'q', except: '')]
+    public string $search = '';
+
+    #[Url(except: '')]
+    public string $category = '';
+
+    #[Url(as: 'threat', except: '')]
+    public string $threatLevel = '';
+
+    /**
+     * Reset pagination when the name search changes.
+     */
+    public function updatedSearch(): void
+    {
+        $this->resetPage();
+    }
+
+    /**
+     * Reset pagination when the category filter changes.
+     */
+    public function updatedCategory(): void
+    {
+        $this->resetPage();
+    }
+
+    /**
+     * Reset pagination when the threat-level filter changes.
+     */
+    public function updatedThreatLevel(): void
+    {
+        $this->resetPage();
+    }
+
+    /**
+     * Remove all catalogue search and filter criteria.
+     */
+    public function clearFilters(): void
+    {
+        $this->reset('search', 'category', 'threatLevel');
+        $this->resetPage();
+    }
+
+    /**
+     * Determine whether the catalogue has active search or filter criteria.
+     */
+    #[Computed]
+    public function hasActiveFilters(): bool
+    {
+        return trim($this->search) !== ''
+            || $this->category !== ''
+            || $this->threatLevel !== '';
+    }
 
     /**
      * Get the current page of the kaiju catalogue.
@@ -18,7 +73,24 @@ new #[Title('Kaiju catalogue')] class extends Component {
     #[Computed]
     public function kaijus(): LengthAwarePaginator
     {
+        $search = trim($this->search);
+        $threatLevel = in_array($this->threatLevel, ['1', '2', '3', '4', '5'], true)
+            ? (int) $this->threatLevel
+            : -1;
+
         return Kaiju::query()
+            ->when(
+                $search !== '',
+                fn ($query) => $query->whereLike('name', "%{$search}%"),
+            )
+            ->when(
+                $this->category !== '',
+                fn ($query) => $query->where('category', $this->category),
+            )
+            ->when(
+                $this->threatLevel !== '',
+                fn ($query) => $query->where('threat_level', $threatLevel),
+            )
             ->orderBy('name')
             ->paginate(config()->integer('kers.pagination.kaijus_per_page'));
     }
@@ -36,10 +108,52 @@ new #[Title('Kaiju catalogue')] class extends Component {
         </flux:button>
     </header>
 
+    <div class="grid gap-4 rounded-xl border border-zinc-200 p-5 md:grid-cols-3 dark:border-zinc-700">
+        <flux:input
+            wire:model.live.debounce.300ms="search"
+            :label="__('Search')"
+            type="search"
+            :placeholder="__('Search by name')"
+        />
+
+        <flux:select wire:model.live="category" :label="__('Category')">
+            <flux:select.option value="">{{ __('All categories') }}</flux:select.option>
+
+            @foreach (KaijuCategory::cases() as $categoryOption)
+                <flux:select.option :value="$categoryOption->value">
+                    {{ ucfirst($categoryOption->value) }}
+                </flux:select.option>
+            @endforeach
+        </flux:select>
+
+        <flux:select wire:model.live="threatLevel" :label="__('Threat level')">
+            <flux:select.option value="">{{ __('All threat levels') }}</flux:select.option>
+
+            @foreach (range(1, 5) as $threatLevelOption)
+                <flux:select.option :value="$threatLevelOption">
+                    {{ __('Level :level', ['level' => $threatLevelOption]) }}
+                </flux:select.option>
+            @endforeach
+        </flux:select>
+
+        @if ($this->hasActiveFilters)
+            <div class="md:col-span-3">
+                <flux:button wire:click="clearFilters" variant="ghost">
+                    {{ __('Clear filters') }}
+                </flux:button>
+            </div>
+        @endif
+    </div>
+
     @if ($this->kaijus->total() === 0)
         <div class="rounded-xl border border-dashed border-zinc-300 px-6 py-12 text-center dark:border-zinc-700">
-            <flux:heading size="lg">{{ __('No kaijus have been catalogued.') }}</flux:heading>
-            <flux:text class="mt-2">{{ __('Known creatures will appear here once they are registered.') }}</flux:text>
+            @if ($this->hasActiveFilters)
+                <flux:heading size="lg">{{ __('No kaijus match the current search and filters.') }}</flux:heading>
+                <flux:text class="mt-2">{{ __('Try different criteria or clear the current filters.') }}</flux:text>
+            @else
+                <flux:heading size="lg">{{ __('No kaijus have been catalogued.') }}</flux:heading>
+                <flux:text class="mt-2">{{ __('Known creatures will appear here once they are registered.') }}</flux:text>
+            @endif
         </div>
     @else
         <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
