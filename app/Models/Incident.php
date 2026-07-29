@@ -4,7 +4,9 @@ namespace App\Models;
 
 use App\Enums\IncidentStatus;
 use Carbon\CarbonImmutable;
+use Database\Factories\IncidentFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -23,6 +25,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['title', 'description', 'location', 'status', 'occurred_at', 'kaiju_id'])]
 class Incident extends Model
 {
+    /** @use HasFactory<IncidentFactory> */
+    use HasFactory;
+
     /**
      * Get the Kaiju involved in this incident.
      *
