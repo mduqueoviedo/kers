@@ -73,19 +73,23 @@ workflows are not implemented yet.
 Single-file components colocate a Livewire anonymous component class and its
 Blade template. The public Kaiju catalogue uses Livewire's `WithPagination`
 trait and exposes an ordered Eloquent paginator through a computed property.
-The current page is represented in the URL. Its page size comes from the
-KERS-specific `kers.pagination.kaijus_per_page` configuration value, which
-defaults to nine. The registration component holds form state, validates it,
-creates a Kaiju through Eloquent, dispatches toast feedback, and redirects to
-the catalogue. The detail and edit components receive their Kaiju through route
-model binding in `mount()`; Laravel returns 404 before rendering when the route
-key is missing. The edit component initializes scalar form state from that
-model, validates changes, and updates it through Eloquent. Its unique-name rule
-ignores only the current model, allowing an unchanged name while continuing to
-reject another Kaiju's exact name. The detail component also owns a boolean
-confirmation state for permanent deletion. Opening or cancelling its Flux modal
-does not change persistence, and the Eloquent delete action is guarded by that
-state before redirecting to the catalogue.
+The current page, name search, category, and threat level are represented in
+the URL. Updating any criterion resets pagination before the computed query
+applies its conditions and alphabetical ordering. PostgreSQL receives Laravel's
+case-insensitive `whereLike()` name search plus exact category and threat-level
+conditions. The page size comes from the KERS-specific
+`kers.pagination.kaijus_per_page` configuration value, which defaults to nine.
+The registration component holds form state, validates it, creates a Kaiju
+through Eloquent, dispatches toast feedback, and redirects to the catalogue.
+The detail and edit components receive their Kaiju through route model binding
+in `mount()`; Laravel returns 404 before rendering when the route key is
+missing. The edit component initializes scalar form state from that model,
+validates changes, and updates it through Eloquent. Its unique-name rule ignores
+only the current model, allowing an unchanged name while continuing to reject
+another Kaiju's exact name. The detail component also owns a boolean
+confirmation state for permanent deletion. Opening or cancelling its Flux
+modal does not change persistence, and the Eloquent delete action is guarded by
+that state before redirecting to the catalogue.
 
 ## Database
 
@@ -141,9 +145,9 @@ Feature tests use Laravel's `RefreshDatabase` trait. PHPUnit forces the
 the development database.
 
 The current suite covers authentication, root redirection, the paginated public
-catalogue, Kaiju registration, route-bound details, editing, and confirmed
-Kaiju deletion, plus persistence, enum casting, database constraints, factory
-states, and repeatable seeding.
+catalogue with combined search and filters, Kaiju registration, route-bound
+details, editing, and confirmed deletion, plus persistence, enum casting,
+database constraints, factory states, and repeatable seeding.
 
 ## Quality and CI
 
