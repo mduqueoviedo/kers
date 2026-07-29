@@ -110,6 +110,21 @@ The current Kaiju is excluded from the unique-name check, so its name may
 remain unchanged. An exact name already used by another Kaiju is rejected.
 Eloquent preserves `created_at` and updates `updated_at` automatically.
 
+### Delete a kaiju
+
+```text
+Open a Kaiju detail page
+→ request deletion
+→ Livewire opens a permanent-deletion confirmation
+→ cancel and preserve the Kaiju, or explicitly confirm
+→ Eloquent deletes the selected Kaiju
+→ redirect to the catalogue with confirmation feedback
+```
+
+The delete action ignores calls made before confirmation. Deletion is currently
+permanent and public, consistently with the other Kaiju workflows. Role-based
+authorization will be added in its later roadmap phase.
+
 The following authentication workflows remain as a technical foundation. They
 are not exposed in the current navigation and are not yet the final KERS role
 and authorization model.

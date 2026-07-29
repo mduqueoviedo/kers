@@ -1,11 +1,14 @@
 <?php
 
 use App\Models\Kaiju;
+use Flux\Flux;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
 new #[Title('Kaiju details')] class extends Component {
     public Kaiju $kaiju;
+
+    public bool $confirmingDeletion = false;
 
     /**
      * Initialize the page with the route-bound Kaiju.
@@ -13,6 +16,38 @@ new #[Title('Kaiju details')] class extends Component {
     public function mount(Kaiju $kaiju): void
     {
         $this->kaiju = $kaiju;
+    }
+
+    /**
+     * Ask the user to confirm permanent deletion.
+     */
+    public function requestDeletion(): void
+    {
+        $this->confirmingDeletion = true;
+    }
+
+    /**
+     * Cancel the pending deletion.
+     */
+    public function cancelDeletion(): void
+    {
+        $this->confirmingDeletion = false;
+    }
+
+    /**
+     * Permanently delete the route-bound Kaiju.
+     */
+    public function deleteKaiju(): void
+    {
+        if (! $this->confirmingDeletion) {
+            return;
+        }
+
+        $this->kaiju->delete();
+
+        Flux::toast(__('Kaiju deleted successfully.'));
+
+        $this->redirectRoute('kaijus.index', navigate: true);
     }
 }; ?>
 
@@ -30,9 +65,15 @@ new #[Title('Kaiju details')] class extends Component {
                 <flux:text>{{ __('Known creature record') }}</flux:text>
             </div>
 
-            <flux:button :href="route('kaijus.edit', $kaiju)" variant="primary" wire:navigate>
-                {{ __('Edit kaiju') }}
-            </flux:button>
+            <div class="flex flex-wrap items-center gap-2">
+                <flux:button :href="route('kaijus.edit', $kaiju)" variant="primary" wire:navigate>
+                    {{ __('Edit kaiju') }}
+                </flux:button>
+
+                <flux:button wire:click="requestDeletion" variant="danger">
+                    {{ __('Delete kaiju') }}
+                </flux:button>
+            </div>
         </header>
 
         <dl class="grid gap-4 sm:grid-cols-2">
@@ -74,4 +115,27 @@ new #[Title('Kaiju details')] class extends Component {
             </div>
         </dl>
     </article>
+
+    <flux:modal wire:model="confirmingDeletion" name="confirm-kaiju-deletion" class="md:w-120">
+        <div class="space-y-6">
+            <div class="space-y-2">
+                <flux:heading size="lg">{{ __('Delete kaiju?') }}</flux:heading>
+                <flux:text>
+                    {{ __('Are you sure you want to delete :name? This action cannot be undone.', ['name' => $kaiju->name]) }}
+                </flux:text>
+            </div>
+
+            <div class="flex justify-end gap-3">
+                <flux:modal.close>
+                    <flux:button wire:click="cancelDeletion" variant="ghost">
+                        {{ __('Cancel') }}
+                    </flux:button>
+                </flux:modal.close>
+
+                <flux:button wire:click="deleteKaiju" variant="danger">
+                    {{ __('Delete kaiju') }}
+                </flux:button>
+            </div>
+        </div>
+    </flux:modal>
 </section>
