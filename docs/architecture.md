@@ -64,8 +64,9 @@ The starter UI uses:
 - Vite 8
 - Shared Blade layouts and components
 
-The Kaiju catalogue and registration form are the first KERS domain pages.
-Editing and the remaining domain workflows are not implemented yet.
+The Kaiju catalogue, registration form, and detail view are the first KERS
+domain pages. Editing and the remaining domain workflows are not implemented
+yet.
 
 ## Livewire
 
@@ -75,6 +76,8 @@ trait and exposes an ordered Eloquent paginator through a computed property.
 The current page is represented in the URL and contains at most nine records.
 The registration component holds form state, validates it, creates a Kaiju
 through Eloquent, dispatches toast feedback, and redirects to the catalogue.
+The detail component receives its Kaiju through route model binding in
+`mount()`; Laravel returns 404 before rendering when the route key is missing.
 
 ## Database
 
@@ -130,8 +133,8 @@ Feature tests use Laravel's `RefreshDatabase` trait. PHPUnit forces the
 the development database.
 
 The current suite covers authentication, root redirection, the paginated public
-catalogue, and Kaiju registration, plus persistence, enum casting, database
-constraints, factory states, and repeatable seeding.
+catalogue, Kaiju registration, and route-bound details, plus persistence, enum
+casting, database constraints, factory states, and repeatable seeding.
 
 ## Quality and CI
 

@@ -69,6 +69,18 @@ Open the public kaiju catalogue
 
 No authentication is required.
 
+### View a kaiju
+
+```text
+Follow a detail link from the public catalogue
+→ Laravel resolves the Kaiju route parameter
+→ Livewire receives the Eloquent model in mount()
+→ display its category, threat level, and description
+→ return to the catalogue
+```
+
+An unknown route key returns Laravel's standard 404 response.
+
 ### Register a kaiju
 
 ```text
