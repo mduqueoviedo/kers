@@ -55,6 +55,7 @@ or repeated.
 ## Database rules
 
 - Foreign keys and database-level constraints enforce durable invariants.
+- Kaiju names use an exact unique constraint.
 - Kaiju deletion cascades to associated incidents.
 - Response-team capacity is enforced using current incident state.
 - USGS source identifiers use an appropriate uniqueness constraint.
