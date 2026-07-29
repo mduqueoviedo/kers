@@ -20,7 +20,7 @@ new #[Title('Kaiju catalogue')] class extends Component {
     {
         return Kaiju::query()
             ->orderBy('name')
-            ->paginate(9);
+            ->paginate(config()->integer('kers.pagination.kaijus_per_page'));
     }
 }; ?>
 
@@ -55,6 +55,15 @@ new #[Title('Kaiju catalogue')] class extends Component {
                     <flux:text>
                         {{ $kaiju->description ?? __('No description provided.') }}
                     </flux:text>
+
+                    <flux:button
+                        :href="route('kaijus.show', $kaiju)"
+                        variant="ghost"
+                        class="mt-auto self-start"
+                        wire:navigate
+                    >
+                        {{ __('View details') }}
+                    </flux:button>
                 </article>
             @endforeach
         </div>
