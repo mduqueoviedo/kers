@@ -2,10 +2,10 @@
 
 ## Status
 
-This document describes the architecture present after the PostgreSQL
-foundation iteration. KERS domain models, domain Livewire pages, response-team
-capacity rules, USGS integration, roles, policies, and the operational
-dashboard are not implemented yet.
+This document describes the architecture present after the first KERS domain
+model iteration. Domain Livewire pages, incidents, response teams, capacity
+rules, USGS integration, roles, policies, and the operational dashboard are
+not implemented yet.
 
 Update this document when architecture actually changes; do not treat planned
 roadmap items as current components.
@@ -89,14 +89,18 @@ Database selection flows from environment variables through
 `config/database.php`. The development database is `kers`; PHPUnit selects the
 separate `kers_testing` database.
 
-The current schema contains only starter infrastructure:
+The current schema contains:
 
 - Users, password-reset tokens, and sessions
 - Cache and cache locks
 - Jobs, job batches, and failed jobs
+- Kaijus with category and threat-level constraints
 - Laravel's migration history
 
-No kaiju, incident, or response-team tables exist.
+The `Kaiju` Eloquent model casts its stored category string to the
+`KaijuCategory` PHP enum. PostgreSQL check constraints independently restrict
+categories to the enum's current values and threat levels to the range 1–5.
+Incident and response-team tables do not exist yet.
 
 ## Authentication
 
@@ -123,7 +127,8 @@ Feature tests use Laravel's `RefreshDatabase` trait. PHPUnit forces the
 the development database.
 
 The current suite covers starter authentication, dashboard, profile, security,
-and home-page behavior.
+and home-page behavior, plus Kaiju persistence, enum casting, and database
+constraints.
 
 ## Quality and CI
 
