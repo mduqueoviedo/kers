@@ -24,9 +24,15 @@ new #[Title('Kaiju details')] class extends Component {
     </div>
 
     <article class="flex flex-col gap-6 rounded-xl border border-zinc-200 p-6 dark:border-zinc-700">
-        <header class="space-y-2">
-            <flux:heading size="xl">{{ $kaiju->name }}</flux:heading>
-            <flux:text>{{ __('Known creature record') }}</flux:text>
+        <header class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div class="space-y-2">
+                <flux:heading size="xl">{{ $kaiju->name }}</flux:heading>
+                <flux:text>{{ __('Known creature record') }}</flux:text>
+            </div>
+
+            <flux:button :href="route('kaijus.edit', $kaiju)" variant="primary" wire:navigate>
+                {{ __('Edit kaiju') }}
+            </flux:button>
         </header>
 
         <dl class="grid gap-4 sm:grid-cols-2">
