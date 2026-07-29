@@ -76,6 +76,22 @@ test('the catalogue displays nine kaijus per page', function () {
         ->assertSee('Kaiju 10');
 });
 
+test('the catalogue uses the configured page size', function () {
+    config()->set('kers.pagination.kaijus_per_page', 2);
+
+    foreach (range(1, 3) as $number) {
+        Kaiju::factory()->create([
+            'name' => sprintf('Kaiju %02d', $number),
+        ]);
+    }
+
+    Livewire::test('pages::kaijus.index')
+        ->assertSeeInOrder(['Kaiju 01', 'Kaiju 02'])
+        ->assertDontSee('Kaiju 03')
+        ->call('nextPage')
+        ->assertSee('Kaiju 03');
+});
+
 test('the current catalogue page is synchronized with the url', function () {
     foreach (range(1, 10) as $number) {
         Kaiju::factory()->create([

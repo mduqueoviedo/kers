@@ -73,11 +73,13 @@ yet.
 Single-file components colocate a Livewire anonymous component class and its
 Blade template. The public Kaiju catalogue uses Livewire's `WithPagination`
 trait and exposes an ordered Eloquent paginator through a computed property.
-The current page is represented in the URL and contains at most nine records.
-The registration component holds form state, validates it, creates a Kaiju
-through Eloquent, dispatches toast feedback, and redirects to the catalogue.
-The detail component receives its Kaiju through route model binding in
-`mount()`; Laravel returns 404 before rendering when the route key is missing.
+The current page is represented in the URL. Its page size comes from the
+KERS-specific `kers.pagination.kaijus_per_page` configuration value, which
+defaults to nine. The registration component holds form state, validates it,
+creates a Kaiju through Eloquent, dispatches toast feedback, and redirects to
+the catalogue. The detail component receives its Kaiju through route model
+binding in `mount()`; Laravel returns 404 before rendering when the route key is
+missing.
 
 ## Database
 

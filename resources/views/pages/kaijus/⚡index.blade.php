@@ -20,7 +20,7 @@ new #[Title('Kaiju catalogue')] class extends Component {
     {
         return Kaiju::query()
             ->orderBy('name')
-            ->paginate(9);
+            ->paginate(config()->integer('kers.pagination.kaijus_per_page'));
     }
 }; ?>
 
