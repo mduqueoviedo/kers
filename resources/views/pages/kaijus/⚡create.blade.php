@@ -55,15 +55,8 @@ new #[Title('Register kaiju')] class extends Component {
         <flux:text>{{ __('Add a known creature to the emergency response catalogue.') }}</flux:text>
     </header>
 
-    <form wire:submit="save" class="space-y-6">
-        <flux:input
-            wire:model="name"
-            :label="__('Name')"
-            type="text"
-            maxlength="255"
-            required
-            autofocus
-        />
+    <form wire:submit="save" class="space-y-6" novalidate>
+        <flux:input wire:model="name" :label="__('Name')" type="text" maxlength="255" required autofocus />
 
         <flux:select wire:model="category" :label="__('Category')" required>
             <flux:select.option value="">{{ __('Select a category') }}</flux:select.option>
@@ -75,21 +68,10 @@ new #[Title('Register kaiju')] class extends Component {
             @endforeach
         </flux:select>
 
-        <flux:input
-            wire:model="threat_level"
-            :label="__('Threat level')"
-            type="number"
-            min="1"
-            max="5"
-            required
-        />
+        <flux:input wire:model="threat_level" :label="__('Threat level')" type="number" min="1" max="5" required />
 
-        <flux:textarea
-            wire:model="description"
-            :label="__('Description')"
-            :description="__('Optional observations about the creature.')"
-            rows="5"
-        />
+        <flux:textarea wire:model="description" :label="__('Description')"
+            :description="__('Optional observations about the creature.')" rows="5" />
 
         <div class="flex items-center justify-end gap-3">
             <flux:button :href="route('kaijus.index')" variant="ghost" wire:navigate>
