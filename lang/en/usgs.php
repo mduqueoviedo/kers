@@ -15,5 +15,9 @@ return [
     'not_available' => 'Not available',
     'occurred_at' => 'Occurred',
     'title' => 'Recent seismic events',
+    'validation' => [
+        'catalogue_unavailable' => 'The current USGS events could not be retrieved. Please try again later.',
+        'event_unavailable' => 'The selected USGS event is no longer available. Please choose another event.',
+    ],
     'view_source' => 'View USGS details',
 ];
