@@ -6,6 +6,8 @@ return [
     'create_account' => 'Crear cuenta',
     'create_account_description' => 'Introduce tus datos para crear tu cuenta',
     'create_account_title' => 'Crear una cuenta',
+    'demo_credentials_description' => 'Usa esta cuenta de demostración desechable para gestionar kaijus e incidentes.',
+    'demo_credentials_heading' => 'Credenciales de demostración',
     'email' => 'Correo electrónico',
     'email_address' => 'Dirección de correo electrónico',
     'email_password_reset_link' => 'Enviar enlace para restablecer la contraseña',

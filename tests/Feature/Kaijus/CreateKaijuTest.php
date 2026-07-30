@@ -2,9 +2,14 @@
 
 use App\Enums\KaijuCategory;
 use App\Models\Kaiju;
+use App\Models\User;
 use Livewire\Livewire;
 
-test('guests can view the kaiju registration form', function () {
+beforeEach(function () {
+    $this->actingAs(User::factory()->create());
+});
+
+test('authenticated users can view the kaiju registration form', function () {
     $this->get(route('kaijus.create'))
         ->assertOk()
         ->assertSee('Register kaiju')

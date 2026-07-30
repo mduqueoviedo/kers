@@ -13,13 +13,13 @@ test('guests can view the incident catalogue and its navigation', function () {
         ->assertSee('Incident catalogue')
         ->assertSee('Kaijus')
         ->assertSee('Incidents')
-        ->assertSee('Record incident')
+        ->assertDontSee('Record incident')
         ->assertSee('Search by title or location')
         ->assertSee('All statuses')
         ->assertSee('All Kaijus')
         ->assertSee('Newest first')
         ->assertSee('Oldest first')
-        ->assertSee(route('incidents.create'), escape: false);
+        ->assertDontSee(route('incidents.create'), escape: false);
 });
 
 test('the incident catalogue displays an empty state', function () {

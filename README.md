@@ -105,6 +105,23 @@ permanently deletes all Railway data before recreating the canonical dataset;
 this policy is intentional for the disposable demo and is not appropriate for
 a persistent production deployment.
 
+### Demo login
+
+The disposable demo has one configured account. `migrate:fresh --seed` and the
+Railway pre-deploy rebuild recreate it using its email as the stable identifier.
+Set these variables outside Git when needed; the `.env.example` values are safe
+public demo defaults and are also displayed on the login page:
+
+```text
+KERS_DEMO_USER_NAME="KERS Demo Operator"
+KERS_DEMO_USER_EMAIL=demo@kers.test
+KERS_DEMO_USER_PASSWORD=kers-demo-password
+```
+
+The password is hashed through Laravel when the user is seeded. Registration,
+password recovery, email verification, profiles, and user management are not
+part of this disposable demo.
+
 ### Demo data API
 
 KERS also exposes two non-visual API operations for resetting the temporary

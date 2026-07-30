@@ -60,6 +60,8 @@ new #[Title('incidents.create.title')] class extends Component {
      */
     public function save(): void
     {
+        abort_unless(auth()->check(), 403);
+
         $validated = $this->validate();
         $kaiju = Kaiju::query()->findOrFail((int) $validated['kaiju_id']);
 

@@ -37,6 +37,8 @@ new #[Title('kaijus.record')] class extends Component {
      */
     public function requestDeletion(): void
     {
+        abort_unless(auth()->check(), 403);
+
         $this->confirmingDeletion = true;
     }
 
@@ -53,6 +55,8 @@ new #[Title('kaijus.record')] class extends Component {
      */
     public function deleteKaiju(): void
     {
+        abort_unless(auth()->check(), 403);
+
         if (!$this->confirmingDeletion) {
             return;
         }
@@ -79,19 +83,21 @@ new #[Title('kaijus.record')] class extends Component {
                 <flux:text>{{ __('kaijus.record') }}</flux:text>
             </div>
 
-            <div class="flex flex-wrap items-center gap-2">
-                <flux:button :href="route('incidents.create', ['kaiju' => $kaiju->id])" variant="outline" wire:navigate>
-                    {{ __('incidents.create.title') }}
-                </flux:button>
+            @auth
+                <div class="flex flex-wrap items-center gap-2">
+                    <flux:button :href="route('incidents.create', ['kaiju' => $kaiju->id])" variant="outline" wire:navigate>
+                        {{ __('incidents.create.title') }}
+                    </flux:button>
 
-                <flux:button :href="route('kaijus.edit', $kaiju)" variant="primary" wire:navigate>
-                    {{ __('kaijus.edit.title') }}
-                </flux:button>
+                    <flux:button :href="route('kaijus.edit', $kaiju)" variant="primary" wire:navigate>
+                        {{ __('kaijus.edit.title') }}
+                    </flux:button>
 
-                <flux:button wire:click="requestDeletion" variant="danger">
-                    {{ __('kaijus.delete.action') }}
-                </flux:button>
-            </div>
+                    <flux:button wire:click="requestDeletion" variant="danger">
+                        {{ __('kaijus.delete.action') }}
+                    </flux:button>
+                </div>
+            @endauth
         </header>
 
         <dl class="grid gap-4 sm:grid-cols-2">

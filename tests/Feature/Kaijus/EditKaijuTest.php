@@ -2,10 +2,15 @@
 
 use App\Enums\KaijuCategory;
 use App\Models\Kaiju;
+use App\Models\User;
 use Illuminate\Support\Carbon;
 use Livewire\Livewire;
 
-test('guests can view a prefilled kaiju edit form', function () {
+beforeEach(function () {
+    $this->actingAs(User::factory()->create());
+});
+
+test('authenticated users can view a prefilled kaiju edit form', function () {
     $kaiju = Kaiju::factory()->create([
         'name' => 'Leviathan',
         'category' => KaijuCategory::Aquatic,

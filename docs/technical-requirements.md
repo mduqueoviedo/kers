@@ -168,14 +168,16 @@ A dependency proposal must explain the problem, why current tools are
 insufficient, its complexity and maintenance cost, and the alternative without
 the dependency. Built-in Laravel and PHP features are preferred.
 
-## Authentication and authorization
+## Demo authentication
 
-The Fortify starter scaffold remains available, but domain authorization is
-introduced only in its roadmap phase.
+The application uses Fortify only for standard session-based login and logout.
+One configuration-backed demo user is seeded by email with a Laravel-hashed
+password. Registration, password recovery, email verification, profiles, user
+management, roles, and policies are out of scope for the disposable demo.
 
-Authorization uses Laravel middleware, policies, and Livewire authorization
-checks. Roles are limited to `operator` and `admin`; no permissions package or
-configurable matrix is required.
+Public catalogue and detail pages remain readable. Route middleware and
+server-side Livewire checks protect every Kaiju, Incident, and USGS-import
+mutation; hiding a control is never the sole authorization measure.
 
 ## External HTTP
 
@@ -265,6 +267,9 @@ APP_DEBUG=false
 APP_KEY=<generated Laravel key>
 APP_URL=https://${{RAILWAY_PUBLIC_DOMAIN}}
 KERS_DEMO_API_KEY=<generated random secret>
+KERS_DEMO_USER_NAME="KERS Demo Operator"
+KERS_DEMO_USER_EMAIL=demo@kers.test
+KERS_DEMO_USER_PASSWORD=kers-demo-password
 DB_CONNECTION=pgsql
 DB_URL=${{Postgres.DATABASE_URL}}
 LOG_CHANNEL=stderr
@@ -280,6 +285,8 @@ RAILPACK_SKIP_MIGRATIONS=true
 `APP_KEY` is generated outside Git and stored only as a Railway secret.
 `KERS_DEMO_API_KEY` is a separate random secret required to use the protected
 demo reset operations. Leaving it empty disables those routes.
+The demo-user values are intentionally public credentials for the disposable
+application; the seeded account is recreated during every pre-deploy rebuild.
 `DB_URL` references the PostgreSQL service inside the same Railway project.
 The local `.env` file is never copied to Railway.
 

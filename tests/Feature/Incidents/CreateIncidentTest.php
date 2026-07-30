@@ -3,10 +3,15 @@
 use App\Enums\IncidentStatus;
 use App\Models\Incident;
 use App\Models\Kaiju;
+use App\Models\User;
 use Carbon\CarbonImmutable;
 use Livewire\Livewire;
 
-test('guests can view the incident form with ordered kaijus', function () {
+beforeEach(function () {
+    $this->actingAs(User::factory()->create());
+});
+
+test('authenticated users can view the incident form with ordered kaijus', function () {
     Kaiju::factory()->create(['name' => 'Stormwing']);
     Kaiju::factory()->create(['name' => 'Abyssal Maw']);
 

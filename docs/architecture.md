@@ -296,8 +296,10 @@ before persistence so users receive form errors instead of database exceptions.
 deterministic local records covering every category and both initial catalogue
 pages. `IncidentSeeder` maintains nine deterministic UTC incidents associated
 with those Kaijus and covering every lifecycle status. The root database seeder
-runs the Kaiju seeder first and is safe to repeat without duplicating either
-dataset.
+runs `DemoUserSeeder` first, then the Kaiju and Incident seeders.
+`DemoUserSeeder` uses the configured demo email as its stable lookup key and
+hashes the configured password through Laravel's `Hash` facade. It is safe to
+repeat without duplicating the demo account or domain dataset.
 
 Each `Incident` belongs to one `Kaiju`, and a Kaiju has many incidents.
 PostgreSQL rejects unknown Kaiju references and invalid status values. Its
@@ -312,23 +314,19 @@ closed states. The manual creation, paginated catalogue, detail, and editing
 routes are implemented. Confirmed deletion is handled by the detail component;
 search and filtering are not implemented yet.
 
-## Authentication
+## Demo authentication
 
-Laravel Fortify provides registration, login, logout, password reset, and email
-verification routes and actions. The `User` model, factory, and authentication
-views remain as the foundation for the later authentication phase. Successful
-authentication redirects to the public Kaiju catalogue; there is no temporary
-starter dashboard or account-settings UI.
+Fortify provides the standard session-based login and logout flow, including
+credential validation, session regeneration, and login rate limiting. Its
+registration, password-reset, and email-verification features are disabled, so
+those routes and views are unavailable.
 
-The Fortify email-verification feature is configured. The application has not
-yet activated the product's final authentication and authorization model:
-
-- Current domain routes remain public.
-- `operator` and `admin` roles do not exist.
-- No domain policies or gates exist.
-- The user model does not currently opt into the `MustVerifyEmail` contract.
-
-Those decisions remain in the authentication roadmap phase.
+The Kaiju and Incident catalogues, their detail pages, USGS events, and locale
+switching remain public. Create and edit routes use `auth` middleware. The
+public detail and USGS components also check authentication in their delete and
+import actions, so a direct Livewire request cannot bypass the interface.
+Mutation controls are rendered only for authenticated users. There are no
+roles, policies, profiles, or user-management screens in this disposable demo.
 
 ## Testing
 

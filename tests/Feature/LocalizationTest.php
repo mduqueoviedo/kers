@@ -54,3 +54,10 @@ test('Spanish renders translated Kaiju and Incident catalogue copy without chang
         ->assertSee('Catálogo de incidentes')
         ->assertSee('Harbour alert');
 });
+
+test('English and Spanish authentication translations have matching keys', function () {
+    $english = require lang_path('en/auth.php');
+    $spanish = require lang_path('es/auth.php');
+
+    expect(array_keys($spanish))->toBe(array_keys($english));
+});

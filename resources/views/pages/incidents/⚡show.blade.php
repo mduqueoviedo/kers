@@ -23,6 +23,8 @@ new #[Title('incidents.title')] class extends Component {
      */
     public function requestDeletion(): void
     {
+        abort_unless(auth()->check(), 403);
+
         $this->confirmingDeletion = true;
     }
 
@@ -39,6 +41,8 @@ new #[Title('incidents.title')] class extends Component {
      */
     public function deleteIncident(): void
     {
+        abort_unless(auth()->check(), 403);
+
         if (!$this->confirmingDeletion) {
             return;
         }
@@ -65,15 +69,17 @@ new #[Title('incidents.title')] class extends Component {
             <span aria-current="page">{{ __('incidents.title') }}</span>
         </nav>
 
-        <div class="flex flex-wrap items-center gap-2">
-            <flux:button :href="route('incidents.edit', $incident)" variant="primary" wire:navigate>
-                {{ __('incidents.edit.title') }}
-            </flux:button>
+        @auth
+            <div class="flex flex-wrap items-center gap-2">
+                <flux:button :href="route('incidents.edit', $incident)" variant="primary" wire:navigate>
+                    {{ __('incidents.edit.title') }}
+                </flux:button>
 
-            <flux:button wire:click="requestDeletion" variant="danger">
-                {{ __('incidents.delete.action') }}
-            </flux:button>
-        </div>
+                <flux:button wire:click="requestDeletion" variant="danger">
+                    {{ __('incidents.delete.action') }}
+                </flux:button>
+            </div>
+        @endauth
     </div>
 
     <article class="flex flex-col gap-6 rounded-xl border border-zinc-200 p-6 dark:border-zinc-700">

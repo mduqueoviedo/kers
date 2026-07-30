@@ -103,15 +103,17 @@ new #[Title('kaijus.index.title')] class extends Component {
             <flux:text>{{ __('kaijus.index.description') }}</flux:text>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2">
-            <flux:button :href="route('incidents.create')" variant="outline" wire:navigate>
-                {{ __('incidents.create.title') }}
-            </flux:button>
+        @auth
+            <div class="flex flex-wrap items-center gap-2">
+                <flux:button :href="route('incidents.create')" variant="outline" wire:navigate>
+                    {{ __('incidents.create.title') }}
+                </flux:button>
 
-            <flux:button :href="route('kaijus.create')" variant="primary" wire:navigate>
-                {{ __('kaijus.create.title') }}
-            </flux:button>
-        </div>
+                <flux:button :href="route('kaijus.create')" variant="primary" wire:navigate>
+                    {{ __('kaijus.create.title') }}
+                </flux:button>
+            </div>
+        @endauth
     </header>
 
     <div class="grid gap-4 rounded-xl border border-teal-200 bg-white p-5 md:grid-cols-3 dark:border-teal-900 dark:bg-zinc-900">

@@ -3,9 +3,14 @@
 use App\Enums\IncidentStatus;
 use App\Models\Incident;
 use App\Models\Kaiju;
+use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Http;
 use Livewire\Livewire;
+
+beforeEach(function () {
+    $this->actingAs(User::factory()->create());
+});
 
 function usgsImportResponse(string $title = 'M 5.6 - 10 km south of Example'): array
 {
