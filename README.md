@@ -126,15 +126,14 @@ part of this disposable demo.
 
 ### Demo data API
 
-KERS also exposes two non-visual API operations for resetting the temporary
-demo without rebuilding its database:
+KERS exposes one non-visual API operation for resetting the temporary demo
+without rebuilding its database:
 
 ```text
-DELETE /api/demo-data
-POST /api/demo-data/seed
+POST /api/demo-data/reset
 ```
 
-Set a strong `KERS_DEMO_API_KEY` in the local `.env` file before using them.
+Set a strong `KERS_DEMO_API_KEY` in the local `.env` file before using it.
 The routes are unavailable while this value is empty. Send the same value as a
 Bearer token:
 
@@ -142,22 +141,17 @@ Bearer token:
 DEMO_BASE_URL='http://localhost:8000'
 DEMO_API_KEY='value-from-KERS_DEMO_API_KEY'
 
-curl --request DELETE \
-    --header "Authorization: Bearer ${DEMO_API_KEY}" \
-    "${DEMO_BASE_URL}/api/demo-data"
-
 curl --request POST \
     --header "Authorization: Bearer ${DEMO_API_KEY}" \
-    "${DEMO_BASE_URL}/api/demo-data/seed"
+    "${DEMO_BASE_URL}/api/demo-data/reset"
 
 unset DEMO_BASE_URL DEMO_API_KEY
 ```
 
-The wipe operation deletes only Kaijus and their cascaded Incidents; it does
-not drop tables or run migrations. Seeding alone preserves additional records
-while restoring canonical seed values. Call wipe and then seed to restore
-exactly the representative dataset. These protected API operations are the
-explicit reset mechanism for Railway as well as local development.
+The reset operation deletes only Kaijus and their cascaded Incidents, then
+restores the canonical Kaiju and Incident seed data. It does not drop tables,
+run migrations, or change users. This protected API operation is the explicit
+reset mechanism for Railway as well as local development.
 
 For the deployed demo, configure `KERS_DEMO_API_KEY` as a secret variable on
 the Railway application service. Do not commit its value or add it to GitHub:
@@ -170,15 +164,10 @@ Once the deployment is active, use the exact production routes:
 ```bash
 RAILWAY_DEMO_API_KEY='value-configured-in-railway'
 
-curl --request DELETE \
-    --header "Accept: application/json" \
-    --header "Authorization: Bearer ${RAILWAY_DEMO_API_KEY}" \
-    https://kers-production.up.railway.app/api/demo-data
-
 curl --request POST \
     --header "Accept: application/json" \
     --header "Authorization: Bearer ${RAILWAY_DEMO_API_KEY}" \
-    https://kers-production.up.railway.app/api/demo-data/seed
+    https://kers-production.up.railway.app/api/demo-data/reset
 
 unset RAILWAY_DEMO_API_KEY
 ```

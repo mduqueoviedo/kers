@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Incident;
 use App\Models\Kaiju;
+use Database\Seeders\IncidentSeeder;
+use Database\Seeders\KaijuSeeder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -11,42 +13,31 @@ use Illuminate\Support\Facades\DB;
 class DemoDataController extends Controller
 {
     /**
-     * Remove all current KERS domain data without changing the schema.
+     * Restore the canonical Kaiju and Incident demo data without changing users.
      */
-    public function destroy(): JsonResponse
+    public function reset(): JsonResponse
     {
-        $deleted = DB::transaction(function (): array {
-            $currentRecords = [
+        $records = DB::transaction(function (): array {
+            Kaiju::query()->delete();
+
+            Artisan::call('db:seed', [
+                '--class' => KaijuSeeder::class,
+                '--force' => true,
+            ]);
+            Artisan::call('db:seed', [
+                '--class' => IncidentSeeder::class,
+                '--force' => true,
+            ]);
+
+            return [
                 'kaijus' => Kaiju::query()->count(),
                 'incidents' => Incident::query()->count(),
             ];
-
-            Kaiju::query()->delete();
-
-            return $currentRecords;
         });
 
         return response()->json([
-            'message' => 'Demo data wiped.',
-            'deleted' => $deleted,
-        ]);
-    }
-
-    /**
-     * Run the repeatable application seeders.
-     */
-    public function seed(): JsonResponse
-    {
-        DB::transaction(
-            fn () => Artisan::call('db:seed', ['--force' => true]),
-        );
-
-        return response()->json([
-            'message' => 'Demo data seeded.',
-            'records' => [
-                'kaijus' => Kaiju::query()->count(),
-                'incidents' => Incident::query()->count(),
-            ],
+            'message' => 'Demo data reset.',
+            'records' => $records,
         ]);
     }
 }

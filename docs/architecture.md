@@ -68,7 +68,7 @@ build or start command. `railway.json` configures `/up` as the deployment
 healthcheck and runs this explicit pre-deploy command:
 
 ```text
-php artisan migrate --force --no-interaction && php artisan db:seed --class=Database\\Seeders\\DemoUserSeeder --force --no-interaction
+php artisan migrate --force --no-interaction && php artisan db:seed --class=DemoUserSeeder --force --no-interaction
 ```
 
 The Railway application service must set
@@ -177,25 +177,23 @@ Laravel HTTP fakes, so automated validation never contacts USGS.
 
 Laravel loads `routes/api.php` through `bootstrap/app.php`, which gives these
 routes the `/api` prefix and API middleware behavior without introducing a
-separate service. `DemoDataController` exposes two JSON operations:
+separate service. `DemoDataController` exposes one JSON operation:
 
 ```text
-DELETE /api/demo-data
-POST /api/demo-data/seed
+POST /api/demo-data/reset
 ```
 
 The `EnsureDemoApiKey` middleware runs before the controller and compares the
 request's Bearer token with `kers.demo_api_key`, populated by
-`KERS_DEMO_API_KEY`. An empty configured key makes both routes unavailable;
+`KERS_DEMO_API_KEY`. An empty configured key makes the route unavailable;
 missing or incorrect credentials receive an unauthorized JSON response. The
 real key exists only in local environment configuration or Railway.
 
-Wiping deletes all Kaijus in a transaction and relies on the existing
-PostgreSQL foreign-key cascade to delete Incidents. It does not change the
-schema or Laravel infrastructure data. Seeding invokes the existing
-`db:seed --force` Artisan command in a transaction. Because the seeders use
-`updateOrCreate`, seeding alone preserves additional records; wipe followed by
-seed restores the canonical dataset.
+Resetting deletes all Kaijus in a transaction and relies on the existing
+PostgreSQL foreign-key cascade to delete Incidents. It then invokes the
+canonical Kaiju and Incident seeders through Artisan before returning the
+restored record counts. It does not change the schema, Laravel infrastructure
+data, or users.
 
 ## Livewire
 

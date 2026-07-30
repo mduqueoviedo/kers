@@ -1,7 +1,7 @@
 {
     "$schema": "https://railway.com/railway.schema.json",
     "deploy": {
-        "preDeployCommand": "php artisan migrate --force --no-interaction && php artisan db:seed --class=Database\\Seeders\\DemoUserSeeder --force --no-interaction",
+        "preDeployCommand": "php artisan migrate --force --no-interaction && php artisan db:seed --class=DemoUserSeeder --force --no-interaction",
         "healthcheckPath": "/up",
         "restartPolicyType": "ON_FAILURE",
         "restartPolicyMaxRetries": 3
