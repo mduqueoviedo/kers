@@ -116,6 +116,12 @@ Wait for explicit approval before:
 
 Do not make implementation changes while preparing the proposal.
 
+Approval of the feature proposal also approves the complete workflow for the
+approved scope: creating the dedicated branch, implementing the change,
+committing it, pushing the branch, and opening the pull request. After
+approval, do not pause to ask whether to commit, push, or create the pull
+request. Material scope changes still require new approval.
+
 Small implementation details may evolve after approval, but material changes to scope must be discussed first.
 
 ---
@@ -154,14 +160,20 @@ For every approved feature:
 7. Update the roadmap status where appropriate.
 8. Create clear commits.
 9. Push the branch.
-10. Open a pull request.
+10. Open a pull request against `main`, ready for review.
 11. Stop.
 
 The project owner will manually review and merge pull requests from GitHub using **Squash and merge**.
 
+This workflow is automatic after explicit feature-proposal approval. Codex
+must not create a draft pull request unless explicitly requested. If a blocker
+prevents committing, pushing, or opening the pull request, report the blocker
+clearly instead of silently stopping.
+
 Codex must never:
 
-* Merge a pull request
+* Merge a pull request; the project owner performs the manual review and
+  squash-merge
 * Push directly to `main`
 * Force-push without explicit permission
 * Rewrite shared Git history
@@ -170,7 +182,8 @@ Codex must never:
 * Bundle unrequested cleanup into a feature
 * Perform destructive Git operations without explicit permission
 
-After opening the pull request, stop and wait for further instructions.
+After opening the ready-for-review pull request, stop and wait for further
+instructions. Do not start the next roadmap item automatically.
 
 ### Branch naming
 

@@ -17,7 +17,11 @@ criteria, testing expectations, dependencies, priority, and notes.
 
 The temporary Railway deployment, protected demo-data API, and Incident phase
 are complete. UX-001 is in review to clarify the two current domain areas. The
-English and Spanish localization checkpoint follows before response teams.
+execution order after the minimum Incident functionality is internationalization,
+the initial USGS integration, and then Response Team management. Response Teams
+are deliberately deferred until after USGS because that integration adds Laravel
+HTTP Client usage, external data mapping, failure handling, HTTP fakes, source
+metadata, and duplicate prevention.
 
 ## Phase 1 — Project foundations and documentation
 
@@ -77,7 +81,27 @@ English and Spanish localization checkpoint follows before response teams.
 | DEP-001 — Deploy the current KERS demo to Railway | Completed | Make the current locally tested application publicly accessible before continuing lower-priority features. | Minimal `railway.json`; GitHub-connected Railway application and PostgreSQL services; private `DB_URL`; native Railpack build and start; explicit non-interactive pre-deploy migration and repeatable seeding; trusted HTTPS proxy headers; `/up` healthcheck; public URL and automatic `main` deployments. | Railway builds successfully; Vite assets load; PostgreSQL migrations and seeders succeed; the application and Kaiju catalogue respond publicly over HTTPS; Laravel trusts Railway's reverse proxy; `/up` succeeds. | INC-003; High; completed in PR #20. Temporary demo: https://kers-production.up.railway.app/kaijus. Review usage and remove the services after approximately one week. |
 | DEM-001 — Add a protected demo-data API | Completed | Reset the temporary demo remotely and learn Laravel controllers without adding visible UI. | API route registration, controller actions, JSON responses, custom API-key middleware, environment configuration, transactions, and Artisan invocation. | Empty configuration disables both routes; missing or invalid Bearer keys cannot mutate data; authenticated wipe deletes only Kaijus and cascaded Incidents; authenticated seed is repeatable; wipe then seed restores the canonical dataset; PostgreSQL-backed feature tests pass. | DEP-001, INC-002B; Medium; merged in PR #22; temporary demo tooling to remove or replace when final authorization exists. |
 
-## Phase 4 — Response team management
+## Phase 4 — USGS integration
+
+USGS integration remains separate from internationalization. The first focused
+iteration fetches and displays recent USGS events in a Livewire page without
+persisting them locally. Later iterations separately create one incident from a
+selected event, store source metadata, prevent duplicates, and optionally
+support multiple selection.
+
+| ID and title | Status | Objective and user value | Concepts and scope | Acceptance and testing | Dependencies, priority, and notes |
+| --- | --- | --- | --- | --- | --- |
+| USG-001 — Configure and call USGS | Planned | Retrieve recent earthquake events through one focused client. | Configuration, environment variables, Laravel HTTP client, timeouts. | Current events are fetched without persistence and failures are represented predictably; HTTP fakes cover success and failure. | INC-004A; High; first USGS iteration; no local event persistence. |
+| USG-002 — Map and display recent events | Planned | Present external data independently of its raw payload shape. | Response mapping and a simple Livewire list. | Required event fields render and no local event records are created; mapper and Livewire tests use fakes. | USG-001; High. |
+| USG-003 — Add incident source fields | Planned | Store only the source details needed by imported incidents. | Nullable migration fields, casts, composite uniqueness. | Manual incidents retain null source data and duplicate USGS identifiers are rejected by PostgreSQL; migration tests pass. | USG-002; High. |
+| USG-004 — Create one incident from one event | Planned | Convert a selected event into an editable incident for a chosen kaiju. | Livewire selection, mapping, Eloquent creation. | Generated title, location, time, coordinates, magnitude, depth, URL, and source persist correctly; HTTP and database tests pass. | USG-003, INC-003; High. |
+| USG-005 — Prevent duplicate imports | Planned | Give clear feedback instead of creating the same source incident twice. | Database exception handling and validation feedback. | Re-import is prevented under concurrent-safe uniqueness and produces understandable feedback; regression tests pass. | USG-004; High. |
+| USG-006 — Import multiple selected events | Planned | Create several controlled incidents in one action. | Multi-selection, transaction, partial-failure decision. | Each unique selection creates one incident and duplicate/error behavior is explicit; transaction and Livewire tests cover mixed selections. | USG-005; Medium; optional later extension of the focused USGS iterations. |
+
+## Phase 5 — Response team management
+
+Response Team management is intentionally deferred until the initial USGS
+integration, including fetching and displaying recent events, is complete.
 
 | ID and title | Status | Objective and user value | Concepts and scope | Acceptance and testing | Dependencies, priority, and notes |
 | --- | --- | --- | --- | --- | --- |
@@ -87,7 +111,7 @@ English and Spanish localization checkpoint follows before response teams.
 | TEM-004 — View and edit response teams | Planned | Review and correct an existing team's details. | Detail component, model binding, form state, update validation. | Correct details render, valid edits persist, and invalid capacity fails; feature and Livewire tests pass. | TEM-003; High. |
 | TEM-005 — Delete and search response teams | Planned | Remove teams safely and find teams when the list grows. | Confirmation state and conditional queries. | Deletion requires confirmation and search returns matching teams; Livewire and database tests pass. | TEM-004; Medium; assignment deletion behavior is defined with the relationship in Phase 5. |
 
-## Phase 5 — Incident assignment and team capacity
+## Phase 6 — Incident assignment and team capacity
 
 | ID and title | Status | Objective and user value | Concepts and scope | Acceptance and testing | Dependencies, priority, and notes |
 | --- | --- | --- | --- | --- | --- |
@@ -95,17 +119,6 @@ English and Spanish localization checkpoint follows before response teams.
 | ASN-002 — Assign, change, and remove a team | Planned | Let operators manage the team responding to an incident. | Livewire actions, relationship updates, validation. | Users can assign, replace, and remove a team; invalid identifiers fail; Livewire tests pass. | ASN-001, INC-005; High. |
 | ASN-003 — Enforce team capacity | Planned | Prevent overcommitting active response teams. | Aggregate queries, business validation, transactions where needed. | Open and contained incidents consume capacity, closed incidents do not, and over-capacity assignments fail; edge cases are tested. | ASN-002; High. |
 | ASN-004 — Display workload and release capacity | Planned | Make assignment decisions understandable and reflect incident closure. | Relationship counts and derived UI state. | Team workload is visible and closing, reopening, or reassigning incidents updates availability correctly; regression tests cover transitions. | ASN-003; High. |
-
-## Phase 6 — USGS integration
-
-| ID and title | Status | Objective and user value | Concepts and scope | Acceptance and testing | Dependencies, priority, and notes |
-| --- | --- | --- | --- | --- | --- |
-| USG-001 — Configure and call USGS | Planned | Retrieve recent earthquake events through one focused client. | Configuration, environment variables, Laravel HTTP client, timeouts. | Current events are fetched without persistence and failures are represented predictably; HTTP fakes cover success and failure. | INC-004; High. |
-| USG-002 — Map and display recent events | Planned | Present external data independently of its raw payload shape. | Response mapping and a simple Livewire list. | Required event fields render and no local event records are created; mapper and Livewire tests use fakes. | USG-001; High. |
-| USG-003 — Add incident source fields | Planned | Store only the source details needed by imported incidents. | Nullable migration fields, casts, composite uniqueness. | Manual incidents retain null source data and duplicate USGS identifiers are rejected by PostgreSQL; migration tests pass. | USG-002; High. |
-| USG-004 — Create one incident from one event | Planned | Convert a selected event into an editable incident for a chosen kaiju. | Livewire selection, mapping, Eloquent creation. | Generated title, location, time, coordinates, magnitude, depth, URL, and source persist correctly; HTTP and database tests pass. | USG-003, INC-003; High. |
-| USG-005 — Prevent duplicate imports | Planned | Give clear feedback instead of creating the same source incident twice. | Database exception handling and validation feedback. | Re-import is prevented under concurrent-safe uniqueness and produces understandable feedback; regression tests pass. | USG-004; High. |
-| USG-006 — Import multiple selected events | Planned | Create several controlled incidents in one action. | Multi-selection, transaction, partial-failure decision. | Each unique selection creates one incident and duplicate/error behavior is explicit; transaction and Livewire tests cover mixed selections. | USG-005; Medium. |
 
 ## Phase 7 — Authentication and authorization
 
