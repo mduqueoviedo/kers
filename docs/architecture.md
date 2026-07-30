@@ -5,9 +5,9 @@
 This document describes the architecture present after adding the Kaiju
 management flow, manual Incident creation, the paginated Incident catalogue,
 Incident search, filtering, ordering, details and editing, and a protected
-demo-data API. Incident deletion, response teams, capacity rules, USGS
-integration, roles, policies, and the operational dashboard are not implemented
-yet.
+demo-data API, and the initial USGS request client. Incident deletion, response
+teams, USGS event mapping and display, roles, policies, and the operational
+dashboard are not implemented yet.
 
 Update this document when architecture actually changes; do not treat planned
 roadmap items as current components.
@@ -135,6 +135,35 @@ The Kaiju catalogue, management forms, detail view with Incident history,
 confirmed deletion action, manual Incident form, Incident catalogue, and
 Incident detail view are the first KERS domain interfaces. The remaining
 domain workflows are not implemented yet.
+
+## USGS request client
+
+The first USGS iteration uses the official
+[USGS Earthquake Catalog API documentation](https://earthquake.usgs.gov/fdsnws/event/1/)
+and its [OpenAPI specification](https://earthquake.usgs.gov/fdsnws/event/1/swagger.json).
+`UsgsEarthquakeClient` uses Laravel's HTTP client to make a `GET` request to
+the configured `USGS_API_URL`, which defaults to the catalog query endpoint:
+
+```text
+GET https://earthquake.usgs.gov/fdsnws/event/1/query
+    ?format=geojson
+    &orderby=time
+    &limit=20
+```
+
+The URL, timeout, and event limit are configured through `USGS_API_URL`,
+`USGS_API_TIMEOUT`, and `USGS_EVENT_LIMIT`, respectively. The request asks for
+GeoJSON, orders events by occurrence time, and limits the response to a small
+recent-event set. The client returns the decoded GeoJSON object without
+persisting it. The expected successful response is a GeoJSON
+`FeatureCollection` whose `features` array contains event objects; later
+iterations will map those features into display data and, separately, Incident
+records.
+
+Laravel's standard `RequestException` represents non-successful HTTP responses,
+`ConnectionException` represents transport failures, and an
+`UnexpectedValueException` represents a non-array response payload. Tests use
+Laravel HTTP fakes, so automated validation never contacts USGS.
 
 ## Demo data API
 
