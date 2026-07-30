@@ -96,15 +96,15 @@ If an implementation starts touching too many files, introducing several indepen
 
 Before implementing any roadmap item, present a concise proposal containing:
 
-* Functional objective
-* User value
-* Laravel concepts introduced
-* Expected scope
-* Main files or areas likely to change
+* Objective
+* Laravel learning objective
+* Expected files or areas
 * Acceptance criteria
-* Testing strategy
-* Relevant risks
-* Whether the feature should be split into smaller pull requests
+* Tests
+* Risks or required split, only when relevant
+
+Keep the proposal to one concise sentence or a few short bullets per section.
+Do not repeat general project rules already documented elsewhere.
 
 Wait for explicit approval before:
 
@@ -238,6 +238,10 @@ Identify:
 * Any code that deserves special attention
 * Questions the owner should be able to answer after reviewing the PR
 
+Avoid repeating the same explanation under Summary, Main changes and Review
+guide. Mention only relevant Laravel concepts and focus the review guide on
+important files and the main execution flow.
+
 ### Documentation
 
 State which documentation was updated, or explain why no documentation change was needed.
@@ -269,19 +273,24 @@ Tests should verify observable behavior and business rules rather than Laravel i
 
 Do not pursue 100% coverage as an objective. Instead, ensure that every important acceptance criterion has meaningful test coverage.
 
-Run the suite using:
+During implementation, run the smallest relevant test file or filtered test
+set. Before opening a pull request, run the complete suite:
 
 ```bash
 php artisan test
 ```
 
-Every pull request must include the tests relevant to its scope.
+Targeted test runs do not replace final full validation. Every pull request must
+include the tests relevant to its scope.
 
 ---
 
 ## 10. Quality checks
 
-Before opening a pull request, run the checks relevant to the change.
+During implementation, run targeted checks relevant to the modified files when
+supported. Do not repeatedly run complete checks after every small edit.
+
+Before opening a pull request, run the complete checks required by the project.
 
 At minimum:
 
@@ -1256,19 +1265,21 @@ When unrelated issues are discovered:
 
 ## 25. Learning-oriented completion report
 
-After implementation and before opening the pull request, provide a concise learning summary containing:
+After implementation and before opening the pull request, provide a concise
+learning summary containing:
 
-### What was implemented
+### Implemented
 
-Describe the functional outcome.
+Describe the functional outcome in one or two sentences.
 
-### Laravel concepts introduced
+### Learned
 
-Explain the framework concepts used in this iteration.
+Explain only the Laravel or Livewire conventions that are genuinely new or
+important in this iteration.
 
-### Request and data flow
+### Flow
 
-Explain the main flow, for example:
+Include one short request/data-flow sequence, for example:
 
 ```text
 Livewire action
@@ -1278,39 +1289,15 @@ Livewire action
 → component re-render
 ```
 
-### Files to review
+### Review
 
-Identify the most educational files.
+Identify only the most important files and summarize the relevant execution
+flow.
 
-### Framework conventions
+### Questions
 
-Explain important Laravel conventions that may be unfamiliar to someone coming from NestJS or another framework.
-
-Where useful, compare concepts briefly:
-
-```text
-Laravel controller      → NestJS controller
-Eloquent model          → ORM entity/model
-Form or Livewire rules  → DTO validation
-Policy                  → authorization guard/policy
-Migration               → database migration
-Factory                  → test data factory
-```
-
-Do not force comparisons when they do not help.
-
-### Questions for manual review
-
-Provide a small number of questions the owner should be able to answer after reviewing the pull request.
-
-Examples:
-
-* Why is this field cast to an enum?
-* Where is the threat-level range enforced?
-* Why is this a feature test rather than a unit test?
-* How does the foreign key cascade work?
-* How does Livewire invoke this action?
-* How is an external USGS request replaced in tests?
+Provide no more than three questions the owner should be able to answer after
+reviewing the pull request.
 
 ---
 
@@ -1330,3 +1317,68 @@ First:
    demonstration period.
 5. Use `docs/roadmap.md` to propose the next focused product iteration and wait
    for approval before implementation.
+
+---
+
+## 27. Codex efficiency mode
+
+### Scope and repository inspection
+
+* Inspect only files reasonably related to the approved scope.
+* Prefer files explicitly named by the owner and the closest existing feature used as a pattern.
+* Do not perform repository-wide searches, architecture reviews, or unrelated cleanup unless required.
+* Do not repeatedly reopen files whose relevant contents are already available in the current conversation.
+* Stop and ask before expanding into unrelated areas.
+
+### Concise approval proposals
+
+* Keep the mandatory pre-implementation proposal.
+* Use the concise structure: Objective; Laravel learning objective; Expected files or areas; Acceptance criteria; Tests; Risks or required split, only when relevant.
+* Prefer one concise sentence or a few short bullets per section.
+* Do not repeat general project rules already documented elsewhere.
+
+### Implementation communication
+
+* Make approved changes directly.
+* Avoid narrating routine exploration, commands, or obvious implementation steps.
+* Report only decisions, blockers, unexpected findings, or material scope changes.
+* Do not repeat information already stated in the approved proposal.
+
+### Testing strategy
+
+* Tests remain mandatory.
+* During implementation, run the smallest relevant test file or filtered test set.
+* Run formatting checks only against modified files where supported.
+* Do not repeatedly run the full suite after every small change.
+* Before opening the pull request, run all complete quality checks required by the project.
+* Targeted test runs do not replace final full validation.
+
+### Concise completion report
+
+* Preserve the learning-oriented completion report using: Implemented; Learned; Flow; Review; Questions.
+* Keep “Implemented” to one or two sentences.
+* Include one short request/data-flow sequence.
+* Identify only the most important files.
+* Include no more than three manual-review questions.
+* Expand only when a Laravel or Livewire convention is genuinely new or important.
+
+### Pull request descriptions
+
+* Preserve all currently required PR sections.
+* Avoid repeating the same explanation under Summary, Main changes, and Review guide.
+* Mention only relevant Laravel concepts.
+* Focus the review guide on important files and execution flow.
+* Include final test commands and results, but not verbose logs unless explaining a failure.
+
+### Final response
+
+After opening the pull request, include only:
+
+* Pull request link
+* Brief functional summary
+* Final checks executed
+* Main files to review
+* Up to three learning questions
+* Any unresolved issue
+
+Then stop.
