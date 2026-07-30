@@ -2,9 +2,9 @@
 
 [![tests](https://github.com/mduqueoviedo/kers/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/mduqueoviedo/kers/actions/workflows/tests.yml)
 
-KERS (Kaiju Emergency Response System) is a Laravel learning project for
-managing fictional kaijus, their incidents, and the response teams assigned to
-them.
+KERS (Kaiju Emergency Response System) is a completed Laravel technical demo
+for managing fictional kaijus and their incidents, including incidents created
+from recent USGS earthquake events.
 
 ## Live demo
 
@@ -180,14 +180,35 @@ Start the Laravel application and frontend development server:
 composer dev
 ```
 
-## Deployment status
+## Final delivery scope
 
-A minimal temporary Railway deployment is the current delivery priority. It is
-intended to expose the same KERS behavior already verified locally, not the
-complete planned product.
+KERS is closed as a technical-demo delivery. The final application includes:
 
-The confirmed architecture, environment variables, manual dashboard steps, and
-acceptance criteria are maintained in the
+- Kaiju and Incident catalogues with creation, detail, editing, confirmed
+  deletion, pagination, search, filtering, and Incident ordering
+- Incident history on each Kaiju detail page
+- English and Spanish interface localization
+- On-demand browsing of recent USGS earthquake events
+- Single-event USGS import into an editable Incident, with persisted source
+  metadata and database-backed duplicate prevention
+- Public read access with disposable demo authentication for mutations
+- A protected API for restoring the canonical demo dataset
+- PostgreSQL-backed local development, automated quality checks, and a
+  temporary Railway deployment
+
+### Deliberately excluded
+
+The final demo does not include response teams or capacity management,
+granular roles or policies, registration or user administration, an
+operational dashboard or analytics, multi-event USGS import, or
+production-grade long-term hosting, observability, backups, and scaling.
+
+Possible future extensions include response-team assignment, role-based
+authorization, multi-event import, and a long-term production deployment. These are
+hypothetical improvements, not committed work.
+
+The final architecture, environment variables, Railway dashboard steps, and
+historical delivery record are maintained in the
 [architecture](docs/architecture.md), [technical requirements](docs/technical-requirements.md),
 [roadmap](docs/roadmap.md), and [workflows](docs/workflows.md). Do not infer
 production values from the local `.env` file.

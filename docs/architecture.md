@@ -2,15 +2,14 @@
 
 ## Status
 
-This document describes the architecture present after adding the Kaiju
-management flow, manual Incident creation, the paginated Incident catalogue,
-Incident search, filtering, ordering, details and editing, and a protected
-demo-data API, and the initial USGS request client. Incident deletion, response
-teams, USGS-to-Incident persistence, roles, policies, and the operational
-dashboard are not implemented yet.
+This document describes the final KERS technical-demo architecture on `main`.
+The delivered application manages Kaijus and Incidents, imports one selected
+USGS event into an Incident, protects mutations with disposable demo
+authentication, restores representative data through a protected API, and runs
+against PostgreSQL locally, in CI, and on Railway.
 
-Update this document when architecture actually changes; do not treat planned
-roadmap items as current components.
+Response teams, granular authorization, multi-event import, and an operational
+dashboard are deliberately outside the final demo scope.
 
 ## System shape
 
@@ -54,12 +53,12 @@ The application and PostgreSQL run as separate services in the same Railway
 project. Database traffic uses Railway's private service connection, while only
 the application receives a public demo URL.
 
-GitHub Actions remains the validation system. It does not initially publish or
-deploy artifacts. Railway connects directly to the repository, observes
+GitHub Actions remains the validation system. It does not publish or deploy
+artifacts. Railway connects directly to the repository, observes
 `main`, and automatically rebuilds and deploys after merged changes.
 
 The public environment reproduces the current locally verified application
-behavior. It does not require the remaining product roadmap, additional
+behavior. It does not depend on the excluded product concepts, additional
 runtime services, or a permanent hosting decision.
 
 Railpack detects the Laravel application, installs Composer and npm
@@ -91,8 +90,8 @@ Docker was not required.
 ## Application framework
 
 Laravel 13 provides application bootstrapping, routing, configuration,
-middleware, database access, migrations, testing integration, and the
-authentication foundation.
+middleware, database access, migrations, testing integration, and
+authentication.
 
 The conventional directory responsibilities are:
 
@@ -135,14 +134,15 @@ The starter UI uses:
 - Vite 8
 - Shared Blade layouts and components
 
-The Kaiju catalogue, management forms, detail view with Incident history,
-confirmed deletion action, manual Incident form, Incident catalogue, and
-Incident detail view are the first KERS domain interfaces. The remaining
-domain workflows are not implemented yet.
+The Kaiju and Incident catalogues and detail pages are public. Creating,
+editing, or deleting either record requires the disposable demo login, as does
+importing an Incident from USGS. The delivered interfaces also include
+pagination, search, filtering, Incident ordering, confirmed deletion, and
+Incident history on Kaiju details.
 
-## USGS request client
+## USGS integration
 
-The first USGS iteration uses the official
+The USGS integration uses the official
 [USGS Earthquake Catalog API documentation](https://earthquake.usgs.gov/fdsnws/event/1/)
 and its [OpenAPI specification](https://earthquake.usgs.gov/fdsnws/event/1/swagger.json).
 `UsgsEarthquakeClient` uses Laravel's HTTP client to make a `GET` request to
@@ -164,9 +164,20 @@ persisting it. The expected successful response is a GeoJSON
 `UsgsEarthquakeMapper` converts valid features into display records containing
 the event identifier, title, magnitude, location, UTC occurrence time, source
 URL, and available coordinates. The public USGS events Livewire page renders
-those records and shows a translated error state for request failures. No USGS
-event is stored locally; later iterations may create editable Incident records
-from selected events.
+those transient records and shows a translated error state for request
+failures.
+
+An authenticated user may select one current event and one existing Kaiju. The
+Livewire action fetches the current catalogue again, rejects unavailable
+selections, and creates an editable Incident containing the mapped title,
+location, occurrence time, magnitude, coordinates, depth, external URL, source,
+and external event identifier. USGS events are never stored as a separate local
+entity.
+
+PostgreSQL enforces uniqueness across `source` and `external_event_id`. The
+import action translates a matching unique-constraint violation into
+understandable duplicate feedback, so concurrent requests cannot import the
+same USGS event twice.
 
 Laravel's standard `RequestException` represents non-successful HTTP responses,
 `ConnectionException` represents transport failures, and an
@@ -223,13 +234,14 @@ persistence, and the Eloquent delete action is guarded by that state before
 redirecting to the catalogue. The modal uses Laravel pluralization to state
 the exact number of incidents affected before PostgreSQL performs its cascade.
 
-The public Incident creation component loads known Kaijus alphabetically,
-validates all submitted state, converts its timezone-free form value explicitly
-to UTC, and creates the record through `Kaiju::incidents()`. Its Kaiju selection
-is synchronized with the `kaiju` query parameter. The general catalogue link
-opens an unselected form, while a Kaiju detail link opens that same route with
-its Kaiju preselected. The query parameter remains untrusted and must pass both
-Livewire existence validation and the PostgreSQL foreign key.
+The authenticated Incident creation component loads known Kaijus
+alphabetically, validates all submitted state, converts its timezone-free form
+value explicitly to UTC, and creates the record through
+`Kaiju::incidents()`. Its Kaiju selection is synchronized with the `kaiju`
+query parameter. The general catalogue link opens an unselected form, while a
+Kaiju detail link opens that same route with its Kaiju preselected. The query
+parameter remains untrusted and must pass both Livewire existence validation
+and the PostgreSQL foreign key.
 
 The public Incident catalogue uses Livewire pagination, case-insensitive title
 or location search, exact status and Kaiju filters, and selectable newest- or
@@ -281,7 +293,9 @@ The current schema contains:
 - Cache and cache locks
 - Jobs, job batches, and failed jobs
 - Kaijus with category and threat-level constraints
-- Incidents belonging to known Kaijus with status and foreign-key constraints
+- Incidents belonging to known Kaijus, with status, foreign-key, nullable USGS
+  source metadata, and a composite source and external-event identifier
+  uniqueness constraint
 - Laravel's migration history
 
 The `Kaiju` Eloquent model casts its stored category string to the
@@ -307,9 +321,9 @@ class. `occurred_at` is a timezone-free PostgreSQL timestamp whose value is
 always interpreted as UTC; the Laravel application timezone is also UTC.
 `IncidentFactory` creates valid related records, can reuse an explicit Kaiju
 through Laravel's `for()` factory method, and provides open, contained, and
-closed states. The manual creation, paginated catalogue, detail, and editing
-routes are implemented. Confirmed deletion is handled by the detail component;
-search and filtering are not implemented yet.
+closed states. Manual and USGS-backed creation, pagination, detail, editing,
+confirmed deletion, title or location search, status and Kaiju filtering, and
+occurrence ordering are implemented.
 
 ## Demo authentication
 
@@ -324,6 +338,14 @@ public detail and USGS components also check authentication in their delete and
 import actions, so a direct Livewire request cannot bypass the interface.
 Mutation controls are rendered only for authenticated users. There are no
 roles, policies, profiles, or user-management screens in this disposable demo.
+
+## Localization
+
+The final interface supports English and Spanish. `SetLocale` validates the
+requested locale, stores it in the session, and applies it to subsequent
+requests. Application-owned interface copy uses keyed Laravel translations,
+while persisted domain values and external USGS data remain unchanged.
+Translation-parity tests keep both locale resources structurally aligned.
 
 ## Testing
 
@@ -349,7 +371,11 @@ navigation, and missing-record 404 responses. Incident deletion tests cover
 confirmation, cancellation, guarded actions, selective deletion, relationship
 preservation, feedback, and redirection. API tests cover disabled and invalid
 credentials, allowed HTTP methods, domain-only deletion, repeatable seeding,
-and canonical reset behavior.
+and canonical reset behavior. USGS tests cover HTTP failures, mapping,
+single-event persistence, stale selections, editable imported Incidents, and
+duplicate prevention without contacting the external API. Localization and
+demo-authentication tests cover locale parity, public reads, protected routes,
+and direct Livewire mutation guards.
 
 ## Quality and CI
 
@@ -402,9 +428,10 @@ external storage, Redis, queues, workers, custom domains, or advanced
 observability. Both Railway services should be stopped or removed after the
 approximately one-week demo period when they are no longer needed.
 
-## Planned but not implemented
+## Deliberately excluded from the final demo
 
-The product requirements anticipate further Eloquent domain models,
-relationships, USGS-to-Incident persistence and duplicate prevention, capacity
-validation, policies, and dashboard aggregates. Their architecture will be documented here only after the
-corresponding roadmap items are implemented.
+The final architecture does not include Response Team models or assignment
+capacity, granular operator and administrator roles or policies, public
+registration and user administration, multi-event USGS import, dashboard
+aggregates, queues, scheduled processing, or long-term production operations.
+These remain hypothetical extensions rather than unfinished delivery work.
