@@ -236,13 +236,12 @@ Production configuration must:
 - Install production Composer dependencies and build Vite assets.
 - Set `RAILPACK_SKIP_MIGRATIONS=true` to disable Railpack's implicit migration
   and seeding startup behavior.
-- Run `php artisan migrate:fresh --seed --force --no-interaction` in the
-  pre-deploy phase.
-- Treat every Railway deployment as destructive: it drops all existing tables
-  and data, reruns migrations, and recreates only the canonical demo dataset.
-- Use this reset-and-reseed policy only for the temporary disposable demo. A
-  persistent production deployment must use a separately designed,
-  non-destructive data migration strategy.
+- Run pending migrations and then seed only `DemoUserSeeder` in the pre-deploy
+  phase.
+- Do not drop Railway tables or automatically seed Kaijus and Incidents.
+- This is a pragmatic reliability rollback: Railway's opaque pre-deploy
+  failures made the destructive rebuild impossible to diagnose. Use the
+  protected demo-data API for an explicit domain reset.
 - Populate only a small, production-safe demonstration dataset.
 - Treat the application filesystem as ephemeral.
 - Avoid local uploads unless losing them is an explicitly accepted demo
@@ -286,10 +285,10 @@ RAILPACK_SKIP_MIGRATIONS=true
 `KERS_DEMO_API_KEY` is a separate random secret required to use the protected
 demo reset operations. Leaving it empty disables those routes.
 The demo-user values are intentionally public credentials for the disposable
-application; the seeded account is recreated during every pre-deploy rebuild.
+application; the seeded account is recreated during every pre-deploy command.
 `DB_URL` references the PostgreSQL service inside the same Railway project.
 The local `.env` file is never copied to Railway.
 
-The current seeders produce the canonical dataset after the pre-deploy rebuild.
-Their `updateOrCreate` behavior remains useful for local development and the
-protected demo API, but Railway never seeds over editable deployment data.
+Railway runs only `DemoUserSeeder` during pre-deploy, preserving editable
+Kaijus and Incidents. The full repeatable seeders remain available for local
+development and the protected demo API.

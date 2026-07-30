@@ -71,7 +71,7 @@ Complete the deployment-readiness audit
 → connect Laravel to PostgreSQL over Railway's private network
 → set RAILPACK_SKIP_MIGRATIONS=true
 → let Railpack install dependencies, build Vite, and serve Laravel
-→ railway.json rebuilds the database and seeds the canonical demo data during pre-deploy
+→ railway.json runs pending migrations and seeds only the demo user during pre-deploy
 → expose and smoke-test the public Railway URL
 → merge a later change into main
 → verify Railway automatically deploys that revision
@@ -82,22 +82,21 @@ GitHub Actions continues to run the test and quality pipeline. Railway observes
 
 The deployment must not copy local `.env` values, commit secrets, or depend on
 persistent local files. It does not add Redis, queues, workers, custom domains,
-external storage, or advanced observability. This temporary Railway demo
-intentionally resets its database; a real persistent production deployment
-must not adopt this command without a separate data-preservation plan.
+external storage, or advanced observability. Railway preserves its database
+during deployment; the protected demo-data API is the explicit reset path for
+Kaijus and Incidents.
 
 The explicit pre-deploy command is:
 
 ```text
-php artisan migrate:fresh --seed --force --no-interaction
+php artisan migrate --force --no-interaction && php artisan db:seed --class=Database\\Seeders\\DemoUserSeeder --force --no-interaction
 ```
 
-This command drops every existing database table and its data, runs all
-migrations, then seeds the canonical demo dataset. Every Railway deployment
-therefore permanently destroys editable demo records, including users and
-Laravel-managed database data. This prevents renamed seeded Kaijus from being
-left behind while their canonical replacements and related Incidents are
-created under new IDs.
+This command runs pending migrations without dropping tables, then creates or
+updates only the configured demo user. It does not automatically seed Kaijus
+or Incidents. The change is a pragmatic reliability decision after repeated
+Railway failures in the opaque pre-deploy phase; use the protected demo-data
+API when the representative domain dataset must be reset.
 
 The Railway dashboard configuration remains manual:
 
@@ -361,8 +360,9 @@ Open login
 ```
 
 The seed lifecycle recreates the one configured demo account whenever
-`migrate:fresh --seed` runs, including on every Railway deployment. Logout
-invalidates the session and redirects through the root URL to the catalogue.
+`migrate:fresh --seed` runs locally and through the dedicated Railway
+pre-deploy seed command. Logout invalidates the session and redirects through
+the root URL to the catalogue.
 Guests may browse public catalogues and details, but Laravel middleware and
 Livewire action checks require login for every mutation.
 
