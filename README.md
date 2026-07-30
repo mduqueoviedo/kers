@@ -99,6 +99,44 @@ Both commands delete all data in the configured database before running the
 migrations. Use them only for local development and confirm that `.env` points
 to the intended `kers` database first.
 
+### Demo data API
+
+KERS also exposes two non-visual API operations for resetting the temporary
+demo without rebuilding its database:
+
+```text
+DELETE /api/demo-data
+POST /api/demo-data/seed
+```
+
+Set a strong `KERS_DEMO_API_KEY` in the local `.env` file before using them.
+The routes are unavailable while this value is empty. Send the same value as a
+Bearer token:
+
+```bash
+DEMO_BASE_URL='http://localhost:8000'
+DEMO_API_KEY='value-from-KERS_DEMO_API_KEY'
+
+curl --request DELETE \
+    --header "Authorization: Bearer ${DEMO_API_KEY}" \
+    "${DEMO_BASE_URL}/api/demo-data"
+
+curl --request POST \
+    --header "Authorization: Bearer ${DEMO_API_KEY}" \
+    "${DEMO_BASE_URL}/api/demo-data/seed"
+
+unset DEMO_BASE_URL DEMO_API_KEY
+```
+
+The wipe operation deletes only Kaijus and their cascaded Incidents; it does
+not drop tables or run migrations. Seeding alone preserves additional records
+while restoring canonical seed values. Call wipe and then seed to restore
+exactly the representative dataset.
+
+For the deployed demo, configure `KERS_DEMO_API_KEY` as a secret variable on
+the Railway application service. Do not commit its value or add it to GitHub:
+GitHub Actions neither deploys the application nor calls these endpoints.
+
 ## Development
 
 Start the Laravel application and frontend development server:
