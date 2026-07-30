@@ -133,38 +133,27 @@ Use these exact commands against the production demo:
 ```bash
 RAILWAY_DEMO_API_KEY='value-configured-in-railway'
 
-curl --request DELETE \
-    --header "Accept: application/json" \
-    --header "Authorization: Bearer ${RAILWAY_DEMO_API_KEY}" \
-    https://kers-production.up.railway.app/api/demo-data
-
 curl --request POST \
     --header "Accept: application/json" \
     --header "Authorization: Bearer ${RAILWAY_DEMO_API_KEY}" \
-    https://kers-production.up.railway.app/api/demo-data/seed
+    https://kers-production.up.railway.app/api/demo-data/reset
 
 unset RAILWAY_DEMO_API_KEY
 ```
 
 ```text
-Send DELETE /api/demo-data with the configured Bearer key
+Send POST /api/demo-data/reset with the configured Bearer key
 → demo-key middleware authenticates the request
-→ DemoDataController counts current Kaijus and Incidents
 → Eloquent deletes all Kaijus in a transaction
 → PostgreSQL cascades deletion to their Incidents
-→ receive a JSON summary of deleted domain records
-
-Send POST /api/demo-data/seed with the configured Bearer key
-→ demo-key middleware authenticates the request
-→ DemoDataController runs the repeatable DatabaseSeeder
-→ receive a JSON summary of current domain records
+→ DemoDataController runs the canonical Kaiju and Incident seeders
+→ receive a JSON summary of restored domain records
 ```
 
-Calling seed alone restores canonical values and preserves additional records.
-Calling wipe and then seed restores exactly the representative dataset. Neither
-operation drops tables or runs migrations. They remain useful for manual demo
-resetting between deployments. When the key is empty, both routes are
-unavailable; an incorrect or missing key cannot modify data.
+The reset restores exactly the representative dataset without dropping tables,
+running migrations, or changing users. It remains useful for manual demo
+resetting between deployments. When the key is empty, the route is unavailable;
+an incorrect or missing key cannot modify data.
 
 ### Verify and retire the temporary demo
 

@@ -37,12 +37,13 @@ requests.
 The temporary demo-data API uses native Laravel routing, a controller, and
 middleware. Its safeguards are:
 
-- Only `DELETE /api/demo-data` and `POST /api/demo-data/seed` mutate demo data.
-- Both routes require `KERS_DEMO_API_KEY` as an HTTPS Bearer token.
-- An empty configured key disables the routes.
+- Only `POST /api/demo-data/reset` mutates demo data.
+- The route requires `KERS_DEMO_API_KEY` as an HTTPS Bearer token.
+- An empty configured key disables the route.
 - Missing or invalid keys must never modify data.
 - Credentials are never accepted in query parameters.
-- Wiping removes domain records only; it must not drop or rebuild the schema.
+- Resetting removes and restores domain records only; it must not drop or
+  rebuild the schema, and it must not change users.
 - The real key exists only in local `.env` configuration or the Railway
   application service.
 - GitHub Actions does not require this secret because tests override Laravel

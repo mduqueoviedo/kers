@@ -3,20 +3,19 @@
 use App\Models\Incident;
 use App\Models\Kaiju;
 use App\Models\User;
+use Database\Seeders\DemoUserSeeder;
+use Database\Seeders\IncidentSeeder;
+use Database\Seeders\KaijuSeeder;
 
 beforeEach(function () {
     config()->set('kers.demo_api_key', 'test-demo-api-key');
 });
 
-test('demo data routes are unavailable when no api key is configured', function () {
+test('the demo data reset route is unavailable when no api key is configured', function () {
     config()->set('kers.demo_api_key', '');
 
     $this->withToken('test-demo-api-key')
-        ->deleteJson('/api/demo-data')
-        ->assertNotFound();
-
-    $this->withToken('test-demo-api-key')
-        ->postJson('/api/demo-data/seed')
+        ->postJson('/api/demo-data/reset')
         ->assertNotFound();
 });
 
@@ -28,7 +27,7 @@ test('missing or invalid api keys cannot modify demo data', function (?string $p
         $this->withToken($providedKey);
     }
 
-    $this->deleteJson('/api/demo-data')
+    $this->postJson('/api/demo-data/reset')
         ->assertUnauthorized()
         ->assertJson(['message' => 'Invalid demo API key.']);
 
@@ -42,41 +41,27 @@ test('missing or invalid api keys cannot modify demo data', function (?string $p
 test('api keys are not accepted in query parameters', function () {
     $kaiju = Kaiju::factory()->create();
 
-    $this->deleteJson('/api/demo-data?api_key=test-demo-api-key')
+    $this->postJson('/api/demo-data/reset?api_key=test-demo-api-key')
         ->assertUnauthorized();
 
     $this->assertDatabaseHas('kaijus', ['id' => $kaiju->id]);
 });
 
-test('the wipe route deletes only current domain data', function () {
-    $user = User::factory()->create();
-    $kaijus = Kaiju::factory()->count(2)->create();
+test('the reset route restores canonical domain data and preserves users', function () {
+    $this->seed([DemoUserSeeder::class, KaijuSeeder::class, IncidentSeeder::class]);
 
-    Incident::factory()->count(2)->for($kaijus[0])->create();
-    Incident::factory()->for($kaijus[1])->create();
+    $modifiedKaiju = Kaiju::query()->where('name', 'Abyssal Maw')->firstOrFail();
+    $modifiedKaiju->update(['name' => 'Edited Abyssal Maw']);
+
+    $additionalKaiju = Kaiju::factory()->create(['name' => 'Temporary Kaiju']);
+    Incident::factory()->for($additionalKaiju)->create();
+    $additionalUser = User::factory()->create();
 
     $this->withToken('test-demo-api-key')
-        ->deleteJson('/api/demo-data')
+        ->postJson('/api/demo-data/reset')
         ->assertOk()
         ->assertExactJson([
-            'message' => 'Demo data wiped.',
-            'deleted' => [
-                'kaijus' => 2,
-                'incidents' => 3,
-            ],
-        ]);
-
-    $this->assertDatabaseCount('kaijus', 0);
-    $this->assertDatabaseCount('incidents', 0);
-    $this->assertDatabaseHas('users', ['id' => $user->id]);
-});
-
-test('the seed route runs the repeatable application seeders', function () {
-    $this->withToken('test-demo-api-key')
-        ->postJson('/api/demo-data/seed')
-        ->assertOk()
-        ->assertExactJson([
-            'message' => 'Demo data seeded.',
+            'message' => 'Demo data reset.',
             'records' => [
                 'kaijus' => 12,
                 'incidents' => 9,
@@ -85,36 +70,18 @@ test('the seed route runs the repeatable application seeders', function () {
 
     $this->assertDatabaseCount('kaijus', 12);
     $this->assertDatabaseCount('incidents', 9);
-});
-
-test('seeding preserves additional records and remains repeatable', function () {
-    $extraKaiju = Kaiju::factory()->create(['name' => 'Demo Visitor']);
-
-    $this->withToken('test-demo-api-key')->postJson('/api/demo-data/seed')->assertOk();
-    $this->withToken('test-demo-api-key')->postJson('/api/demo-data/seed')->assertOk();
-
-    $this->assertDatabaseCount('kaijus', 13);
-    $this->assertDatabaseCount('incidents', 9);
-    $this->assertDatabaseHas('kaijus', ['id' => $extraKaiju->id]);
-});
-
-test('wiping and then seeding restores the canonical demo state', function () {
-    $kaiju = Kaiju::factory()->create(['name' => 'Temporary Kaiju']);
-    Incident::factory()->for($kaiju)->create();
-
-    $this->withToken('test-demo-api-key')->deleteJson('/api/demo-data')->assertOk();
-    $this->withToken('test-demo-api-key')->postJson('/api/demo-data/seed')->assertOk();
-
-    $this->assertDatabaseCount('kaijus', 12);
-    $this->assertDatabaseCount('incidents', 9);
+    $this->assertDatabaseMissing('kaijus', ['id' => $modifiedKaiju->id]);
     $this->assertDatabaseMissing('kaijus', ['name' => 'Temporary Kaiju']);
+    $this->assertDatabaseHas('kaijus', ['name' => 'Abyssal Maw']);
+    $this->assertDatabaseHas('users', ['email' => config()->string('kers.demo_user.email')]);
+    $this->assertDatabaseHas('users', ['id' => $additionalUser->id]);
 });
 
-test('demo data mutations do not accept get requests', function (string $path) {
+test('the old demo data endpoints are unavailable', function (string $method, string $path) {
     $this->withToken('test-demo-api-key')
-        ->getJson($path)
-        ->assertMethodNotAllowed();
+        ->{$method}($path)
+        ->assertNotFound();
 })->with([
-    'wipe route' => ['/api/demo-data'],
-    'seed route' => ['/api/demo-data/seed'],
+    'wipe route' => ['deleteJson', '/api/demo-data'],
+    'seed route' => ['postJson', '/api/demo-data/seed'],
 ]);
