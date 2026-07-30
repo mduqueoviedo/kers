@@ -201,7 +201,10 @@ Each catalogue card links to a single-file detail component. Laravel resolves
 the `Incident` route parameter into its Eloquent model before `mount()` runs;
 missing identifiers therefore return 404 without custom lookup code. The
 component eager loads its Kaiju and renders the incident, relationship, and
-timestamps explicitly in UTC.
+timestamps explicitly in UTC. Its stable breadcrumb represents the domain
+hierarchy from the Kaiju catalogue through the associated Kaiju rather than
+attempting to infer the previous request URL. The global navigation remains
+available for direct access to the Incident catalogue.
 
 The Incident edit component also receives its model through route model
 binding, then initializes scalar form state in `mount()`. It validates the
