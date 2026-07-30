@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\IncidentStatus;
 use App\Models\Incident;
 use App\Models\Kaiju;
 use Carbon\CarbonImmutable;
@@ -59,6 +60,21 @@ test('incidents are displayed by most recent occurrence with their kaiju', funct
         ->assertSee(route('kaijus.show', $newerKaiju), escape: false)
         ->assertDontSee('Next');
 });
+
+test('each incident status uses its configured badge color', function (
+    IncidentStatus $status,
+    string $colorClass,
+) {
+    Incident::factory()->create(['status' => $status]);
+
+    $this->get(route('incidents.index'))
+        ->assertOk()
+        ->assertSee($colorClass, escape: false);
+})->with([
+    'open' => [IncidentStatus::Open, 'text-red-700'],
+    'contained' => [IncidentStatus::Contained, 'text-amber-700'],
+    'closed' => [IncidentStatus::Closed, 'text-green-800'],
+]);
 
 test('the incident catalogue displays nine incidents per page', function () {
     $kaiju = Kaiju::factory()->create();

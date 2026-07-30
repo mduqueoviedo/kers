@@ -160,6 +160,11 @@ tie-breaker. It eager loads each Incident's Kaiju in one relationship query,
 shows occurrence times explicitly as UTC, and uses the configurable
 `kers.pagination.incidents_per_page` page size, which defaults to nine.
 
+Kaiju-category and Incident-status badge colors are presentation settings
+stored under `kers.badges`. The enums remain responsible for valid domain
+values, while the centralized configuration lets the visual mapping change
+without adding conditional color logic to individual Blade views.
+
 ## Database
 
 PostgreSQL 18 is the project database for local development, automated tests,

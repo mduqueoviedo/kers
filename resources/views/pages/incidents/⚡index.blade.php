@@ -49,7 +49,9 @@ new #[Title('Incident catalogue')] class extends Component {
                 <article wire:key="incident-{{ $incident->id }}" class="flex flex-col gap-4 rounded-xl border border-zinc-200 p-5 dark:border-zinc-700">
                     <div class="flex items-start justify-between gap-4">
                         <flux:heading size="lg">{{ $incident->title }}</flux:heading>
-                        <flux:badge>{{ ucfirst($incident->status->value) }}</flux:badge>
+                        <flux:badge :color="config()->string('kers.badges.incident_statuses.'.$incident->status->value)">
+                            {{ ucfirst($incident->status->value) }}
+                        </flux:badge>
                     </div>
 
                     <div class="space-y-1">
