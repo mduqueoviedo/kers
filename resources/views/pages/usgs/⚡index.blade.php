@@ -5,9 +5,11 @@ use App\Models\Kaiju;
 use App\Services\Usgs\UsgsEarthquakeClient;
 use App\Services\Usgs\UsgsEarthquakeMapper;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
@@ -87,20 +89,30 @@ new #[Title('usgs.page_title')] class extends Component {
 
         $kaiju = Kaiju::query()->findOrFail((int) $validated['kaiju_id']);
 
-        $incident = $kaiju->incidents()->create([
-            'title' => $event['title'],
-            'description' => 'Imported from USGS: '.$event['title'],
-            'location' => $event['location'] ?? 'Unknown location',
-            'status' => IncidentStatus::Open,
-            'occurred_at' => CarbonImmutable::parse($event['occurred_at_iso'], 'UTC'),
-            'source' => 'USGS',
-            'external_event_id' => $event['id'],
-            'external_url' => $event['url'],
-            'magnitude' => $event['magnitude'],
-            'latitude' => $event['latitude'],
-            'longitude' => $event['longitude'],
-            'depth' => $event['depth'],
-        ]);
+        try {
+            $incident = DB::transaction(fn () => $kaiju->incidents()->create([
+                'title' => $event['title'],
+                'description' => 'Imported from USGS: '.$event['title'],
+                'location' => $event['location'] ?? 'Unknown location',
+                'status' => IncidentStatus::Open,
+                'occurred_at' => CarbonImmutable::parse($event['occurred_at_iso'], 'UTC'),
+                'source' => 'USGS',
+                'external_event_id' => $event['id'],
+                'external_url' => $event['url'],
+                'magnitude' => $event['magnitude'],
+                'latitude' => $event['latitude'],
+                'longitude' => $event['longitude'],
+                'depth' => $event['depth'],
+            ]));
+        } catch (QueryException $exception) {
+            if ($exception->getCode() !== '23505' || ! str_contains($exception->getMessage(), 'incidents_source_external_event_id_unique')) {
+                throw $exception;
+            }
+
+            $this->addError('selected_event_id', __('usgs.validation.duplicate_import'));
+
+            return;
+        }
 
         $this->redirectRoute('incidents.show', $incident, navigate: true);
     }
