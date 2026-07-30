@@ -37,6 +37,48 @@ test('an incident can be persisted with its casts and relationships', function (
     ]);
 });
 
+test('an incident can persist nullable usgs source metadata', function () {
+    $incident = Incident::factory()->create([
+        'source' => 'USGS',
+        'external_event_id' => 'us7000example',
+        'external_url' => 'https://example.test/event/us7000example',
+        'magnitude' => 5.6,
+        'latitude' => 40.4,
+        'longitude' => -3.7,
+        'depth' => 12.5,
+    ])->refresh();
+
+    expect($incident->source)->toBe('USGS')
+        ->and($incident->external_event_id)->toBe('us7000example')
+        ->and($incident->external_url)->toBe('https://example.test/event/us7000example')
+        ->and($incident->magnitude)->toBe(5.6)
+        ->and($incident->latitude)->toBe(40.4)
+        ->and($incident->longitude)->toBe(-3.7)
+        ->and($incident->depth)->toBe(12.5);
+
+    $manualIncident = Incident::factory()->create();
+
+    expect($manualIncident->source)->toBeNull()
+        ->and($manualIncident->external_event_id)->toBeNull()
+        ->and($manualIncident->external_url)->toBeNull()
+        ->and($manualIncident->magnitude)->toBeNull()
+        ->and($manualIncident->latitude)->toBeNull()
+        ->and($manualIncident->longitude)->toBeNull()
+        ->and($manualIncident->depth)->toBeNull();
+});
+
+test('the database rejects a duplicate external event for the same source', function () {
+    Incident::factory()->create([
+        'source' => 'USGS',
+        'external_event_id' => 'us7000example',
+    ]);
+
+    expect(fn () => Incident::factory()->create([
+        'source' => 'USGS',
+        'external_event_id' => 'us7000example',
+    ]))->toThrow(QueryException::class);
+});
+
 test('the database accepts every incident status', function (IncidentStatus $status) {
     $incident = Incident::query()->create([
         'title' => 'Status test incident',
