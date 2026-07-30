@@ -110,10 +110,18 @@ present.
 The root route redirects to the public `/kaijus` catalogue. That Livewire page
 queries and renders the current Kaiju records.
 
-The shared application layout provides a small top navigation with the KERS
-name and links to the Kaiju and Incident catalogues. The generated welcome
-page, sidebar, dashboard, user menus, and account settings UI have been removed
-so the visible application only represents implemented KERS functionality.
+The shared application layout provides top navigation with the KERS name and
+original two-color emblem. Route-name matching gives the active Kaiju and
+Incident areas distinct teal and orange navigation states, respectively. A
+matching context strip also names and describes the current area, so color is
+never the only orientation cue. The generated welcome page, sidebar, dashboard,
+user menus, and account settings UI have been removed so the visible
+application only represents implemented KERS functionality. The same
+repository-owned SVG emblem supplies the browser favicon and generates the ICO
+and Apple touch icon variants. Catalogue filter panels and record cards continue
+the same restrained area colors. Cards also carry explicit `Known creature` or
+`Incident record` labels, including Incident cards nested in Kaiju history, so
+their identity does not depend on color alone.
 
 The starter UI uses:
 

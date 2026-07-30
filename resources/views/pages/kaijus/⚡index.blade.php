@@ -114,7 +114,7 @@ new #[Title('Kaiju catalogue')] class extends Component {
         </div>
     </header>
 
-    <div class="grid gap-4 rounded-xl border border-zinc-200 p-5 md:grid-cols-3 dark:border-zinc-700">
+    <div class="grid gap-4 rounded-xl border border-teal-200 bg-white p-5 md:grid-cols-3 dark:border-teal-900 dark:bg-zinc-900">
         <flux:input
             wire:model.live.debounce.300ms="search"
             :label="__('Search')"
@@ -164,9 +164,15 @@ new #[Title('Kaiju catalogue')] class extends Component {
     @else
         <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             @foreach ($this->kaijus as $kaiju)
-                <article wire:key="kaiju-{{ $kaiju->id }}" class="flex flex-col gap-4 rounded-xl border border-zinc-200 p-5 dark:border-zinc-700">
+                <article wire:key="kaiju-{{ $kaiju->id }}" class="flex flex-col gap-4 rounded-xl border border-zinc-200 border-t-4 border-t-teal-500 bg-white p-5 shadow-sm transition-shadow hover:shadow-md dark:border-zinc-700 dark:border-t-teal-500 dark:bg-zinc-900 dark:shadow-black/20">
                     <div class="flex items-start justify-between gap-4">
-                        <flux:heading size="lg">{{ $kaiju->name }}</flux:heading>
+                        <div class="space-y-1">
+                            <p class="text-xs font-semibold tracking-wider text-teal-700 uppercase dark:text-teal-300">
+                                {{ __('Known creature') }}
+                            </p>
+                            <flux:heading size="lg">{{ $kaiju->name }}</flux:heading>
+                        </div>
+
                         <flux:badge :color="config()->string('kers.badges.kaiju_categories.'.$kaiju->category->value)">
                             {{ ucfirst($kaiju->category->value) }}
                         </flux:badge>

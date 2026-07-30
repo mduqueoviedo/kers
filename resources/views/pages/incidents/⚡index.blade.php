@@ -143,7 +143,7 @@ new #[Title('Incident catalogue')] class extends Component {
         </flux:button>
     </header>
 
-    <div class="grid gap-4 rounded-xl border border-zinc-200 p-5 md:grid-cols-2 xl:grid-cols-4 dark:border-zinc-700">
+    <div class="grid gap-4 rounded-xl border border-orange-200 bg-white p-5 md:grid-cols-2 xl:grid-cols-4 dark:border-orange-900 dark:bg-zinc-900">
         <flux:input
             wire:model.live.debounce.300ms="search"
             :label="__('Search')"
@@ -198,9 +198,15 @@ new #[Title('Incident catalogue')] class extends Component {
     @else
         <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             @foreach ($this->incidents as $incident)
-                <article wire:key="incident-{{ $incident->id }}" class="flex flex-col gap-4 rounded-xl border border-zinc-200 p-5 dark:border-zinc-700">
+                <article wire:key="incident-{{ $incident->id }}" class="flex flex-col gap-4 rounded-xl border border-zinc-200 border-t-4 border-t-orange-500 bg-white p-5 shadow-sm transition-shadow hover:shadow-md dark:border-zinc-700 dark:border-t-orange-500 dark:bg-zinc-900 dark:shadow-black/20">
                     <div class="flex items-start justify-between gap-4">
-                        <flux:heading size="lg">{{ $incident->title }}</flux:heading>
+                        <div class="space-y-1">
+                            <p class="text-xs font-semibold tracking-wider text-orange-700 uppercase dark:text-orange-300">
+                                {{ __('Incident record') }}
+                            </p>
+                            <flux:heading size="lg">{{ $incident->title }}</flux:heading>
+                        </div>
+
                         <flux:badge :color="config()->string('kers.badges.incident_statuses.'.$incident->status->value)">
                             {{ ucfirst($incident->status->value) }}
                         </flux:badge>

@@ -148,9 +148,15 @@ new #[Title('Kaiju details')] class extends Component {
         @else
             <div class="grid gap-4 md:grid-cols-2">
                 @foreach ($kaiju->incidents as $incident)
-                    <article wire:key="kaiju-incident-{{ $incident->id }}" class="flex flex-col gap-4 rounded-xl border border-zinc-200 p-5 dark:border-zinc-700">
+                    <article wire:key="kaiju-incident-{{ $incident->id }}" class="flex flex-col gap-4 rounded-xl border border-zinc-200 border-t-4 border-t-orange-500 bg-white p-5 shadow-sm transition-shadow hover:shadow-md dark:border-zinc-700 dark:border-t-orange-500 dark:bg-zinc-900 dark:shadow-black/20">
                         <div class="flex items-start justify-between gap-4">
-                            <flux:heading size="lg">{{ $incident->title }}</flux:heading>
+                            <div class="space-y-1">
+                                <p class="text-xs font-semibold tracking-wider text-orange-700 uppercase dark:text-orange-300">
+                                    {{ __('Incident record') }}
+                                </p>
+                                <flux:heading size="lg">{{ $incident->title }}</flux:heading>
+                            </div>
+
                             <flux:badge :color="config()->string('kers.badges.incident_statuses.'.$incident->status->value)">
                                 {{ ucfirst($incident->status->value) }}
                             </flux:badge>

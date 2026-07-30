@@ -47,6 +47,8 @@ test('the catalogue displays existing kaijus ordered by name', function () {
         ->assertSee('Threat level 3 of 5')
         ->assertSee('No description provided.')
         ->assertSee('An aerial hunter.')
+        ->assertSee('Known creature')
+        ->assertSee('border-t-teal-500', escape: false)
         ->assertDontSee('Next');
 });
 
