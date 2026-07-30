@@ -32,6 +32,25 @@ requests.
 - The application must not silently fall back to SQLite.
 - Persistent local disk and provider-specific services are avoided.
 
+## Demo API security
+
+The temporary demo-data API uses native Laravel routing, a controller, and
+middleware. Its safeguards are:
+
+- Only `DELETE /api/demo-data` and `POST /api/demo-data/seed` mutate demo data.
+- Both routes require `KERS_DEMO_API_KEY` as an HTTPS Bearer token.
+- An empty configured key disables the routes.
+- Missing or invalid keys must never modify data.
+- Credentials are never accepted in query parameters.
+- Wiping removes domain records only; it must not drop or rebuild the schema.
+- The real key exists only in local `.env` configuration or the Railway
+  application service.
+- GitHub Actions does not require this secret because tests override Laravel
+  configuration and do not call the deployed environment.
+
+This API is temporary demo tooling, not a replacement for the planned user,
+role, policy, and authorization model.
+
 ## Application architecture
 
 Use conventional Laravel structure and native framework features before custom
@@ -242,6 +261,7 @@ APP_ENV=production
 APP_DEBUG=false
 APP_KEY=<generated Laravel key>
 APP_URL=https://${{RAILWAY_PUBLIC_DOMAIN}}
+KERS_DEMO_API_KEY=<generated random secret>
 DB_CONNECTION=pgsql
 DB_URL=${{Postgres.DATABASE_URL}}
 LOG_CHANNEL=stderr
@@ -255,6 +275,8 @@ RAILPACK_SKIP_MIGRATIONS=true
 ```
 
 `APP_KEY` is generated outside Git and stored only as a Railway secret.
+`KERS_DEMO_API_KEY` is a separate random secret required to use the protected
+demo reset operations. Leaving it empty disables those routes.
 `DB_URL` references the PostgreSQL service inside the same Railway project.
 The local `.env` file is never copied to Railway.
 

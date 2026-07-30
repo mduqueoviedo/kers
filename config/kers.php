@@ -4,6 +4,7 @@ use App\Enums\IncidentStatus;
 use App\Enums\KaijuCategory;
 
 return [
+    'demo_api_key' => env('KERS_DEMO_API_KEY', ''),
     'badges' => [
         'incident_statuses' => [
             IncidentStatus::Open->value => 'red',

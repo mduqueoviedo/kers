@@ -3,10 +3,10 @@
 ## Status
 
 This document describes the architecture present after adding the Kaiju
-management flow, manual Incident creation, and the paginated Incident
-catalogue. Incident details and management, response teams, capacity rules,
-USGS integration, roles, policies, and the operational dashboard are not
-implemented yet.
+management flow, manual Incident creation, the paginated Incident catalogue,
+and a protected demo-data API. Incident details and management, response
+teams, capacity rules, USGS integration, roles, policies, and the operational
+dashboard are not implemented yet.
 
 Update this document when architecture actually changes; do not treat planned
 roadmap items as current components.
@@ -20,6 +20,12 @@ Browser
 → Laravel web routes
 → Blade view or single-file Livewire component
 → Laravel application services and Eloquent
+→ PostgreSQL
+
+Authorized API client
+→ Laravel API route and demo-key middleware
+→ DemoDataController
+→ Eloquent or the application seeder
 → PostgreSQL
 ```
 
@@ -120,6 +126,30 @@ The Kaiju catalogue, management forms, detail view, confirmed deletion action,
 manual Incident form, and Incident catalogue are the first KERS domain
 interfaces. Incident details and the remaining domain workflows are not
 implemented yet.
+
+## Demo data API
+
+Laravel loads `routes/api.php` through `bootstrap/app.php`, which gives these
+routes the `/api` prefix and API middleware behavior without introducing a
+separate service. `DemoDataController` exposes two JSON operations:
+
+```text
+DELETE /api/demo-data
+POST /api/demo-data/seed
+```
+
+The `EnsureDemoApiKey` middleware runs before the controller and compares the
+request's Bearer token with `kers.demo_api_key`, populated by
+`KERS_DEMO_API_KEY`. An empty configured key makes both routes unavailable;
+missing or incorrect credentials receive an unauthorized JSON response. The
+real key exists only in local environment configuration or Railway.
+
+Wiping deletes all Kaijus in a transaction and relies on the existing
+PostgreSQL foreign-key cascade to delete Incidents. It does not change the
+schema or Laravel infrastructure data. Seeding invokes the existing
+`db:seed --force` Artisan command in a transaction. Because the seeders use
+`updateOrCreate`, seeding alone preserves additional records; wipe followed by
+seed restores the canonical dataset.
 
 ## Livewire
 
@@ -239,7 +269,9 @@ route-bound details, editing, and confirmed deletion, plus persistence, enum
 casting, database constraints, Incident relationships and cascade behavior,
 factory states for both current domain models, repeatable related seeding,
 exact cascade-warning counts, manual Incident creation with validation, and
-the paginated Incident catalogue with eager-loaded Kaijus and UTC dates.
+the paginated Incident catalogue with eager-loaded Kaijus and UTC dates. API
+tests cover disabled and invalid credentials, allowed HTTP methods,
+domain-only deletion, repeatable seeding, and canonical reset behavior.
 
 ## Quality and CI
 

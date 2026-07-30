@@ -101,10 +101,11 @@ The Railway dashboard configuration remains manual:
 2. Add PostgreSQL to the same project.
 3. Add the documented Laravel variables, generate `APP_KEY`, and reference the
    PostgreSQL `DATABASE_URL` as `DB_URL`.
-4. Generate a public Railway domain for the application service.
-5. Enable automatic deployments and `Wait for CI`.
-6. Inspect the build, pre-deploy, and runtime logs.
-7. Smoke-test the current public Kaiju and Incident workflows.
+4. Generate and add `KERS_DEMO_API_KEY` as a secret application variable.
+5. Generate a public Railway domain for the application service.
+6. Enable automatic deployments and `Wait for CI`.
+7. Inspect the build, pre-deploy, and runtime logs.
+8. Smoke-test the current public Kaiju and Incident workflows.
 
 The initial deployment verified:
 
@@ -115,6 +116,31 @@ The initial deployment verified:
 - Laravel uses Railway's forwarded proxy headers for the correct HTTPS scheme.
 - The `/up` healthcheck succeeds.
 - Changes from the connected GitHub branch deploy automatically.
+
+### Reset the temporary demo through the API
+
+The application service must have a strong `KERS_DEMO_API_KEY` configured in
+Railway. The key is sent only in the HTTPS `Authorization: Bearer` header; it
+is never committed, added to a URL, or stored as a GitHub Actions secret.
+
+```text
+Send DELETE /api/demo-data with the configured Bearer key
+→ demo-key middleware authenticates the request
+→ DemoDataController counts current Kaijus and Incidents
+→ Eloquent deletes all Kaijus in a transaction
+→ PostgreSQL cascades deletion to their Incidents
+→ receive a JSON summary of deleted domain records
+
+Send POST /api/demo-data/seed with the configured Bearer key
+→ demo-key middleware authenticates the request
+→ DemoDataController runs the repeatable DatabaseSeeder
+→ receive a JSON summary of current domain records
+```
+
+Calling seed alone restores canonical values and preserves additional records.
+Calling wipe and then seed restores exactly the representative dataset. Neither
+operation drops tables or runs migrations. When the key is empty, both routes
+are unavailable; an incorrect or missing key cannot modify data.
 
 ### Verify and retire the temporary demo
 
