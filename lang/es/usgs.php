@@ -27,6 +27,7 @@ return [
     'title' => 'Eventos sísmicos recientes',
     'validation' => [
         'catalogue_unavailable' => 'No se han podido obtener los eventos actuales de USGS. Inténtalo más tarde.',
+        'duplicate_import' => 'Ya se ha creado un incidente a partir de este evento de USGS.',
         'event_unavailable' => 'El evento de USGS seleccionado ya no está disponible. Elige otro evento.',
     ],
     'view_source' => 'Ver detalles de USGS',

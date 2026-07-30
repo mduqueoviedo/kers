@@ -113,6 +113,30 @@ test('an event missing from the current usgs catalogue cannot be imported', func
     expect(Incident::query()->count())->toBe(0);
 });
 
+test('importing the same usgs event twice displays a duplicate error without creating another incident', function () {
+    $kaiju = Kaiju::factory()->create();
+    Http::fake(['*' => Http::response(usgsImportResponse())]);
+
+    Livewire::test('pages::usgs.index')
+        ->set('selected_event_id', 'us7000example')
+        ->set('kaiju_id', (string) $kaiju->id)
+        ->call('importIncident')
+        ->assertHasNoErrors()
+        ->assertRedirect(route('incidents.show', Incident::query()->sole()));
+
+    Livewire::test('pages::usgs.index')
+        ->set('selected_event_id', 'us7000example')
+        ->set('kaiju_id', (string) $kaiju->id)
+        ->call('importIncident')
+        ->assertHasErrors(['selected_event_id'])
+        ->assertSee('An incident has already been created from this USGS event.');
+
+    expect(Incident::query()
+        ->where('source', 'USGS')
+        ->where('external_event_id', 'us7000example')
+        ->count())->toBe(1);
+});
+
 test('an imported incident remains editable through the normal incident form', function () {
     $kaiju = Kaiju::factory()->create();
     $incident = Incident::factory()->for($kaiju)->create([
