@@ -63,6 +63,8 @@ test('incidents are displayed by most recent occurrence with their kaiju', funct
         ->assertSee('Occurred Jul 29, 2026, 12:30 UTC')
         ->assertSee('Occurred Jul 28, 2026, 08:15 UTC')
         ->assertSee(route('kaijus.show', $newerKaiju), escape: false)
+        ->assertSee('Incident record')
+        ->assertSee('border-t-orange-500', escape: false)
         ->assertDontSee('Next');
 });
 

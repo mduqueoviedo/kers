@@ -99,6 +99,8 @@ test('a kaiju detail page shows its incident history newest first', function () 
         ->assertSee('Jul 28, 2026, 08:15 UTC')
         ->assertSee(route('incidents.show', $newerIncident), escape: false)
         ->assertSee(route('incidents.show', $olderIncident), escape: false)
+        ->assertSee('Incident record')
+        ->assertSee('border-t-orange-500', escape: false)
         ->assertDontSee('Unrelated incident');
 });
 
