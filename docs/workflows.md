@@ -71,7 +71,7 @@ Complete the deployment-readiness audit
 → connect Laravel to PostgreSQL over Railway's private network
 → set RAILPACK_SKIP_MIGRATIONS=true
 → let Railpack install dependencies, build Vite, and serve Laravel
-→ railway.json runs migrations and the demo seeder during pre-deploy
+→ railway.json rebuilds the database and seeds the canonical demo data during pre-deploy
 → expose and smoke-test the public Railway URL
 → merge a later change into main
 → verify Railway automatically deploys that revision
@@ -80,20 +80,24 @@ Complete the deployment-readiness audit
 GitHub Actions continues to run the test and quality pipeline. Railway observes
 `main` directly; GitHub Actions does not initially deploy the application.
 
-The deployment must not copy local `.env` values, commit secrets, reset the
-production database, or depend on persistent local files. It does not add
-Redis, queues, workers, custom domains, external storage, or advanced
-observability.
+The deployment must not copy local `.env` values, commit secrets, or depend on
+persistent local files. It does not add Redis, queues, workers, custom domains,
+external storage, or advanced observability. This temporary Railway demo
+intentionally resets its database; a real persistent production deployment
+must not adopt this command without a separate data-preservation plan.
 
 The explicit pre-deploy command is:
 
 ```text
-php artisan migrate --force --no-interaction && php artisan db:seed --force --no-interaction
+php artisan migrate:fresh --seed --force --no-interaction
 ```
 
-The seeders are repeatable and preserve unrelated records. A redeployment may
-restore canonical values for predefined demo records because the seeders use
-`updateOrCreate`.
+This command drops every existing database table and its data, runs all
+migrations, then seeds the canonical demo dataset. Every Railway deployment
+therefore permanently destroys editable demo records, including users and
+Laravel-managed database data. This prevents renamed seeded Kaijus from being
+left behind while their canonical replacements and related Incidents are
+created under new IDs.
 
 The Railway dashboard configuration remains manual:
 
@@ -159,8 +163,9 @@ Send POST /api/demo-data/seed with the configured Bearer key
 
 Calling seed alone restores canonical values and preserves additional records.
 Calling wipe and then seed restores exactly the representative dataset. Neither
-operation drops tables or runs migrations. When the key is empty, both routes
-are unavailable; an incorrect or missing key cannot modify data.
+operation drops tables or runs migrations. They remain useful for manual demo
+resetting between deployments. When the key is empty, both routes are
+unavailable; an incorrect or missing key cannot modify data.
 
 ### Verify and retire the temporary demo
 

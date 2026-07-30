@@ -234,10 +234,13 @@ Production configuration must:
 - Install production Composer dependencies and build Vite assets.
 - Set `RAILPACK_SKIP_MIGRATIONS=true` to disable Railpack's implicit migration
   and seeding startup behavior.
-- Run `php artisan migrate --force --no-interaction` followed by
-  `php artisan db:seed --force --no-interaction` in the pre-deploy phase.
-- Never run `migrate:fresh`, database resets, or destructive seed behavior
-  during deployment.
+- Run `php artisan migrate:fresh --seed --force --no-interaction` in the
+  pre-deploy phase.
+- Treat every Railway deployment as destructive: it drops all existing tables
+  and data, reruns migrations, and recreates only the canonical demo dataset.
+- Use this reset-and-reseed policy only for the temporary disposable demo. A
+  persistent production deployment must use a separately designed,
+  non-destructive data migration strategy.
 - Populate only a small, production-safe demonstration dataset.
 - Treat the application filesystem as ephemeral.
 - Avoid local uploads unless losing them is an explicitly accepted demo
@@ -280,7 +283,6 @@ demo reset operations. Leaving it empty disables those routes.
 `DB_URL` references the PostgreSQL service inside the same Railway project.
 The local `.env` file is never copied to Railway.
 
-The current seeders are acceptable for the temporary demo because they use
-`updateOrCreate` and do not delete unrelated records. Since they run during
-every pre-deploy phase, a redeployment may restore canonical field values for
-the predefined Kaijus and Incidents.
+The current seeders produce the canonical dataset after the pre-deploy rebuild.
+Their `updateOrCreate` behavior remains useful for local development and the
+protected demo API, but Railway never seeds over editable deployment data.
