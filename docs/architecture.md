@@ -4,7 +4,7 @@
 
 This document describes the architecture present after adding the Kaiju
 management flow, manual Incident creation, the paginated Incident catalogue,
-and a protected demo-data API. Incident details and management, response
+Incident details, and a protected demo-data API. Incident management, response
 teams, capacity rules, USGS integration, roles, policies, and the operational
 dashboard are not implemented yet.
 
@@ -123,8 +123,8 @@ The starter UI uses:
 - Shared Blade layouts and components
 
 The Kaiju catalogue, management forms, detail view, confirmed deletion action,
-manual Incident form, and Incident catalogue are the first KERS domain
-interfaces. Incident details and the remaining domain workflows are not
+manual Incident form, Incident catalogue, and Incident detail view are the
+first KERS domain interfaces. The remaining domain workflows are not
 implemented yet.
 
 ## Demo data API
@@ -189,6 +189,11 @@ the most recent `occurred_at` value, with the identifier as a deterministic
 tie-breaker. It eager loads each Incident's Kaiju in one relationship query,
 shows occurrence times explicitly as UTC, and uses the configurable
 `kers.pagination.incidents_per_page` page size, which defaults to nine.
+Each catalogue card links to a single-file detail component. Laravel resolves
+the `Incident` route parameter into its Eloquent model before `mount()` runs;
+missing identifiers therefore return 404 without custom lookup code. The
+component eager loads its Kaiju and renders the incident, relationship, and
+timestamps explicitly in UTC.
 
 Kaiju-category and Incident-status badge colors are presentation settings
 stored under `kers.badges`. The enums remain responsible for valid domain
@@ -234,8 +239,8 @@ class. `occurred_at` is a timezone-free PostgreSQL timestamp whose value is
 always interpreted as UTC; the Laravel application timezone is also UTC.
 `IncidentFactory` creates valid related records, can reuse an explicit Kaiju
 through Laravel's `for()` factory method, and provides open, contained, and
-closed states. The manual creation and paginated catalogue routes are
-implemented; other Incident pages are not.
+closed states. The manual creation, paginated catalogue, and detail routes are
+implemented; other Incident management pages are not.
 
 ## Authentication
 
@@ -269,9 +274,11 @@ route-bound details, editing, and confirmed deletion, plus persistence, enum
 casting, database constraints, Incident relationships and cascade behavior,
 factory states for both current domain models, repeatable related seeding,
 exact cascade-warning counts, manual Incident creation with validation, and
-the paginated Incident catalogue with eager-loaded Kaijus and UTC dates. API
-tests cover disabled and invalid credentials, allowed HTTP methods,
-domain-only deletion, repeatable seeding, and canonical reset behavior.
+the paginated Incident catalogue with eager-loaded Kaijus and UTC dates.
+Incident detail tests cover route model binding, current record and relationship
+rendering, catalogue navigation, configured badges, and missing-record 404
+responses. API tests cover disabled and invalid credentials, allowed HTTP
+methods, domain-only deletion, repeatable seeding, and canonical reset behavior.
 
 ## Quality and CI
 
