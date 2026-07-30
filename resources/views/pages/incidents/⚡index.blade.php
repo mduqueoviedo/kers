@@ -61,14 +61,15 @@ new #[Title('Incident catalogue')] class extends Component {
                         </flux:text>
                     </div>
 
-                    <flux:button
-                        :href="route('kaijus.show', $incident->kaiju)"
-                        variant="ghost"
-                        class="mt-auto self-start"
-                        wire:navigate
-                    >
-                        {{ $incident->kaiju->name }}
-                    </flux:button>
+                    <div class="mt-auto flex flex-wrap items-center gap-2">
+                        <flux:button :href="route('incidents.show', $incident)" variant="primary" wire:navigate>
+                            {{ __('View details') }}
+                        </flux:button>
+
+                        <flux:button :href="route('kaijus.show', $incident->kaiju)" variant="ghost" wire:navigate>
+                            {{ $incident->kaiju->name }}
+                        </flux:button>
+                    </div>
                 </article>
             @endforeach
         </div>
