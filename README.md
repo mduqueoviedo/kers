@@ -137,6 +137,26 @@ For the deployed demo, configure `KERS_DEMO_API_KEY` as a secret variable on
 the Railway application service. Do not commit its value or add it to GitHub:
 GitHub Actions neither deploys the application nor calls these endpoints.
 
+In Railway, open the Laravel application service, select **Variables**, create
+`KERS_DEMO_API_KEY`, optionally seal it, and deploy the staged variable change.
+Once the deployment is active, use the exact production routes:
+
+```bash
+RAILWAY_DEMO_API_KEY='value-configured-in-railway'
+
+curl --request DELETE \
+    --header "Accept: application/json" \
+    --header "Authorization: Bearer ${RAILWAY_DEMO_API_KEY}" \
+    https://kers-production.up.railway.app/api/demo-data
+
+curl --request POST \
+    --header "Accept: application/json" \
+    --header "Authorization: Bearer ${RAILWAY_DEMO_API_KEY}" \
+    https://kers-production.up.railway.app/api/demo-data/seed
+
+unset RAILWAY_DEMO_API_KEY
+```
+
 ## Development
 
 Start the Laravel application and frontend development server:
