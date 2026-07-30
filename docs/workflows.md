@@ -120,8 +120,28 @@ The initial deployment verified:
 ### Reset the temporary demo through the API
 
 The application service must have a strong `KERS_DEMO_API_KEY` configured in
-Railway. The key is sent only in the HTTPS `Authorization: Bearer` header; it
-is never committed, added to a URL, or stored as a GitHub Actions secret.
+Railway. Open the Laravel service's **Variables** tab, create the variable,
+optionally seal it, and deploy the staged variable change. The key is sent only
+in the HTTPS `Authorization: Bearer` header; it is never committed, added to a
+URL, or stored as a GitHub Actions secret.
+
+Use these exact commands against the production demo:
+
+```bash
+RAILWAY_DEMO_API_KEY='value-configured-in-railway'
+
+curl --request DELETE \
+    --header "Accept: application/json" \
+    --header "Authorization: Bearer ${RAILWAY_DEMO_API_KEY}" \
+    https://kers-production.up.railway.app/api/demo-data
+
+curl --request POST \
+    --header "Accept: application/json" \
+    --header "Authorization: Bearer ${RAILWAY_DEMO_API_KEY}" \
+    https://kers-production.up.railway.app/api/demo-data/seed
+
+unset RAILWAY_DEMO_API_KEY
+```
 
 ```text
 Send DELETE /api/demo-data with the configured Bearer key
