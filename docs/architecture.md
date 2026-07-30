@@ -4,9 +4,10 @@
 
 This document describes the architecture present after adding the Kaiju
 management flow, manual Incident creation, the paginated Incident catalogue,
-Incident details and editing, and a protected demo-data API. Incident deletion,
-search and filtering, response teams, capacity rules, USGS integration, roles,
-policies, and the operational dashboard are not implemented yet.
+Incident search, filtering, ordering, details and editing, and a protected
+demo-data API. Incident deletion, response teams, capacity rules, USGS
+integration, roles, policies, and the operational dashboard are not implemented
+yet.
 
 Update this document when architecture actually changes; do not treat planned
 roadmap items as current components.
@@ -184,10 +185,14 @@ opens an unselected form, while a Kaiju detail link opens that same route with
 its Kaiju preselected. The query parameter remains untrusted and must pass both
 Livewire existence validation and the PostgreSQL foreign key.
 
-The public Incident catalogue uses Livewire pagination and orders records by
-the most recent `occurred_at` value, with the identifier as a deterministic
-tie-breaker. It eager loads each Incident's Kaiju in one relationship query,
-shows occurrence times explicitly as UTC, and uses the configurable
+The public Incident catalogue uses Livewire pagination, case-insensitive title
+or location search, exact status and Kaiju filters, and selectable newest- or
+oldest-first occurrence ordering. Search, filters, ordering, and pagination are
+synchronized with the URL. Changing any criterion resets pagination, and all
+criteria can be cleared together. The Eloquent query groups the two search
+columns before applying exact filters and uses the identifier as a deterministic
+ordering tie-breaker. It eager loads each Incident's Kaiju in one relationship
+query, shows occurrence times explicitly as UTC, and uses the configurable
 `kers.pagination.incidents_per_page` page size, which defaults to nine.
 Each catalogue card links to a single-file detail component. Laravel resolves
 the `Incident` route parameter into its Eloquent model before `mount()` runs;
@@ -200,6 +205,12 @@ binding, then initializes scalar form state in `mount()`. It validates the
 selected Kaiju and status against current database and enum values, converts
 the timezone-free date input to UTC, and updates the Eloquent model. All three
 supported statuses may currently transition to any other supported status.
+
+The Incident detail component owns a boolean confirmation state for permanent
+deletion. Opening or cancelling its Flux modal preserves the record, and the
+delete action returns without changing persistence unless confirmation is
+active. A confirmed Eloquent deletion removes only that Incident, preserves its
+Kaiju, and redirects to the catalogue with toast feedback.
 
 Kaiju-category and Incident-status badge colors are presentation settings
 stored under `kers.badges`. The enums remain responsible for valid domain
@@ -246,7 +257,8 @@ always interpreted as UTC; the Laravel application timezone is also UTC.
 `IncidentFactory` creates valid related records, can reuse an explicit Kaiju
 through Laravel's `for()` factory method, and provides open, contained, and
 closed states. The manual creation, paginated catalogue, detail, and editing
-routes are implemented; other Incident management pages are not.
+routes are implemented. Confirmed deletion is handled by the detail component;
+search and filtering are not implemented yet.
 
 ## Authentication
 
@@ -280,14 +292,17 @@ route-bound details, editing, and confirmed deletion, plus persistence, enum
 casting, database constraints, Incident relationships and cascade behavior,
 factory states for both current domain models, repeatable related seeding,
 exact cascade-warning counts, manual Incident creation with validation, and
-the paginated Incident catalogue with eager-loaded Kaijus and UTC dates.
+the paginated Incident catalogue with combined search, filters, ordering,
+URL-backed state, eager-loaded Kaijus, and UTC dates.
 Incident detail tests cover route model binding, current record and relationship
 rendering, catalogue navigation, configured badges, and missing-record 404
 responses. Incident edit tests cover prefilled state, complete updates,
 relationship reassignment, status changes, UTC conversion, validation,
-navigation, and missing-record 404 responses. API tests cover disabled and
-invalid credentials, allowed HTTP methods, domain-only deletion, repeatable
-seeding, and canonical reset behavior.
+navigation, and missing-record 404 responses. Incident deletion tests cover
+confirmation, cancellation, guarded actions, selective deletion, relationship
+preservation, feedback, and redirection. API tests cover disabled and invalid
+credentials, allowed HTTP methods, domain-only deletion, repeatable seeding,
+and canonical reset behavior.
 
 ## Quality and CI
 
