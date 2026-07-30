@@ -7,7 +7,7 @@ use Illuminate\Validation\Rule;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-new #[Title('Register kaiju')] class extends Component {
+new #[Title('kaijus.create.title')] class extends Component {
     public string $name = '';
 
     public string $category = '';
@@ -43,7 +43,7 @@ new #[Title('Register kaiju')] class extends Component {
 
         Kaiju::query()->create($validated);
 
-        Flux::toast(__('Kaiju registered successfully.'));
+        Flux::toast(__('kaijus.success.created'));
 
         $this->redirectRoute('kaijus.index', navigate: true);
     }
@@ -51,35 +51,35 @@ new #[Title('Register kaiju')] class extends Component {
 
 <section class="mx-auto flex w-full max-w-2xl flex-col gap-6">
     <header class="space-y-2">
-        <flux:heading size="xl">{{ __('Register kaiju') }}</flux:heading>
-        <flux:text>{{ __('Add a known creature to the emergency response catalogue.') }}</flux:text>
+        <flux:heading size="xl">{{ __('kaijus.create.title') }}</flux:heading>
+        <flux:text>{{ __('kaijus.create.description') }}</flux:text>
     </header>
 
     <form wire:submit="save" class="space-y-6" novalidate>
-        <flux:input wire:model="name" :label="__('Name')" type="text" maxlength="255" required autofocus />
+        <flux:input wire:model="name" :label="__('common.fields.name')" type="text" maxlength="255" required autofocus />
 
-        <flux:select wire:model="category" :label="__('Category')" required>
-            <flux:select.option value="">{{ __('Select a category') }}</flux:select.option>
+        <flux:select wire:model="category" :label="__('common.fields.category')" required>
+            <flux:select.option value="">{{ __('kaijus.select_category') }}</flux:select.option>
 
             @foreach (KaijuCategory::cases() as $categoryOption)
                 <flux:select.option :value="$categoryOption->value">
-                    {{ ucfirst($categoryOption->value) }}
+                    {{ __('kaijus.categories.'.$categoryOption->value) }}
                 </flux:select.option>
             @endforeach
         </flux:select>
 
-        <flux:input wire:model="threat_level" :label="__('Threat level')" type="number" min="1" max="5" required />
+        <flux:input wire:model="threat_level" :label="__('common.fields.threat_level')" type="number" min="1" max="5" required />
 
-        <flux:textarea wire:model="description" :label="__('Description')"
-            :description="__('Optional observations about the creature.')" rows="5" />
+        <flux:textarea wire:model="description" :label="__('common.fields.description')"
+            :description="__('kaijus.create.form_description')" rows="5" />
 
         <div class="flex items-center justify-end gap-3">
             <flux:button :href="route('kaijus.index')" variant="ghost" wire:navigate>
-                {{ __('Cancel') }}
+                {{ __('common.actions.cancel') }}
             </flux:button>
 
             <flux:button type="submit" variant="primary">
-                {{ __('Register kaiju') }}
+                {{ __('kaijus.create.title') }}
             </flux:button>
         </div>
     </form>

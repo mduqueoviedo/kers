@@ -20,6 +20,7 @@ return [
         'no_event' => 'Selecciona un evento de la lista inferior.',
         'selected_label' => 'Evento seleccionado:',
     ],
+    'page_title' => 'Eventos de USGS',
     'magnitude' => 'Magnitud',
     'not_available' => 'No disponible',
     'occurred_at' => 'Ocurrido',

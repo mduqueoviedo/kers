@@ -13,7 +13,7 @@ use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-new #[Title('USGS events')] class extends Component {
+new #[Title('usgs.page_title')] class extends Component {
     /** @var array<int, array<string, mixed>> */
     public array $events = [];
 
@@ -189,7 +189,7 @@ new #[Title('USGS events')] class extends Component {
                                 </div>
                                 <div class="flex justify-between gap-4">
                                     <dt class="text-zinc-500 dark:text-zinc-400">{{ __('usgs.occurred_at') }}</dt>
-                                    <dd class="text-right text-zinc-900 dark:text-white">{{ $event['occurred_at'] }}</dd>
+                                    <dd class="text-right text-zinc-900 dark:text-white">{{ CarbonImmutable::parse($event['occurred_at_iso'])->locale(app()->getLocale())->isoFormat('LLL') }} {{ __('common.labels.utc') }}</dd>
                                 </div>
                             </dl>
 

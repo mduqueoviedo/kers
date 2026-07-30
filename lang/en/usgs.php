@@ -20,6 +20,7 @@ return [
         'no_event' => 'Select an event from the list below.',
         'selected_label' => 'Selected event:',
     ],
+    'page_title' => 'USGS events',
     'magnitude' => 'Magnitude',
     'not_available' => 'Not available',
     'occurred_at' => 'Occurred',

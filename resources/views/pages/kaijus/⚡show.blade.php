@@ -6,7 +6,7 @@ use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-new #[Title('Kaiju details')] class extends Component {
+new #[Title('kaijus.record')] class extends Component {
     public Kaiju $kaiju;
 
     public bool $confirmingDeletion = false;
@@ -59,7 +59,7 @@ new #[Title('Kaiju details')] class extends Component {
 
         $this->kaiju->delete();
 
-        Flux::toast(__('Kaiju deleted successfully.'));
+        Flux::toast(__('kaijus.success.deleted'));
 
         $this->redirectRoute('kaijus.index', navigate: true);
     }
@@ -68,7 +68,7 @@ new #[Title('Kaiju details')] class extends Component {
 <section class="mx-auto flex w-full max-w-3xl flex-col gap-6">
     <div>
         <flux:button :href="route('kaijus.index')" variant="ghost" wire:navigate>
-            {{ __('Back to catalogue') }}
+            {{ __('common.actions.back_to_catalogue') }}
         </flux:button>
     </div>
 
@@ -76,46 +76,46 @@ new #[Title('Kaiju details')] class extends Component {
         <header class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div class="space-y-2">
                 <flux:heading size="xl">{{ $kaiju->name }}</flux:heading>
-                <flux:text>{{ __('Known creature record') }}</flux:text>
+                <flux:text>{{ __('kaijus.record') }}</flux:text>
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
                 <flux:button :href="route('incidents.create', ['kaiju' => $kaiju->id])" variant="outline" wire:navigate>
-                    {{ __('Record incident') }}
+                    {{ __('incidents.create.title') }}
                 </flux:button>
 
                 <flux:button :href="route('kaijus.edit', $kaiju)" variant="primary" wire:navigate>
-                    {{ __('Edit kaiju') }}
+                    {{ __('kaijus.edit.title') }}
                 </flux:button>
 
                 <flux:button wire:click="requestDeletion" variant="danger">
-                    {{ __('Delete kaiju') }}
+                    {{ __('kaijus.delete.action') }}
                 </flux:button>
             </div>
         </header>
 
         <dl class="grid gap-4 sm:grid-cols-2">
             <div class="space-y-1">
-                <dt class="text-sm font-medium text-zinc-500 dark:text-zinc-400">{{ __('Category') }}</dt>
-                <dd class="text-zinc-900 dark:text-white">{{ ucfirst($kaiju->category->value) }}</dd>
+                <dt class="text-sm font-medium text-zinc-500 dark:text-zinc-400">{{ __('common.fields.category') }}</dt>
+                <dd class="text-zinc-900 dark:text-white">{{ __('kaijus.categories.'.$kaiju->category->value) }}</dd>
             </div>
 
             <div class="space-y-1">
-                <dt class="text-sm font-medium text-zinc-500 dark:text-zinc-400">{{ __('Threat level') }}</dt>
+                <dt class="text-sm font-medium text-zinc-500 dark:text-zinc-400">{{ __('common.fields.threat_level') }}</dt>
                 <dd class="text-zinc-900 dark:text-white">
-                    {{ __('Level :level of 5', ['level' => $kaiju->threat_level]) }}
+                    {{ __('kaijus.detail_level_of_five', ['level' => $kaiju->threat_level]) }}
                 </dd>
             </div>
         </dl>
 
         <div class="space-y-2 border-t border-zinc-200 pt-6 dark:border-zinc-700">
-            <flux:heading size="lg">{{ __('Description') }}</flux:heading>
-            <flux:text>{{ $kaiju->description ?? __('No description provided.') }}</flux:text>
+            <flux:heading size="lg">{{ __('common.fields.description') }}</flux:heading>
+            <flux:text>{{ $kaiju->description ?? __('common.empty_description') }}</flux:text>
         </div>
 
         <dl class="grid gap-4 border-t border-zinc-200 pt-6 sm:grid-cols-2 dark:border-zinc-700">
             <div class="space-y-1">
-                <dt class="text-sm font-medium text-zinc-500 dark:text-zinc-400">{{ __('Created at') }}</dt>
+                <dt class="text-sm font-medium text-zinc-500 dark:text-zinc-400">{{ __('common.fields.created_at') }}</dt>
                 <dd class="text-zinc-900 dark:text-white">
                     <time datetime="{{ $kaiju->created_at?->toIso8601String() }}">
                         {{ $kaiju->created_at?->isoFormat('LLL') }}
@@ -124,7 +124,7 @@ new #[Title('Kaiju details')] class extends Component {
             </div>
 
             <div class="space-y-1">
-                <dt class="text-sm font-medium text-zinc-500 dark:text-zinc-400">{{ __('Updated at') }}</dt>
+                <dt class="text-sm font-medium text-zinc-500 dark:text-zinc-400">{{ __('common.fields.updated_at') }}</dt>
                 <dd class="text-zinc-900 dark:text-white">
                     <time datetime="{{ $kaiju->updated_at?->toIso8601String() }}">
                         {{ $kaiju->updated_at?->isoFormat('LLL') }}
@@ -136,14 +136,14 @@ new #[Title('Kaiju details')] class extends Component {
 
     <section class="flex flex-col gap-4">
         <div class="space-y-1">
-            <flux:heading size="lg">{{ __('Incident history') }}</flux:heading>
-            <flux:text>{{ __('Recorded activity involving this Kaiju, newest first.') }}</flux:text>
+            <flux:heading size="lg">{{ __('kaijus.history.heading') }}</flux:heading>
+            <flux:text>{{ __('kaijus.history.description') }}</flux:text>
         </div>
 
         @if ($kaiju->incidents->isEmpty())
             <div class="rounded-xl border border-dashed border-zinc-300 px-6 py-10 text-center dark:border-zinc-700">
-                <flux:heading size="lg">{{ __('No incidents have been recorded for this Kaiju.') }}</flux:heading>
-                <flux:text class="mt-2">{{ __('New activity involving this creature will appear here.') }}</flux:text>
+                <flux:heading size="lg">{{ __('kaijus.history.empty_heading') }}</flux:heading>
+                <flux:text class="mt-2">{{ __('kaijus.history.empty_description') }}</flux:text>
             </div>
         @else
             <div class="grid gap-4 md:grid-cols-2">
@@ -152,13 +152,13 @@ new #[Title('Kaiju details')] class extends Component {
                         <div class="flex items-start justify-between gap-4">
                             <div class="space-y-1">
                                 <p class="text-xs font-semibold tracking-wider text-orange-700 uppercase dark:text-orange-300">
-                                    {{ __('Incident record') }}
+                                    {{ __('incidents.index.record') }}
                                 </p>
                                 <flux:heading size="lg">{{ $incident->title }}</flux:heading>
                             </div>
 
                             <flux:badge :color="config()->string('kers.badges.incident_statuses.'.$incident->status->value)">
-                                {{ ucfirst($incident->status->value) }}
+                                {{ __('incidents.statuses.'.$incident->status->value) }}
                             </flux:badge>
                         </div>
 
@@ -166,14 +166,14 @@ new #[Title('Kaiju details')] class extends Component {
                             <flux:text>{{ $incident->location }}</flux:text>
                             <flux:text>
                                 <time datetime="{{ $incident->occurred_at->toIso8601String() }}">
-                                    {{ __('Occurred :date', ['date' => $incident->occurred_at->format('M j, Y, H:i').' UTC']) }}
+                                    {{ __('common.labels.occurred', ['date' => $incident->occurred_at->locale(app()->getLocale())->isoFormat('LLL').' '.__('common.labels.utc')]) }}
                                 </time>
                             </flux:text>
                         </div>
 
                         <div class="mt-auto">
                             <flux:button :href="route('incidents.show', $incident)" variant="outline" wire:navigate>
-                                {{ __('View incident') }}
+                                {{ __('common.actions.view_details') }}
                             </flux:button>
                         </div>
                     </article>
@@ -185,7 +185,7 @@ new #[Title('Kaiju details')] class extends Component {
     <flux:modal wire:model="confirmingDeletion" name="confirm-kaiju-deletion" class="md:w-120">
         <div class="space-y-6">
             <div class="space-y-2">
-                <flux:heading size="lg">{{ __('Delete kaiju?') }}</flux:heading>
+                <flux:heading size="lg">{{ __('kaijus.delete.heading') }}</flux:heading>
                 <flux:text>
                     {{ trans_choice(
                         'This kaiju has :count associated incident.|This kaiju has :count associated incidents.',
@@ -204,19 +204,19 @@ new #[Title('Kaiju details')] class extends Component {
                 @endif
 
                 <flux:text>
-                    {{ __('Are you sure you want to delete :name? This action cannot be undone.', ['name' => $kaiju->name]) }}
+                    {{ __('kaijus.delete.confirmation', ['name' => $kaiju->name]) }}
                 </flux:text>
             </div>
 
             <div class="flex justify-end gap-3">
                 <flux:modal.close>
                     <flux:button wire:click="cancelDeletion" variant="ghost">
-                        {{ __('Cancel') }}
+                        {{ __('common.actions.cancel') }}
                     </flux:button>
                 </flux:modal.close>
 
                 <flux:button wire:click="deleteKaiju" variant="danger">
-                    {{ __('Delete kaiju') }}
+                    {{ __('kaijus.delete.action') }}
                 </flux:button>
             </div>
         </div>

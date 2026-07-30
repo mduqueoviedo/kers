@@ -11,7 +11,7 @@ use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-new #[Title('Edit incident')] class extends Component {
+new #[Title('incidents.edit.title')] class extends Component {
     public Incident $incident;
 
     public string $title = '';
@@ -86,7 +86,7 @@ new #[Title('Edit incident')] class extends Component {
             'kaiju_id' => (int) $validated['kaiju_id'],
         ]);
 
-        Flux::toast(__('Incident updated successfully.'));
+        Flux::toast(__('incidents.success.updated'));
 
         $this->redirectRoute('incidents.show', $this->incident, navigate: true);
     }
@@ -94,12 +94,12 @@ new #[Title('Edit incident')] class extends Component {
 
 <section class="mx-auto flex w-full max-w-2xl flex-col gap-6">
     <header class="space-y-2">
-        <flux:heading size="xl">{{ __('Edit incident') }}</flux:heading>
-        <flux:text>{{ __('Correct the recorded details or update the incident status.') }}</flux:text>
+        <flux:heading size="xl">{{ __('incidents.edit.title') }}</flux:heading>
+        <flux:text>{{ __('incidents.edit.description') }}</flux:text>
     </header>
 
     <form wire:submit="save" class="space-y-6" novalidate>
-        <flux:select wire:model="kaiju_id" :label="__('Kaiju')" required>
+        <flux:select wire:model="kaiju_id" :label="__('common.fields.kaiju')" required>
             @foreach ($this->kaijus as $kaiju)
                 <flux:select.option :value="$kaiju->id">
                     {{ $kaiju->name }}
@@ -107,23 +107,23 @@ new #[Title('Edit incident')] class extends Component {
             @endforeach
         </flux:select>
 
-        <flux:input wire:model="title" :label="__('Title')" type="text" maxlength="255" required autofocus />
+        <flux:input wire:model="title" :label="__('common.fields.title')" type="text" maxlength="255" required autofocus />
 
-        <flux:textarea wire:model="description" :label="__('Description')" rows="5" required />
+        <flux:textarea wire:model="description" :label="__('common.fields.description')" rows="5" required />
 
-        <flux:input wire:model="location" :label="__('Location')" type="text" maxlength="255" required />
+        <flux:input wire:model="location" :label="__('common.fields.location')" type="text" maxlength="255" required />
 
-        <flux:select wire:model="status" :label="__('Status')" required>
+        <flux:select wire:model="status" :label="__('common.fields.status')" required>
             @foreach (IncidentStatus::cases() as $statusOption)
                 <flux:select.option :value="$statusOption->value">
-                    {{ ucfirst($statusOption->value) }}
+                    {{ __('incidents.statuses.'.$statusOption->value) }}
                 </flux:select.option>
             @endforeach
         </flux:select>
 
         <flux:input
             wire:model="occurred_at"
-            :label="__('Occurred at (UTC)')"
+            :label="__('common.fields.occurred_at_utc')"
             type="datetime-local"
             step="60"
             required
@@ -131,11 +131,11 @@ new #[Title('Edit incident')] class extends Component {
 
         <div class="flex items-center justify-end gap-3">
             <flux:button :href="route('incidents.show', $incident)" variant="ghost" wire:navigate>
-                {{ __('Cancel') }}
+                {{ __('common.actions.cancel') }}
             </flux:button>
 
             <flux:button type="submit" variant="primary">
-                {{ __('Save changes') }}
+                {{ __('common.actions.save_changes') }}
             </flux:button>
         </div>
     </form>

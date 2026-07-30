@@ -11,7 +11,7 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-new #[Title('Incident catalogue')] class extends Component {
+new #[Title('incidents.index.title')] class extends Component {
     use WithPagination;
 
     #[Url(as: 'q', except: '')]
@@ -134,35 +134,35 @@ new #[Title('Incident catalogue')] class extends Component {
 <section class="mx-auto flex w-full max-w-6xl flex-col gap-6">
     <header class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div class="space-y-2">
-            <flux:heading size="xl">{{ __('Incident catalogue') }}</flux:heading>
-            <flux:text>{{ __('Find recorded Kaiju incidents by their current details.') }}</flux:text>
+            <flux:heading size="xl">{{ __('incidents.index.title') }}</flux:heading>
+            <flux:text>{{ __('incidents.index.description') }}</flux:text>
         </div>
 
         <flux:button :href="route('incidents.create')" variant="primary" wire:navigate>
-            {{ __('Record incident') }}
+            {{ __('incidents.create.title') }}
         </flux:button>
     </header>
 
     <div class="grid gap-4 rounded-xl border border-orange-200 bg-white p-5 md:grid-cols-2 xl:grid-cols-4 dark:border-orange-900 dark:bg-zinc-900">
         <flux:input
             wire:model.live.debounce.300ms="search"
-            :label="__('Search')"
+            :label="__('common.fields.search')"
             type="search"
-            :placeholder="__('Search by title or location')"
+            :placeholder="__('incidents.filters.search_placeholder')"
         />
 
-        <flux:select wire:model.live="status" :label="__('Status')">
-            <flux:select.option value="">{{ __('All statuses') }}</flux:select.option>
+        <flux:select wire:model.live="status" :label="__('common.fields.status')">
+            <flux:select.option value="">{{ __('incidents.filters.all_statuses') }}</flux:select.option>
 
             @foreach (IncidentStatus::cases() as $statusOption)
                 <flux:select.option :value="$statusOption->value">
-                    {{ ucfirst($statusOption->value) }}
+                    {{ __('incidents.statuses.'.$statusOption->value) }}
                 </flux:select.option>
             @endforeach
         </flux:select>
 
-        <flux:select wire:model.live="kaijuId" :label="__('Kaiju')">
-            <flux:select.option value="">{{ __('All Kaijus') }}</flux:select.option>
+        <flux:select wire:model.live="kaijuId" :label="__('common.fields.kaiju')">
+            <flux:select.option value="">{{ __('incidents.filters.all_kaijus') }}</flux:select.option>
 
             @foreach ($this->kaijus as $kaiju)
                 <flux:select.option :value="$kaiju->id">
@@ -171,15 +171,15 @@ new #[Title('Incident catalogue')] class extends Component {
             @endforeach
         </flux:select>
 
-        <flux:select wire:model.live="sort" :label="__('Occurrence order')">
-            <flux:select.option value="newest">{{ __('Newest first') }}</flux:select.option>
-            <flux:select.option value="oldest">{{ __('Oldest first') }}</flux:select.option>
+        <flux:select wire:model.live="sort" :label="__('incidents.filters.occurrence_order')">
+            <flux:select.option value="newest">{{ __('incidents.filters.newest_first') }}</flux:select.option>
+            <flux:select.option value="oldest">{{ __('incidents.filters.oldest_first') }}</flux:select.option>
         </flux:select>
 
         @if ($this->hasActiveFilters)
             <div class="md:col-span-2 xl:col-span-4">
                 <flux:button wire:click="clearFilters" variant="ghost">
-                    {{ __('Clear filters') }}
+                    {{ __('common.actions.clear_filters') }}
                 </flux:button>
             </div>
         @endif
@@ -188,11 +188,11 @@ new #[Title('Incident catalogue')] class extends Component {
     @if ($this->incidents->total() === 0)
         <div class="rounded-xl border border-dashed border-zinc-300 px-6 py-12 text-center dark:border-zinc-700">
             @if ($this->hasActiveFilters)
-                <flux:heading size="lg">{{ __('No incidents match the current search and filters.') }}</flux:heading>
-                <flux:text class="mt-2">{{ __('Try different criteria or clear the current filters.') }}</flux:text>
+                <flux:heading size="lg">{{ __('incidents.index.empty_filtered_heading') }}</flux:heading>
+                <flux:text class="mt-2">{{ __('incidents.index.empty_filtered_description') }}</flux:text>
             @else
-                <flux:heading size="lg">{{ __('No incidents have been recorded.') }}</flux:heading>
-                <flux:text class="mt-2">{{ __('Recorded Kaiju activity will appear here.') }}</flux:text>
+                <flux:heading size="lg">{{ __('incidents.index.empty_heading') }}</flux:heading>
+                <flux:text class="mt-2">{{ __('incidents.index.empty_description') }}</flux:text>
             @endif
         </div>
     @else
@@ -202,26 +202,26 @@ new #[Title('Incident catalogue')] class extends Component {
                     <div class="flex items-start justify-between gap-4">
                         <div class="space-y-1">
                             <p class="text-xs font-semibold tracking-wider text-orange-700 uppercase dark:text-orange-300">
-                                {{ __('Incident record') }}
+                                {{ __('incidents.index.record') }}
                             </p>
                             <flux:heading size="lg">{{ $incident->title }}</flux:heading>
                         </div>
 
                         <flux:badge :color="config()->string('kers.badges.incident_statuses.'.$incident->status->value)">
-                            {{ ucfirst($incident->status->value) }}
+                            {{ __('incidents.statuses.'.$incident->status->value) }}
                         </flux:badge>
                     </div>
 
                     <div class="space-y-1">
                         <flux:text>{{ $incident->location }}</flux:text>
                         <flux:text>
-                            {{ __('Occurred :date', ['date' => $incident->occurred_at->format('M j, Y, H:i').' UTC']) }}
+                            {{ __('common.labels.occurred', ['date' => $incident->occurred_at->locale(app()->getLocale())->isoFormat('LLL').' '.__('common.labels.utc')]) }}
                         </flux:text>
                     </div>
 
                     <div class="mt-auto flex flex-wrap items-center gap-2">
                         <flux:button :href="route('incidents.show', $incident)" variant="primary" wire:navigate>
-                            {{ __('View details') }}
+                            {{ __('common.actions.view_details') }}
                         </flux:button>
 
                         <flux:button :href="route('kaijus.show', $incident->kaiju)" variant="ghost" wire:navigate>
