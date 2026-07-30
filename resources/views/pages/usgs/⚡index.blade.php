@@ -147,12 +147,12 @@ new #[Title('USGS events')] class extends Component {
                         @endforeach
                     </flux:select>
 
-                    <flux:button type="submit" variant="primary" :disabled="$selected_event_id === null">
+                    <flux:button type="submit" variant="primary" :disabled="$selected_event_id === null" data-test="import-incident">
                         {{ __('usgs.import.button') }}
                     </flux:button>
                 </div>
 
-                <div class="rounded-lg bg-zinc-50 px-4 py-3 dark:bg-zinc-800" aria-live="polite">
+                <div class="rounded-lg bg-zinc-50 px-4 py-3 dark:bg-zinc-800" aria-live="polite" data-test="selected-usgs-event">
                     <span class="font-medium">{{ __('usgs.import.selected_label') }}</span>
                     @if ($selectedEvent !== null)
                         <span>{{ $selectedEvent['title'] }}</span>
@@ -173,7 +173,7 @@ new #[Title('USGS events')] class extends Component {
             <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 @foreach ($events as $event)
                     <div wire:key="usgs-event-{{ $event['id'] }}" class="flex flex-col rounded-xl border border-sky-200 border-t-4 border-t-sky-500 bg-white shadow-sm dark:border-sky-900 dark:border-t-sky-500 dark:bg-zinc-900">
-                        <input wire:model="selected_event_id" id="usgs-event-{{ $event['id'] }}" type="radio" name="selected_event_id" value="{{ $event['id'] }}" class="peer sr-only">
+                        <input wire:model.live="selected_event_id" id="usgs-event-{{ $event['id'] }}" type="radio" name="selected_event_id" value="{{ $event['id'] }}" class="peer sr-only">
                         <label for="usgs-event-{{ $event['id'] }}" class="flex cursor-pointer flex-1 flex-col gap-4 rounded-xl p-5 outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-sky-500 peer-checked:bg-sky-50 peer-checked:ring-2 peer-checked:ring-sky-500 dark:peer-checked:bg-sky-950/40">
                             <div class="space-y-1">
                                 <p class="text-xs font-semibold tracking-wider text-sky-700 uppercase dark:text-sky-300">

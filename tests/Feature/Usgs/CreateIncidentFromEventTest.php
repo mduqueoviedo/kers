@@ -27,15 +27,19 @@ function usgsImportResponse(string $title = 'M 5.6 - 10 km south of Example'): a
     ];
 }
 
-test('one current usgs event can be imported for a selected kaiju', function () {
+test('a selected event updates the import action and can be imported for a selected kaiju', function () {
     $kaiju = Kaiju::factory()->create();
 
     Http::fakeSequence()
         ->push(usgsImportResponse('Displayed event'))
         ->push(usgsImportResponse('Current event'));
 
-    Livewire::test('pages::usgs.index')
+    $component = Livewire::test('pages::usgs.index')
         ->set('selected_event_id', 'us7000example')
+        ->assertSet('selected_event_id', 'us7000example')
+        ->assertSeeHtml('data-test="selected-usgs-event"')
+        ->assertSee('Selected event:')
+        ->assertSee('Displayed event')
         ->set('kaiju_id', (string) $kaiju->id)
         ->call('importIncident')
         ->assertHasNoErrors()
@@ -60,19 +64,19 @@ test('one current usgs event can be imported for a selected kaiju', function () 
     Http::assertSentCount(2);
 });
 
-test('the import action explains the flow and stays disabled until an event is selected', function () {
-    $kaiju = Kaiju::factory()->create();
+test('the import action stays disabled until an event is selected', function () {
     Http::fake(['*' => Http::response(usgsImportResponse())]);
 
     $component = Livewire::test('pages::usgs.index')
-        ->assertSee('1. Select one seismic event from the list. 2. Select the Kaiju responsible. 3. Create the Incident and continue on its detail page.')
-        ->assertSee('Select an event from the list below.')
+        ->assertSeeHtml('wire:model.live="selected_event_id"')
+        ->assertSeeHtml('data-test="import-incident"')
         ->assertSeeHtml('disabled="disabled"');
 
     $component
         ->set('selected_event_id', 'us7000example')
-        ->set('kaiju_id', (string) $kaiju->id)
         ->assertSet('selected_event_id', 'us7000example')
+        ->assertSeeHtml('data-test="selected-usgs-event"')
+        ->assertSee('Selected event:')
         ->assertSee('M 5.6 - 10 km south of Example')
         ->assertDontSeeHtml('disabled="disabled"');
 });
