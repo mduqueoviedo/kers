@@ -21,6 +21,7 @@ Route::livewire('incidents/create', 'pages::incidents.create')->name('incidents.
 Route::livewire('incidents', 'pages::incidents.index')->name('incidents.index');
 Route::livewire('incidents/{incident}/edit', 'pages::incidents.edit')->name('incidents.edit');
 Route::livewire('incidents/{incident}', 'pages::incidents.show')->name('incidents.show');
+Route::livewire('usgs-events', 'pages::usgs.index')->name('usgs.index');
 Route::livewire('kaijus/create', 'pages::kaijus.create')->name('kaijus.create');
 Route::livewire('kaijus', 'pages::kaijus.index')->name('kaijus.index');
 Route::livewire('kaijus/{kaiju}/edit', 'pages::kaijus.edit')->name('kaijus.edit');

@@ -12,4 +12,7 @@ return [
     'main_navigation' => 'Main navigation',
     'recorded_emergency_activity' => 'Recorded emergency activity',
     'spanish' => 'Spanish',
+    'usgs_events' => 'USGS events',
+    'usgs_operations' => 'Seismic intelligence',
+    'usgs_event_records' => 'Live external event data',
 ];

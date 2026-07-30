@@ -12,4 +12,7 @@ return [
     'main_navigation' => 'Navegación principal',
     'recorded_emergency_activity' => 'Actividad de emergencia registrada',
     'spanish' => 'Español',
+    'usgs_events' => 'Eventos de USGS',
+    'usgs_operations' => 'Inteligencia sísmica',
+    'usgs_event_records' => 'Datos de eventos externos en directo',
 ];

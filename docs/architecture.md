@@ -6,7 +6,7 @@ This document describes the architecture present after adding the Kaiju
 management flow, manual Incident creation, the paginated Incident catalogue,
 Incident search, filtering, ordering, details and editing, and a protected
 demo-data API, and the initial USGS request client. Incident deletion, response
-teams, USGS event mapping and display, roles, policies, and the operational
+teams, USGS-to-Incident persistence, roles, policies, and the operational
 dashboard are not implemented yet.
 
 Update this document when architecture actually changes; do not treat planned
@@ -30,8 +30,9 @@ Authorized API client
 → PostgreSQL
 ```
 
-There is no separate frontend application, API service, worker service, or
-external integration process.
+There is no separate frontend application, API service, or worker service.
+USGS calls are made synchronously by the Laravel application when the public
+USGS events page is requested.
 
 ## Railway deployment
 
@@ -156,9 +157,13 @@ The URL, timeout, and event limit are configured through `USGS_API_URL`,
 GeoJSON, orders events by occurrence time, and limits the response to a small
 recent-event set. The client returns the decoded GeoJSON object without
 persisting it. The expected successful response is a GeoJSON
-`FeatureCollection` whose `features` array contains event objects; later
-iterations will map those features into display data and, separately, Incident
-records.
+`FeatureCollection` whose `features` array contains event objects. The
+`UsgsEarthquakeMapper` converts valid features into display records containing
+the event identifier, title, magnitude, location, UTC occurrence time, source
+URL, and available coordinates. The public USGS events Livewire page renders
+those records and shows a translated error state for request failures. No USGS
+event is stored locally; later iterations may create editable Incident records
+from selected events.
 
 Laravel's standard `RequestException` represents non-successful HTTP responses,
 `ConnectionException` represents transport failures, and an
@@ -401,6 +406,6 @@ approximately one-week demo period when they are no longer needed.
 ## Planned but not implemented
 
 The product requirements anticipate further Eloquent domain models,
-relationships, policies, USGS HTTP mapping, capacity validation, and dashboard
-aggregates. Their architecture will be documented here only after the
+relationships, USGS-to-Incident persistence and duplicate prevention, capacity
+validation, policies, and dashboard aggregates. Their architecture will be documented here only after the
 corresponding roadmap items are implemented.
