@@ -1,8 +1,21 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/kaijus')->name('home');
+
+Route::post('locale', function (Request $request) {
+    $locale = $request->string('locale')->toString();
+    $fallback = config('app.fallback_locale', 'en');
+
+    $request->session()->put(
+        'locale',
+        in_array($locale, config('kers.locales', [$fallback]), true) ? $locale : $fallback,
+    );
+
+    return back();
+})->name('locale.update');
 
 Route::livewire('incidents/create', 'pages::incidents.create')->name('incidents.create');
 Route::livewire('incidents', 'pages::incidents.index')->name('incidents.index');

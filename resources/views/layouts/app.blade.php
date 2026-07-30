@@ -5,14 +5,14 @@
         $isIncidentArea = request()->routeIs('incidents.*');
 
         $areaLabel = match (true) {
-            $isKaijuArea => __('Kaiju registry'),
-            $isIncidentArea => __('Incident operations'),
+            $isKaijuArea => __('navigation.kaiju_registry'),
+            $isIncidentArea => __('navigation.incident_operations'),
             default => null,
         };
 
         $areaDescription = match (true) {
-            $isKaijuArea => __('Known creature records'),
-            $isIncidentArea => __('Recorded emergency activity'),
+            $isKaijuArea => __('navigation.known_creature_records'),
+            $isIncidentArea => __('navigation.recorded_emergency_activity'),
             default => null,
         };
     @endphp
@@ -22,7 +22,7 @@
     </head>
     <body class="min-h-screen bg-zinc-50 antialiased dark:bg-zinc-950">
         <header class="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
-            <nav class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8" aria-label="{{ __('Main navigation') }}">
+            <nav class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8" aria-label="{{ __('navigation.main_navigation') }}">
                 <a href="{{ route('kaijus.index') }}" class="flex items-center gap-2.5 font-semibold text-zinc-900 dark:text-white" wire:navigate>
                     <img src="{{ asset('favicon.svg') }}" width="28" height="28" alt="">
                     <span>{{ config('app.name', 'KERS') }}</span>
@@ -39,7 +39,7 @@
                         @if ($isKaijuArea) aria-current="page" @endif
                         wire:navigate
                     >
-                        {{ __('Kaijus') }}
+                        {{ __('navigation.kaijus') }}
                     </a>
 
                     <a
@@ -52,8 +52,23 @@
                         @if ($isIncidentArea) aria-current="page" @endif
                         wire:navigate
                     >
-                        {{ __('Incidents') }}
+                        {{ __('navigation.incidents') }}
                     </a>
+
+                    <form action="{{ route('locale.update') }}" method="POST" class="ml-2">
+                        @csrf
+                        <label for="locale-selector" class="sr-only">{{ __('navigation.language') }}</label>
+                        <select
+                            id="locale-selector"
+                            name="locale"
+                            class="rounded-md border-zinc-300 bg-white py-2 pl-3 pr-8 text-sm text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
+                            onchange="this.form.submit()"
+                        >
+                            <option value="en" @selected(app()->getLocale() === 'en')>{{ __('navigation.english') }}</option>
+                            <option value="es" @selected(app()->getLocale() === 'es')>{{ __('navigation.spanish') }}</option>
+                        </select>
+                        <button type="submit" class="sr-only">{{ __('navigation.apply') }}</button>
+                    </form>
                 </div>
             </nav>
         </header>
