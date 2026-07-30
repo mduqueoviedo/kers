@@ -23,3 +23,15 @@ test('incident routes show the active operations context', function () {
 
     expect(substr_count($response->getContent(), 'aria-current="page"'))->toBe(1);
 });
+
+test('usgs routes show the active seismic context', function () {
+    $response = $this->get(route('usgs.index'))
+        ->assertOk()
+        ->assertSee('Seismic intelligence')
+        ->assertSee('Live external event data')
+        ->assertDontSee('Kaiju registry')
+        ->assertDontSee('Incident operations')
+        ->assertSee('bg-sky-100', escape: false);
+
+    expect(substr_count($response->getContent(), 'aria-current="page"'))->toBe(1);
+});

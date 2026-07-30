@@ -3,16 +3,19 @@
     @php
         $isKaijuArea = request()->routeIs('kaijus.*');
         $isIncidentArea = request()->routeIs('incidents.*');
+        $isUsgsArea = request()->routeIs('usgs.*');
 
         $areaLabel = match (true) {
             $isKaijuArea => __('navigation.kaiju_registry'),
             $isIncidentArea => __('navigation.incident_operations'),
+            $isUsgsArea => __('navigation.usgs_operations'),
             default => null,
         };
 
         $areaDescription = match (true) {
             $isKaijuArea => __('navigation.known_creature_records'),
             $isIncidentArea => __('navigation.recorded_emergency_activity'),
+            $isUsgsArea => __('navigation.usgs_event_records'),
             default => null,
         };
     @endphp
@@ -55,6 +58,19 @@
                         {{ __('navigation.incidents') }}
                     </a>
 
+                    <a
+                        href="{{ route('usgs.index') }}"
+                        @class([
+                            'rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                            'bg-sky-100 text-sky-900 dark:bg-sky-950 dark:text-sky-200' => $isUsgsArea,
+                            'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white' => ! $isUsgsArea,
+                        ])
+                        @if ($isUsgsArea) aria-current="page" @endif
+                        wire:navigate
+                    >
+                        {{ __('navigation.usgs_events') }}
+                    </a>
+
                     <form action="{{ route('locale.update') }}" method="POST" class="ml-2">
                         @csrf
                         <label for="locale-selector" class="sr-only">{{ __('navigation.language') }}</label>
@@ -79,6 +95,7 @@
                     'border-b',
                     'border-teal-200 bg-teal-50/80 dark:border-teal-900 dark:bg-teal-950/40' => $isKaijuArea,
                     'border-orange-200 bg-orange-50/80 dark:border-orange-900 dark:bg-orange-950/40' => $isIncidentArea,
+                    'border-sky-200 bg-sky-50/80 dark:border-sky-900 dark:bg-sky-950/40' => $isUsgsArea,
                 ])
             >
                 <div class="mx-auto flex max-w-7xl items-center gap-3 px-6 py-3 lg:px-8">
@@ -87,6 +104,7 @@
                             'h-2.5 w-2.5 shrink-0 rounded-full',
                             'bg-teal-500' => $isKaijuArea,
                             'bg-orange-500' => $isIncidentArea,
+                            'bg-sky-500' => $isUsgsArea,
                         ])
                         aria-hidden="true"
                     ></span>
@@ -97,6 +115,7 @@
                                 'text-xs font-semibold tracking-wider uppercase',
                                 'text-teal-800 dark:text-teal-200' => $isKaijuArea,
                                 'text-orange-800 dark:text-orange-200' => $isIncidentArea,
+                                'text-sky-800 dark:text-sky-200' => $isUsgsArea,
                             ])
                         >
                             {{ $areaLabel }}
