@@ -16,8 +16,7 @@ criteria, testing expectations, dependencies, priority, and notes.
 ## Current delivery priority
 
 The temporary Railway deployment, Incident catalogue, and protected demo-data
-API are complete. INC-006 and INC-007 are in review as independent pull
-requests.
+API are complete. INC-006 is in review; INC-007 follows after it is merged.
 
 ## Phase 1 — Project foundations and documentation
 

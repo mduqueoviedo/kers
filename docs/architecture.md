@@ -206,6 +206,12 @@ selected Kaiju and status against current database and enum values, converts
 the timezone-free date input to UTC, and updates the Eloquent model. All three
 supported statuses may currently transition to any other supported status.
 
+The Incident detail component owns a boolean confirmation state for permanent
+deletion. Opening or cancelling its Flux modal preserves the record, and the
+delete action returns without changing persistence unless confirmation is
+active. A confirmed Eloquent deletion removes only that Incident, preserves its
+Kaiju, and redirects to the catalogue with toast feedback.
+
 Kaiju-category and Incident-status badge colors are presentation settings
 stored under `kers.badges`. The enums remain responsible for valid domain
 values, while the centralized configuration lets the visual mapping change
@@ -251,7 +257,8 @@ always interpreted as UTC; the Laravel application timezone is also UTC.
 `IncidentFactory` creates valid related records, can reuse an explicit Kaiju
 through Laravel's `for()` factory method, and provides open, contained, and
 closed states. The manual creation, paginated catalogue, detail, and editing
-routes are implemented; other Incident management pages are not.
+routes are implemented. Confirmed deletion is handled by the detail component;
+search and filtering are not implemented yet.
 
 ## Authentication
 
@@ -291,9 +298,11 @@ Incident detail tests cover route model binding, current record and relationship
 rendering, catalogue navigation, configured badges, and missing-record 404
 responses. Incident edit tests cover prefilled state, complete updates,
 relationship reassignment, status changes, UTC conversion, validation,
-navigation, and missing-record 404 responses. API tests cover disabled and
-invalid credentials, allowed HTTP methods, domain-only deletion, repeatable
-seeding, and canonical reset behavior.
+navigation, and missing-record 404 responses. Incident deletion tests cover
+confirmation, cancellation, guarded actions, selective deletion, relationship
+preservation, feedback, and redirection. API tests cover disabled and invalid
+credentials, allowed HTTP methods, domain-only deletion, repeatable seeding,
+and canonical reset behavior.
 
 ## Quality and CI
 
