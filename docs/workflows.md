@@ -198,12 +198,17 @@ search is partial and case-insensitive. No authentication is required.
 ```text
 Follow a detail link from the public catalogue
 → Laravel resolves the Kaiju route parameter
-→ Livewire receives the Eloquent model in mount()
+→ Livewire receives the Eloquent model and eagerly loads its incidents
 → display its category, threat level, description, and friendly timestamps
+→ review its incident history from newest to oldest
+→ optionally follow an Incident detail link
 → return to the catalogue
 ```
 
-An unknown route key returns Laravel's standard 404 response.
+Each history entry shows its current status, location, and UTC occurrence time.
+Only incidents belonging to the selected Kaiju appear, and an explicit empty
+state is shown when it has no recorded activity. An unknown route key returns
+Laravel's standard 404 response.
 
 ### Register a kaiju
 
@@ -297,12 +302,14 @@ Follow an Incident detail link
 → Laravel resolves the Incident route parameter
 → Livewire eager loads its associated Kaiju
 → display the current details, status, and timestamps in UTC
-→ navigate to the Kaiju or back to the Incident catalogue
+→ use the stable Kaiju hierarchy breadcrumb or the global navigation
 ```
 
-An unknown Incident identifier returns Laravel's standard 404 response. The
-detail page links to the current editing workflow. Deletion is introduced in a
-later roadmap item.
+The breadcrumb links to the Kaiju catalogue and the associated Kaiju instead
+of claiming to return to a request origin that the page does not track. The
+global navigation remains the consistent route to the Incident catalogue. An
+unknown Incident identifier returns Laravel's standard 404 response. The detail
+page links to the current editing and deletion workflows.
 
 ### Edit an incident and change its status
 

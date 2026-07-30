@@ -123,10 +123,10 @@ The starter UI uses:
 - Vite 8
 - Shared Blade layouts and components
 
-The Kaiju catalogue, management forms, detail view, confirmed deletion action,
-manual Incident form, Incident catalogue, and Incident detail view are the
-first KERS domain interfaces. The remaining domain workflows are not
-implemented yet.
+The Kaiju catalogue, management forms, detail view with Incident history,
+confirmed deletion action, manual Incident form, Incident catalogue, and
+Incident detail view are the first KERS domain interfaces. The remaining
+domain workflows are not implemented yet.
 
 ## Demo data API
 
@@ -167,15 +167,18 @@ The registration component holds form state, validates it, creates a Kaiju
 through Eloquent, dispatches toast feedback, and redirects to the catalogue.
 The detail and edit components receive their Kaiju through route model binding
 in `mount()`; Laravel returns 404 before rendering when the route key is
-missing. The edit component initializes scalar form state from that model,
-validates changes, and updates it through Eloquent. Its unique-name rule ignores
-only the current model, allowing an unchanged name while continuing to reject
-another Kaiju's exact name. The detail component also owns a boolean
-confirmation state for permanent deletion. Opening or cancelling its Flux
-modal does not change persistence, and the Eloquent delete action is guarded by
-that state before redirecting to the catalogue. The modal uses a computed
-relationship count and Laravel pluralization to state the exact number of
-incidents affected before PostgreSQL performs its cascade.
+missing. The detail component eager loads its Incidents in newest-first
+occurrence order, renders their current status and UTC occurrence time, and
+links each entry to its existing detail route. The loaded relationship also
+supplies the deletion warning count without issuing a second count query. The
+edit component initializes scalar form state from that model, validates
+changes, and updates it through Eloquent. Its unique-name rule ignores only the
+current model, allowing an unchanged name while continuing to reject another
+Kaiju's exact name. The detail component also owns a boolean confirmation state
+for permanent deletion. Opening or cancelling its Flux modal does not change
+persistence, and the Eloquent delete action is guarded by that state before
+redirecting to the catalogue. The modal uses Laravel pluralization to state
+the exact number of incidents affected before PostgreSQL performs its cascade.
 
 The public Incident creation component loads known Kaijus alphabetically,
 validates all submitted state, converts its timezone-free form value explicitly
@@ -198,7 +201,10 @@ Each catalogue card links to a single-file detail component. Laravel resolves
 the `Incident` route parameter into its Eloquent model before `mount()` runs;
 missing identifiers therefore return 404 without custom lookup code. The
 component eager loads its Kaiju and renders the incident, relationship, and
-timestamps explicitly in UTC.
+timestamps explicitly in UTC. Its stable breadcrumb represents the domain
+hierarchy from the Kaiju catalogue through the associated Kaiju rather than
+attempting to infer the previous request URL. The global navigation remains
+available for direct access to the Incident catalogue.
 
 The Incident edit component also receives its model through route model
 binding, then initializes scalar form state in `mount()`. It validates the

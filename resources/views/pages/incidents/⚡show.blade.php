@@ -53,9 +53,17 @@ new #[Title('Incident details')] class extends Component {
 
 <section class="mx-auto flex w-full max-w-3xl flex-col gap-6">
     <div class="flex flex-wrap items-center justify-between gap-3">
-        <flux:button :href="route('incidents.index')" variant="ghost" wire:navigate>
-            {{ __('Back to incident catalogue') }}
-        </flux:button>
+        <nav aria-label="{{ __('Breadcrumb') }}" class="flex flex-wrap items-center gap-2 text-sm text-zinc-600 dark:text-zinc-300">
+            <a href="{{ route('kaijus.index') }}" class="hover:text-zinc-950 dark:hover:text-white" wire:navigate>
+                {{ __('Kaijus') }}
+            </a>
+            <span aria-hidden="true">/</span>
+            <a href="{{ route('kaijus.show', $incident->kaiju) }}" class="hover:text-zinc-950 dark:hover:text-white" wire:navigate>
+                {{ $incident->kaiju->name }}
+            </a>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">{{ __('Incident details') }}</span>
+        </nav>
 
         <div class="flex flex-wrap items-center gap-2">
             <flux:button :href="route('incidents.edit', $incident)" variant="primary" wire:navigate>

@@ -42,6 +42,9 @@ test('guests can view the correct incident details in UTC', function () {
         ->assertSee('text-amber-700', escape: false)
         ->assertSee(route('kaijus.show', $kaiju), escape: false)
         ->assertSee(route('incidents.index'), escape: false)
+        ->assertSee('aria-label="Breadcrumb"', escape: false)
+        ->assertSeeInOrder(['Kaijus', 'Abyssal Maw', 'Incident details'])
+        ->assertDontSee('Back to incident catalogue')
         ->assertDontSee('Unrelated incident');
 });
 
