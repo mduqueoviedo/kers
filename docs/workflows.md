@@ -223,6 +223,21 @@ and preselects that Kaiju while leaving the selector editable. The submitted
 identifier is still validated. If no Kaijus exist, the page explains the
 dependency and links to Kaiju registration instead of showing an unusable form.
 
+### Browse the incident catalogue
+
+```text
+Open the public Incident catalogue
+→ Livewire reads the requested page from the URL
+→ Eloquent loads incidents and their Kaijus
+→ order incidents by most recent occurrence
+→ display status, location, UTC occurrence time, and linked Kaiju
+→ navigate between pages without a full browser reload
+```
+
+The page size comes from KERS configuration and defaults to nine. The
+catalogue shows an explicit empty state when no incidents have been recorded.
+Incident detail pages are introduced separately.
+
 The following authentication workflows remain as a technical foundation. They
 are not exposed in the current navigation and are not yet the final KERS role
 and authorization model.

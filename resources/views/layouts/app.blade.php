@@ -10,13 +10,23 @@
                     {{ config('app.name', 'KERS') }}
                 </a>
 
-                <a
-                    href="{{ route('kaijus.index') }}"
-                    class="text-sm font-medium text-zinc-700 hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white"
-                    wire:navigate
-                >
-                    {{ __('Kaijus') }}
-                </a>
+                <div class="flex items-center gap-4">
+                    <a
+                        href="{{ route('kaijus.index') }}"
+                        class="text-sm font-medium text-zinc-700 hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white"
+                        wire:navigate
+                    >
+                        {{ __('Kaijus') }}
+                    </a>
+
+                    <a
+                        href="{{ route('incidents.index') }}"
+                        class="text-sm font-medium text-zinc-700 hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white"
+                        wire:navigate
+                    >
+                        {{ __('Incidents') }}
+                    </a>
+                </div>
             </nav>
         </header>
 

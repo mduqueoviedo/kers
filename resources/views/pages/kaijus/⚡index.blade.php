@@ -167,7 +167,9 @@ new #[Title('Kaiju catalogue')] class extends Component {
                 <article wire:key="kaiju-{{ $kaiju->id }}" class="flex flex-col gap-4 rounded-xl border border-zinc-200 p-5 dark:border-zinc-700">
                     <div class="flex items-start justify-between gap-4">
                         <flux:heading size="lg">{{ $kaiju->name }}</flux:heading>
-                        <flux:badge>{{ ucfirst($kaiju->category->value) }}</flux:badge>
+                        <flux:badge :color="config()->string('kers.badges.kaiju_categories.'.$kaiju->category->value)">
+                            {{ ucfirst($kaiju->category->value) }}
+                        </flux:badge>
                     </div>
 
                     <flux:text>{{ __('Threat level :level of 5', ['level' => $kaiju->threat_level]) }}</flux:text>

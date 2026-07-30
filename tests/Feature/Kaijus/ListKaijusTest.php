@@ -50,6 +50,23 @@ test('the catalogue displays existing kaijus ordered by name', function () {
         ->assertDontSee('Next');
 });
 
+test('each kaiju category uses its configured badge color', function (
+    KaijuCategory $category,
+    string $colorClass,
+) {
+    Kaiju::factory()->create(['category' => $category]);
+
+    $this->get(route('kaijus.index'))
+        ->assertOk()
+        ->assertSee($colorClass, escape: false);
+})->with([
+    'aquatic' => [KaijuCategory::Aquatic, 'text-blue-800'],
+    'terrestrial' => [KaijuCategory::Terrestrial, 'text-amber-700'],
+    'aerial' => [KaijuCategory::Aerial, 'text-sky-800'],
+    'amphibious' => [KaijuCategory::Amphibious, 'text-green-800'],
+    'unknown' => [KaijuCategory::Unknown, 'text-zinc-700'],
+]);
+
 test('the catalogue displays nine kaijus per page', function () {
     foreach (range(1, 10) as $number) {
         Kaiju::factory()->create([

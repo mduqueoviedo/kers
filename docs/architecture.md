@@ -3,14 +3,13 @@
 ## Status
 
 This document describes the architecture present after adding the Kaiju
-management flow and manual Incident creation. Incident listing and management,
-response teams, capacity rules, USGS integration, roles, policies, and the
-operational dashboard are not implemented yet.
+management flow, manual Incident creation, and the paginated Incident
+catalogue. Incident details and management, response teams, capacity rules,
+USGS integration, roles, policies, and the operational dashboard are not
+implemented yet.
 
 Update this document when architecture actually changes; do not treat planned
-roadmap items as current components. The Railway section below records a
-confirmed target architecture and remains explicitly marked as not yet
-implemented.
+roadmap items as current components.
 
 ## System shape
 
@@ -105,9 +104,9 @@ The root route redirects to the public `/kaijus` catalogue. That Livewire page
 queries and renders the current Kaiju records.
 
 The shared application layout provides a small top navigation with the KERS
-name and catalogue link. The generated welcome page, sidebar, dashboard, user
-menus, and account settings UI have been removed so the visible application
-only represents implemented KERS functionality.
+name and links to the Kaiju and Incident catalogues. The generated welcome
+page, sidebar, dashboard, user menus, and account settings UI have been removed
+so the visible application only represents implemented KERS functionality.
 
 The starter UI uses:
 
@@ -118,8 +117,9 @@ The starter UI uses:
 - Shared Blade layouts and components
 
 The Kaiju catalogue, management forms, detail view, confirmed deletion action,
-and manual Incident form are the first KERS domain interfaces. Incident
-listing and details and the remaining domain workflows are not implemented yet.
+manual Incident form, and Incident catalogue are the first KERS domain
+interfaces. Incident details and the remaining domain workflows are not
+implemented yet.
 
 ## Livewire
 
@@ -153,6 +153,17 @@ is synchronized with the `kaiju` query parameter. The general catalogue link
 opens an unselected form, while a Kaiju detail link opens that same route with
 its Kaiju preselected. The query parameter remains untrusted and must pass both
 Livewire existence validation and the PostgreSQL foreign key.
+
+The public Incident catalogue uses Livewire pagination and orders records by
+the most recent `occurred_at` value, with the identifier as a deterministic
+tie-breaker. It eager loads each Incident's Kaiju in one relationship query,
+shows occurrence times explicitly as UTC, and uses the configurable
+`kers.pagination.incidents_per_page` page size, which defaults to nine.
+
+Kaiju-category and Incident-status badge colors are presentation settings
+stored under `kers.badges`. The enums remain responsible for valid domain
+values, while the centralized configuration lets the visual mapping change
+without adding conditional color logic to individual Blade views.
 
 ## Database
 
@@ -193,8 +204,8 @@ class. `occurred_at` is a timezone-free PostgreSQL timestamp whose value is
 always interpreted as UTC; the Laravel application timezone is also UTC.
 `IncidentFactory` creates valid related records, can reuse an explicit Kaiju
 through Laravel's `for()` factory method, and provides open, contained, and
-closed states. The manual creation route is implemented; other Incident pages
-are not.
+closed states. The manual creation and paginated catalogue routes are
+implemented; other Incident pages are not.
 
 ## Authentication
 
@@ -223,11 +234,12 @@ Feature tests use Laravel's `RefreshDatabase` trait. PHPUnit forces the
 the development database.
 
 The current suite covers authentication, root redirection, the paginated public
-catalogue with combined search and filters, Kaiju registration, route-bound
-details, editing, and confirmed deletion, plus persistence, enum casting,
-database constraints, Incident relationships and cascade behavior, factory
-states for both current domain models, repeatable related seeding, exact
-cascade-warning counts, and manual Incident creation with validation.
+Kaiju catalogue with combined search and filters, Kaiju registration,
+route-bound details, editing, and confirmed deletion, plus persistence, enum
+casting, database constraints, Incident relationships and cascade behavior,
+factory states for both current domain models, repeatable related seeding,
+exact cascade-warning counts, manual Incident creation with validation, and
+the paginated Incident catalogue with eager-loaded Kaijus and UTC dates.
 
 ## Quality and CI
 
