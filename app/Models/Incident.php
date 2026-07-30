@@ -18,11 +18,32 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property IncidentStatus $status
  * @property CarbonImmutable $occurred_at
  * @property int $kaiju_id
+ * @property string|null $source
+ * @property string|null $external_event_id
+ * @property string|null $external_url
+ * @property float|null $magnitude
+ * @property float|null $latitude
+ * @property float|null $longitude
+ * @property float|null $depth
  * @property CarbonImmutable|null $created_at
  * @property CarbonImmutable|null $updated_at
  * @property-read Kaiju $kaiju
  */
-#[Fillable(['title', 'description', 'location', 'status', 'occurred_at', 'kaiju_id'])]
+#[Fillable([
+    'title',
+    'description',
+    'location',
+    'status',
+    'occurred_at',
+    'kaiju_id',
+    'source',
+    'external_event_id',
+    'external_url',
+    'magnitude',
+    'latitude',
+    'longitude',
+    'depth',
+])]
 class Incident extends Model
 {
     /** @use HasFactory<IncidentFactory> */
@@ -48,6 +69,10 @@ class Incident extends Model
         return [
             'status' => IncidentStatus::class,
             'occurred_at' => 'datetime',
+            'magnitude' => 'float',
+            'latitude' => 'float',
+            'longitude' => 'float',
+            'depth' => 'float',
         ];
     }
 }
