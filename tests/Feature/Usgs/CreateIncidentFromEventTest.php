@@ -60,6 +60,23 @@ test('one current usgs event can be imported for a selected kaiju', function () 
     Http::assertSentCount(2);
 });
 
+test('the import action explains the flow and stays disabled until an event is selected', function () {
+    $kaiju = Kaiju::factory()->create();
+    Http::fake(['*' => Http::response(usgsImportResponse())]);
+
+    $component = Livewire::test('pages::usgs.index')
+        ->assertSee('1. Select one seismic event from the list. 2. Select the Kaiju responsible. 3. Create the Incident and continue on its detail page.')
+        ->assertSee('Select an event from the list below.')
+        ->assertSeeHtml('disabled="disabled"');
+
+    $component
+        ->set('selected_event_id', 'us7000example')
+        ->set('kaiju_id', (string) $kaiju->id)
+        ->assertSet('selected_event_id', 'us7000example')
+        ->assertSee('M 5.6 - 10 km south of Example')
+        ->assertDontSeeHtml('disabled="disabled"');
+});
+
 test('event and kaiju selections are required before importing', function () {
     Kaiju::factory()->create();
     Http::fake(['*' => Http::response(usgsImportResponse())]);

@@ -124,64 +124,88 @@ new #[Title('USGS events')] class extends Component {
         </div>
     @else
         <form wire:submit="importIncident" class="space-y-6" novalidate>
+            @php
+                $selectedEvent = collect($events)->first(
+                    fn (array $event): bool => $event['id'] === $selected_event_id,
+                );
+            @endphp
+
+            <div class="space-y-4 rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900">
+                <div class="space-y-1">
+                    <flux:heading size="lg">{{ __('usgs.import.heading') }}</flux:heading>
+                    <flux:text>{{ __('usgs.import.instructions') }}</flux:text>
+                </div>
+
+                <div class="grid gap-4 md:grid-cols-2 md:items-end">
+                    <flux:select wire:model="kaiju_id" :label="__('usgs.import.kaiju_label')" required>
+                        <flux:select.option value="">{{ __('usgs.import.kaiju_placeholder') }}</flux:select.option>
+
+                        @foreach ($this->kaijus as $kaiju)
+                            <flux:select.option :value="$kaiju->id">
+                                {{ $kaiju->name }}
+                            </flux:select.option>
+                        @endforeach
+                    </flux:select>
+
+                    <flux:button type="submit" variant="primary" :disabled="$selected_event_id === null">
+                        {{ __('usgs.import.button') }}
+                    </flux:button>
+                </div>
+
+                <div class="rounded-lg bg-zinc-50 px-4 py-3 dark:bg-zinc-800" aria-live="polite">
+                    <span class="font-medium">{{ __('usgs.import.selected_label') }}</span>
+                    @if ($selectedEvent !== null)
+                        <span>{{ $selectedEvent['title'] }}</span>
+                    @else
+                        <span class="text-zinc-500 dark:text-zinc-400">{{ __('usgs.import.no_event') }}</span>
+                    @endif
+                </div>
+
+                @error('selected_event_id')
+                    <flux:text class="text-red-600" role="alert">{{ $message }}</flux:text>
+                @enderror
+
+                @error('kaiju_id')
+                    <flux:text class="text-red-600" role="alert">{{ $message }}</flux:text>
+                @enderror
+            </div>
+
             <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 @foreach ($events as $event)
-                    <label wire:key="usgs-event-{{ $event['id'] }}" class="flex cursor-pointer flex-col gap-4 rounded-xl border border-sky-200 border-t-4 border-t-sky-500 bg-white p-5 shadow-sm has-[:checked]:ring-2 has-[:checked]:ring-sky-500 dark:border-sky-900 dark:border-t-sky-500 dark:bg-zinc-900">
-                        <input wire:model="selected_event_id" type="radio" name="selected_event_id" value="{{ $event['id'] }}" class="sr-only">
-                        <div class="space-y-1">
-                            <p class="text-xs font-semibold tracking-wider text-sky-700 uppercase dark:text-sky-300">
-                                {{ __('usgs.event_label') }}
-                            </p>
-                            <flux:heading size="lg">{{ $event['title'] }}</flux:heading>
-                        </div>
-
-                        <dl class="space-y-2 text-sm">
-                            <div class="flex justify-between gap-4">
-                                <dt class="text-zinc-500 dark:text-zinc-400">{{ __('usgs.magnitude') }}</dt>
-                                <dd class="font-medium text-zinc-900 dark:text-white">{{ $event['magnitude'] ?? __('usgs.not_available') }}</dd>
+                    <div wire:key="usgs-event-{{ $event['id'] }}" class="flex flex-col rounded-xl border border-sky-200 border-t-4 border-t-sky-500 bg-white shadow-sm dark:border-sky-900 dark:border-t-sky-500 dark:bg-zinc-900">
+                        <input wire:model="selected_event_id" id="usgs-event-{{ $event['id'] }}" type="radio" name="selected_event_id" value="{{ $event['id'] }}" class="peer sr-only">
+                        <label for="usgs-event-{{ $event['id'] }}" class="flex cursor-pointer flex-1 flex-col gap-4 rounded-xl p-5 outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-sky-500 peer-checked:bg-sky-50 peer-checked:ring-2 peer-checked:ring-sky-500 dark:peer-checked:bg-sky-950/40">
+                            <div class="space-y-1">
+                                <p class="text-xs font-semibold tracking-wider text-sky-700 uppercase dark:text-sky-300">
+                                    {{ __('usgs.event_label') }}
+                                </p>
+                                <flux:heading size="lg">{{ $event['title'] }}</flux:heading>
                             </div>
-                            <div class="flex justify-between gap-4">
-                                <dt class="text-zinc-500 dark:text-zinc-400">{{ __('usgs.occurred_at') }}</dt>
-                                <dd class="text-right text-zinc-900 dark:text-white">{{ $event['occurred_at'] }}</dd>
-                            </div>
-                        </dl>
 
-                        @if ($event['location'] !== null)
-                            <flux:text>{{ $event['location'] }}</flux:text>
-                        @endif
+                            <dl class="space-y-2 text-sm">
+                                <div class="flex justify-between gap-4">
+                                    <dt class="text-zinc-500 dark:text-zinc-400">{{ __('usgs.magnitude') }}</dt>
+                                    <dd class="font-medium text-zinc-900 dark:text-white">{{ $event['magnitude'] ?? __('usgs.not_available') }}</dd>
+                                </div>
+                                <div class="flex justify-between gap-4">
+                                    <dt class="text-zinc-500 dark:text-zinc-400">{{ __('usgs.occurred_at') }}</dt>
+                                    <dd class="text-right text-zinc-900 dark:text-white">{{ $event['occurred_at'] }}</dd>
+                                </div>
+                            </dl>
+
+                            @if ($event['location'] !== null)
+                                <flux:text>{{ $event['location'] }}</flux:text>
+                            @endif
+                        </label>
 
                         @if ($event['url'] !== null)
-                            <flux:button :href="$event['url']" target="_blank" variant="ghost" class="mt-auto self-start">
+                            <flux:button :href="$event['url']" target="_blank" variant="ghost" class="mx-5 mb-5 self-start">
                                 {{ __('usgs.view_source') }}
                             </flux:button>
                         @endif
-                    </label>
+                    </div>
                 @endforeach
             </div>
-
-            @error('selected_event_id')
-                <flux:text class="text-red-600" role="alert">{{ $message }}</flux:text>
-            @enderror
-
-            <div class="flex flex-col gap-4 rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900 md:flex-row md:items-end">
-                <flux:select wire:model="kaiju_id" :label="__('Kaiju')" required class="flex-1">
-                    <flux:select.option value="">{{ __('Select a Kaiju') }}</flux:select.option>
-
-                    @foreach ($this->kaijus as $kaiju)
-                        <flux:select.option :value="$kaiju->id">
-                            {{ $kaiju->name }}
-                        </flux:select.option>
-                    @endforeach
-                </flux:select>
-
-                <flux:button type="submit" variant="primary">
-                    {{ __('Create incident') }}
-                </flux:button>
-            </div>
-
-            @error('kaiju_id')
-                <flux:text class="text-red-600" role="alert">{{ $message }}</flux:text>
-            @enderror
         </form>
     @endif
 </section>
