@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'usgs' => [
+        'url' => env('USGS_API_URL', 'https://earthquake.usgs.gov/fdsnws/event/1/query'),
+        'timeout' => (int) env('USGS_API_TIMEOUT', 10),
+        'limit' => (int) env('USGS_EVENT_LIMIT', 20),
+    ],
+
 ];
