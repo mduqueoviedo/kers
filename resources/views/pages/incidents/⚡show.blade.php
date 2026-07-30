@@ -17,9 +17,13 @@ new #[Title('Incident details')] class extends Component {
 }; ?>
 
 <section class="mx-auto flex w-full max-w-3xl flex-col gap-6">
-    <div>
+    <div class="flex flex-wrap items-center justify-between gap-3">
         <flux:button :href="route('incidents.index')" variant="ghost" wire:navigate>
             {{ __('Back to incident catalogue') }}
+        </flux:button>
+
+        <flux:button :href="route('incidents.edit', $incident)" variant="primary" wire:navigate>
+            {{ __('Edit incident') }}
         </flux:button>
     </div>
 

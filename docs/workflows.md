@@ -296,8 +296,27 @@ Follow an Incident detail link
 ```
 
 An unknown Incident identifier returns Laravel's standard 404 response. The
-detail page is currently read-only; editing, status changes, and deletion are
-introduced in later roadmap items.
+detail page links to the current editing workflow. Deletion is introduced in a
+later roadmap item.
+
+### Edit an incident and change its status
+
+```text
+Open an Incident detail page
+→ follow the edit link
+→ Laravel resolves the Incident route parameter
+→ Livewire preloads its fields and current Kaiju
+→ change the recorded details, Kaiju, or status
+→ Livewire validates the submitted state
+→ convert the occurrence time explicitly to UTC
+→ Eloquent updates the Incident
+→ redirect to the detail page with confirmation feedback
+```
+
+The current workflow permits transitions between any of the `open`,
+`contained`, and `closed` statuses. Invalid fields, unsupported statuses, and
+unknown Kaijus do not update the record. Cancelling returns to the detail page
+without saving.
 
 The following authentication workflows remain as a technical foundation. They
 are not exposed in the current navigation and are not yet the final KERS role

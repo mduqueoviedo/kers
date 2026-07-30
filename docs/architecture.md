@@ -4,9 +4,9 @@
 
 This document describes the architecture present after adding the Kaiju
 management flow, manual Incident creation, the paginated Incident catalogue,
-Incident details, and a protected demo-data API. Incident management, response
-teams, capacity rules, USGS integration, roles, policies, and the operational
-dashboard are not implemented yet.
+Incident details and editing, and a protected demo-data API. Incident deletion,
+search and filtering, response teams, capacity rules, USGS integration, roles,
+policies, and the operational dashboard are not implemented yet.
 
 Update this document when architecture actually changes; do not treat planned
 roadmap items as current components.
@@ -195,6 +195,12 @@ missing identifiers therefore return 404 without custom lookup code. The
 component eager loads its Kaiju and renders the incident, relationship, and
 timestamps explicitly in UTC.
 
+The Incident edit component also receives its model through route model
+binding, then initializes scalar form state in `mount()`. It validates the
+selected Kaiju and status against current database and enum values, converts
+the timezone-free date input to UTC, and updates the Eloquent model. All three
+supported statuses may currently transition to any other supported status.
+
 Kaiju-category and Incident-status badge colors are presentation settings
 stored under `kers.badges`. The enums remain responsible for valid domain
 values, while the centralized configuration lets the visual mapping change
@@ -239,8 +245,8 @@ class. `occurred_at` is a timezone-free PostgreSQL timestamp whose value is
 always interpreted as UTC; the Laravel application timezone is also UTC.
 `IncidentFactory` creates valid related records, can reuse an explicit Kaiju
 through Laravel's `for()` factory method, and provides open, contained, and
-closed states. The manual creation, paginated catalogue, and detail routes are
-implemented; other Incident management pages are not.
+closed states. The manual creation, paginated catalogue, detail, and editing
+routes are implemented; other Incident management pages are not.
 
 ## Authentication
 
@@ -277,8 +283,11 @@ exact cascade-warning counts, manual Incident creation with validation, and
 the paginated Incident catalogue with eager-loaded Kaijus and UTC dates.
 Incident detail tests cover route model binding, current record and relationship
 rendering, catalogue navigation, configured badges, and missing-record 404
-responses. API tests cover disabled and invalid credentials, allowed HTTP
-methods, domain-only deletion, repeatable seeding, and canonical reset behavior.
+responses. Incident edit tests cover prefilled state, complete updates,
+relationship reassignment, status changes, UTC conversion, validation,
+navigation, and missing-record 404 responses. API tests cover disabled and
+invalid credentials, allowed HTTP methods, domain-only deletion, repeatable
+seeding, and canonical reset behavior.
 
 ## Quality and CI
 
