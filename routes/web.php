@@ -17,12 +17,12 @@ Route::post('locale', function (Request $request) {
     return back();
 })->name('locale.update');
 
-Route::livewire('incidents/create', 'pages::incidents.create')->name('incidents.create');
+Route::livewire('incidents/create', 'pages::incidents.create')->middleware('auth')->name('incidents.create');
 Route::livewire('incidents', 'pages::incidents.index')->name('incidents.index');
-Route::livewire('incidents/{incident}/edit', 'pages::incidents.edit')->name('incidents.edit');
+Route::livewire('incidents/{incident}/edit', 'pages::incidents.edit')->middleware('auth')->name('incidents.edit');
 Route::livewire('incidents/{incident}', 'pages::incidents.show')->name('incidents.show');
 Route::livewire('usgs-events', 'pages::usgs.index')->name('usgs.index');
-Route::livewire('kaijus/create', 'pages::kaijus.create')->name('kaijus.create');
+Route::livewire('kaijus/create', 'pages::kaijus.create')->middleware('auth')->name('kaijus.create');
 Route::livewire('kaijus', 'pages::kaijus.index')->name('kaijus.index');
-Route::livewire('kaijus/{kaiju}/edit', 'pages::kaijus.edit')->name('kaijus.edit');
+Route::livewire('kaijus/{kaiju}/edit', 'pages::kaijus.edit')->middleware('auth')->name('kaijus.edit');
 Route::livewire('kaijus/{kaiju}', 'pages::kaijus.show')->name('kaijus.show');

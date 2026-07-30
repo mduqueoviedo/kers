@@ -66,6 +66,8 @@ new #[Title('usgs.page_title')] class extends Component {
      */
     public function importIncident(UsgsEarthquakeClient $client, UsgsEarthquakeMapper $mapper): void
     {
+        abort_unless(auth()->check(), 403);
+
         $validated = $this->validate();
 
         try {
@@ -135,6 +137,7 @@ new #[Title('usgs.page_title')] class extends Component {
             <flux:text class="mt-2">{{ __('usgs.empty.description') }}</flux:text>
         </div>
     @else
+        @auth
         <form wire:submit="importIncident" class="space-y-6" novalidate>
             @php
                 $selectedEvent = collect($events)->first(
@@ -181,43 +184,49 @@ new #[Title('usgs.page_title')] class extends Component {
                     <flux:text class="text-red-600" role="alert">{{ $message }}</flux:text>
                 @enderror
             </div>
-
-            <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                @foreach ($events as $event)
-                    <div wire:key="usgs-event-{{ $event['id'] }}" class="flex flex-col rounded-xl border border-sky-200 border-t-4 border-t-sky-500 bg-white shadow-sm dark:border-sky-900 dark:border-t-sky-500 dark:bg-zinc-900">
-                        <input wire:model.live="selected_event_id" id="usgs-event-{{ $event['id'] }}" type="radio" name="selected_event_id" value="{{ $event['id'] }}" class="peer sr-only">
-                        <label for="usgs-event-{{ $event['id'] }}" class="flex cursor-pointer flex-1 flex-col gap-4 rounded-xl p-5 outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-sky-500 peer-checked:bg-sky-50 peer-checked:ring-2 peer-checked:ring-sky-500 dark:peer-checked:bg-sky-950/40">
-                            <div class="space-y-1">
-                                <p class="text-xs font-semibold tracking-wider text-sky-700 uppercase dark:text-sky-300">
-                                    {{ __('usgs.event_label') }}
-                                </p>
-                                <flux:heading size="lg">{{ $event['title'] }}</flux:heading>
-                            </div>
-
-                            <dl class="space-y-2 text-sm">
-                                <div class="flex justify-between gap-4">
-                                    <dt class="text-zinc-500 dark:text-zinc-400">{{ __('usgs.magnitude') }}</dt>
-                                    <dd class="font-medium text-zinc-900 dark:text-white">{{ $event['magnitude'] ?? __('usgs.not_available') }}</dd>
-                                </div>
-                                <div class="flex justify-between gap-4">
-                                    <dt class="text-zinc-500 dark:text-zinc-400">{{ __('usgs.occurred_at') }}</dt>
-                                    <dd class="text-right text-zinc-900 dark:text-white">{{ CarbonImmutable::parse($event['occurred_at_iso'])->locale(app()->getLocale())->isoFormat('LLL') }} {{ __('common.labels.utc') }}</dd>
-                                </div>
-                            </dl>
-
-                            @if ($event['location'] !== null)
-                                <flux:text>{{ $event['location'] }}</flux:text>
-                            @endif
-                        </label>
-
-                        @if ($event['url'] !== null)
-                            <flux:button :href="$event['url']" target="_blank" variant="ghost" class="mx-5 mb-5 self-start">
-                                {{ __('usgs.view_source') }}
-                            </flux:button>
-                        @endif
-                    </div>
-                @endforeach
-            </div>
         </form>
+        @endauth
+
+        <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            @foreach ($events as $event)
+                <div wire:key="usgs-event-{{ $event['id'] }}" class="flex flex-col rounded-xl border border-sky-200 border-t-4 border-t-sky-500 bg-white shadow-sm dark:border-sky-900 dark:border-t-sky-500 dark:bg-zinc-900">
+                    @auth
+                        <input wire:model.live="selected_event_id" id="usgs-event-{{ $event['id'] }}" type="radio" name="selected_event_id" value="{{ $event['id'] }}" class="peer sr-only">
+                    @endauth
+                    <label @auth for="usgs-event-{{ $event['id'] }}" @endauth @class([
+                        'flex flex-1 flex-col gap-4 rounded-xl p-5 outline-none',
+                        'cursor-pointer peer-focus-visible:ring-2 peer-focus-visible:ring-sky-500 peer-checked:bg-sky-50 peer-checked:ring-2 dark:peer-checked:bg-sky-950/40' => auth()->check(),
+                    ])>
+                        <div class="space-y-1">
+                            <p class="text-xs font-semibold tracking-wider text-sky-700 uppercase dark:text-sky-300">
+                                {{ __('usgs.event_label') }}
+                            </p>
+                            <flux:heading size="lg">{{ $event['title'] }}</flux:heading>
+                        </div>
+
+                        <dl class="space-y-2 text-sm">
+                            <div class="flex justify-between gap-4">
+                                <dt class="text-zinc-500 dark:text-zinc-400">{{ __('usgs.magnitude') }}</dt>
+                                <dd class="font-medium text-zinc-900 dark:text-white">{{ $event['magnitude'] ?? __('usgs.not_available') }}</dd>
+                            </div>
+                            <div class="flex justify-between gap-4">
+                                <dt class="text-zinc-500 dark:text-zinc-400">{{ __('usgs.occurred_at') }}</dt>
+                                <dd class="text-right text-zinc-900 dark:text-white">{{ CarbonImmutable::parse($event['occurred_at_iso'])->locale(app()->getLocale())->isoFormat('LLL') }} {{ __('common.labels.utc') }}</dd>
+                            </div>
+                        </dl>
+
+                        @if ($event['location'] !== null)
+                            <flux:text>{{ $event['location'] }}</flux:text>
+                        @endif
+                    </label>
+
+                    @if ($event['url'] !== null)
+                        <flux:button :href="$event['url']" target="_blank" variant="ghost" class="mx-5 mb-5 self-start">
+                            {{ __('usgs.view_source') }}
+                        </flux:button>
+                    @endif
+                </div>
+            @endforeach
+        </div>
     @endif
 </section>

@@ -6,6 +6,8 @@ return [
     'create_account' => 'Create account',
     'create_account_description' => 'Enter your details below to create your account',
     'create_account_title' => 'Create an account',
+    'demo_credentials_description' => 'Use this disposable demo account to manage Kaijus and Incidents.',
+    'demo_credentials_heading' => 'Demo credentials',
     'email' => 'Email',
     'email_address' => 'Email address',
     'email_password_reset_link' => 'Email password reset link',

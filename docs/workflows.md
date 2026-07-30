@@ -347,41 +347,24 @@ Open an Incident detail page
 → redirect to the Incident catalogue with confirmation feedback
 ```
 
-The delete action ignores calls made before confirmation. Deletion is currently
-permanent and public, consistently with the other Incident workflows.
-Role-based authorization will be added in its later roadmap phase.
+The delete action ignores calls made before confirmation. Deletion is permanent
+and requires an authenticated demo session.
 
-The following authentication workflows remain as a technical foundation. They
-are not exposed in the current navigation and are not yet the final KERS role
-and authorization model.
-
-### Register and authenticate
+### Authenticate for demo mutations
 
 ```text
-Open registration
-→ submit name, email, and password
-→ Fortify validates the request
-→ create the user through CreateNewUser
-→ authenticate the new user
+Open login
+→ review the displayed disposable demo credentials
+→ submit the configured email and password
+→ Fortify validates the credentials and creates the session
 → redirect to the Kaiju catalogue
 ```
 
-Existing users submit the login form, Fortify validates their credentials, and
-successful authentication redirects to the Kaiju catalogue. Logout invalidates
-the session and redirects through the root URL to the catalogue.
-
-### Reset a password
-
-```text
-Request a password-reset link
-→ Laravel sends a reset notification
-→ open the tokenized reset route
-→ submit and confirm a new password
-→ Fortify resets the password
-→ redirect to login
-```
-
-Local mail uses the configured log driver unless another mailer is selected.
+The seed lifecycle recreates the one configured demo account whenever
+`migrate:fresh --seed` runs, including on every Railway deployment. Logout
+invalidates the session and redirects through the root URL to the catalogue.
+Guests may browse public catalogues and details, but Laravel middleware and
+Livewire action checks require login for every mutation.
 
 ## Planned product workflows
 

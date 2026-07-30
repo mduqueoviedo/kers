@@ -2,9 +2,14 @@
 
 use App\Models\Incident;
 use App\Models\Kaiju;
+use App\Models\User;
 use Livewire\Livewire;
 
-test('guests can request confirmation before deleting an incident', function () {
+beforeEach(function () {
+    $this->actingAs(User::factory()->create());
+});
+
+test('authenticated users can request confirmation before deleting an incident', function () {
     $incident = Incident::factory()->create(['title' => 'Harbour evacuation']);
 
     Livewire::test('pages::incidents.show', ['incident' => $incident])

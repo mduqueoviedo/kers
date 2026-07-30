@@ -36,6 +36,8 @@ new #[Title('kaijus.create.title')] class extends Component {
      */
     public function save(): void
     {
+        abort_unless(auth()->check(), 403);
+
         $validated = $this->validate();
         $validated['description'] = filled($validated['description'])
             ? $validated['description']

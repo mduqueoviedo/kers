@@ -2,9 +2,14 @@
 
 use App\Models\Incident;
 use App\Models\Kaiju;
+use App\Models\User;
 use Livewire\Livewire;
 
-test('guests can request confirmation before deleting a kaiju', function () {
+beforeEach(function () {
+    $this->actingAs(User::factory()->create());
+});
+
+test('authenticated users can request confirmation before deleting a kaiju', function () {
     $kaiju = Kaiju::factory()->create(['name' => 'Leviathan']);
 
     Livewire::test('pages::kaijus.show', ['kaiju' => $kaiju])

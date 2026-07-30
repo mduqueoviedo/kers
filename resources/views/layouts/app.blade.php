@@ -85,6 +85,17 @@
                         </select>
                         <button type="submit" class="sr-only">{{ __('navigation.apply') }}</button>
                     </form>
+
+                    @auth
+                        <form action="{{ route('logout') }}" method="POST" class="ml-2">
+                            @csrf
+                            <flux:button type="submit" variant="ghost" size="sm">{{ __('auth.log_out') }}</flux:button>
+                        </form>
+                    @else
+                        <flux:button :href="route('login')" variant="ghost" size="sm" class="ml-2" wire:navigate>
+                            {{ __('auth.log_in') }}
+                        </flux:button>
+                    @endauth
                 </div>
             </nav>
         </header>

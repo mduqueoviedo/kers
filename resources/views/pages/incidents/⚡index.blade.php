@@ -138,9 +138,11 @@ new #[Title('incidents.index.title')] class extends Component {
             <flux:text>{{ __('incidents.index.description') }}</flux:text>
         </div>
 
-        <flux:button :href="route('incidents.create')" variant="primary" wire:navigate>
-            {{ __('incidents.create.title') }}
-        </flux:button>
+        @auth
+            <flux:button :href="route('incidents.create')" variant="primary" wire:navigate>
+                {{ __('incidents.create.title') }}
+            </flux:button>
+        @endauth
     </header>
 
     <div class="grid gap-4 rounded-xl border border-orange-200 bg-white p-5 md:grid-cols-2 xl:grid-cols-4 dark:border-orange-900 dark:bg-zinc-900">
