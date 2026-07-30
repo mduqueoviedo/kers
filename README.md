@@ -99,16 +99,18 @@ Both commands delete all data in the configured database before running the
 migrations. Use them only for local development and confirm that `.env` points
 to the intended `kers` database first.
 
-Railway uses the same `migrate:fresh --seed --force --no-interaction` lifecycle
-command for its temporary demo database on every deployment. Each deployment
-permanently deletes all Railway data before recreating the canonical dataset;
-this policy is intentional for the disposable demo and is not appropriate for
-a persistent production deployment.
+Railway runs pending migrations and then seeds only the deterministic demo user
+before each deployment. It does not drop tables or automatically seed Kaijus
+and Incidents. This is a pragmatic reliability decision after opaque Railway
+pre-deploy failures made the destructive rebuild impossible to diagnose. Use
+the protected demo-data API below when a full Kaiju and Incident reset is
+required.
 
 ### Demo login
 
-The disposable demo has one configured account. `migrate:fresh --seed` and the
-Railway pre-deploy rebuild recreate it using its email as the stable identifier.
+The disposable demo has one configured account. `migrate:fresh --seed` in
+local development and Railway's dedicated pre-deploy seeder recreate it using
+its email as the stable identifier.
 Set these variables outside Git when needed; the `.env.example` values are safe
 public demo defaults and are also displayed on the login page:
 
@@ -154,8 +156,8 @@ unset DEMO_BASE_URL DEMO_API_KEY
 The wipe operation deletes only Kaijus and their cascaded Incidents; it does
 not drop tables or run migrations. Seeding alone preserves additional records
 while restoring canonical seed values. Call wipe and then seed to restore
-exactly the representative dataset. These protected API operations remain
-available independently of the destructive Railway deployment lifecycle.
+exactly the representative dataset. These protected API operations are the
+explicit reset mechanism for Railway as well as local development.
 
 For the deployed demo, configure `KERS_DEMO_API_KEY` as a secret variable on
 the Railway application service. Do not commit its value or add it to GitHub:

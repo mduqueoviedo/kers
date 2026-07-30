@@ -1,6 +1,6 @@
 <?php
 
-test('Railway rebuilds and seeds the disposable demo database before deployment', function () {
+test('Railway runs migrations and seeds only the demo user before deployment', function () {
     $configuration = json_decode(
         file_get_contents(base_path('railway.json')),
         associative: true,
@@ -8,5 +8,7 @@ test('Railway rebuilds and seeds the disposable demo database before deployment'
     );
 
     expect($configuration['deploy']['preDeployCommand'])
-        ->toBe('php artisan migrate:fresh --seed --force --no-interaction');
+        ->toBe('php artisan migrate --force --no-interaction && php artisan db:seed --class=Database\\Seeders\\DemoUserSeeder --force --no-interaction')
+        ->not->toContain('migrate:fresh')
+        ->not->toContain('--seed');
 });
