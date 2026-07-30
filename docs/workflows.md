@@ -89,7 +89,7 @@ Kaijus and Incidents.
 The explicit pre-deploy command is:
 
 ```text
-php artisan migrate --force --no-interaction && php artisan db:seed --class=Database\\Seeders\\DemoUserSeeder --force --no-interaction
+php artisan migrate --force --no-interaction && php artisan db:seed --class=DemoUserSeeder --force --no-interaction
 ```
 
 This command runs pending migrations without dropping tables, then creates or

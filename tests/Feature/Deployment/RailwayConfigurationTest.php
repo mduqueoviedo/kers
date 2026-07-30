@@ -8,7 +8,7 @@ test('Railway runs migrations and seeds only the demo user before deployment', f
     );
 
     expect($configuration['deploy']['preDeployCommand'])
-        ->toBe('php artisan migrate --force --no-interaction && php artisan db:seed --class=Database\\Seeders\\DemoUserSeeder --force --no-interaction')
+        ->toBe('php artisan migrate --force --no-interaction && php artisan db:seed --class=DemoUserSeeder --force --no-interaction')
         ->not->toContain('migrate:fresh')
         ->not->toContain('--seed');
 });

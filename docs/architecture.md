@@ -68,7 +68,7 @@ build or start command. `railway.json` configures `/up` as the deployment
 healthcheck and runs this explicit pre-deploy command:
 
 ```text
-php artisan migrate --force --no-interaction && php artisan db:seed --class=Database\\Seeders\\DemoUserSeeder --force --no-interaction
+php artisan migrate --force --no-interaction && php artisan db:seed --class=DemoUserSeeder --force --no-interaction
 ```
 
 The Railway application service must set
