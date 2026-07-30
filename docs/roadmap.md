@@ -15,9 +15,8 @@ criteria, testing expectations, dependencies, priority, and notes.
 
 ## Current delivery priority
 
-The temporary Railway deployment and Incident catalogue are complete. One
-approved demo-tooling checkpoint introduces a protected controller-based API
-before product delivery returns to INC-004B.
+The temporary Railway deployment, Incident catalogue, and protected demo-data
+API are complete. Product delivery returns to INC-004B.
 
 ## Phase 1 — Project foundations and documentation
 
@@ -63,7 +62,7 @@ before product delivery returns to INC-004B.
 | ID and title | Status | Objective and user value | Concepts and scope | Acceptance and testing | Dependencies, priority, and notes |
 | --- | --- | --- | --- | --- | --- |
 | DEP-001 — Deploy the current KERS demo to Railway | Completed | Make the current locally tested application publicly accessible before continuing lower-priority features. | Minimal `railway.json`; GitHub-connected Railway application and PostgreSQL services; private `DB_URL`; native Railpack build and start; explicit non-interactive pre-deploy migration and repeatable seeding; trusted HTTPS proxy headers; `/up` healthcheck; public URL and automatic `main` deployments. | Railway builds successfully; Vite assets load; PostgreSQL migrations and seeders succeed; the application and Kaiju catalogue respond publicly over HTTPS; Laravel trusts Railway's reverse proxy; `/up` succeeds. | INC-003; High; completed in PR #20. Temporary demo: https://kers-production.up.railway.app/kaijus. Review usage and remove the services after approximately one week. |
-| DEM-001 — Add a protected demo-data API | In review | Reset the temporary demo remotely and learn Laravel controllers without adding visible UI. | API route registration, controller actions, JSON responses, custom API-key middleware, environment configuration, transactions, and Artisan invocation. | Empty configuration disables both routes; missing or invalid Bearer keys cannot mutate data; authenticated wipe deletes only Kaijus and cascaded Incidents; authenticated seed is repeatable; wipe then seed restores the canonical dataset; PostgreSQL-backed feature tests pass. | DEP-001, INC-002B; Medium; temporary demo tooling to remove or replace when final authorization exists. |
+| DEM-001 — Add a protected demo-data API | Completed | Reset the temporary demo remotely and learn Laravel controllers without adding visible UI. | API route registration, controller actions, JSON responses, custom API-key middleware, environment configuration, transactions, and Artisan invocation. | Empty configuration disables both routes; missing or invalid Bearer keys cannot mutate data; authenticated wipe deletes only Kaijus and cascaded Incidents; authenticated seed is repeatable; wipe then seed restores the canonical dataset; PostgreSQL-backed feature tests pass. | DEP-001, INC-002B; Medium; merged in PR #22; temporary demo tooling to remove or replace when final authorization exists. |
 
 ## Phase 4 — Response team management
 
