@@ -282,7 +282,22 @@ Open the public Incident catalogue
 
 The page size comes from KERS configuration and defaults to nine. The
 catalogue shows an explicit empty state when no incidents have been recorded.
-Incident detail pages are introduced separately.
+Each catalogue card links to its incident detail page and keeps the associated
+Kaiju available as a separate navigation target.
+
+### View an incident
+
+```text
+Follow an Incident detail link
+→ Laravel resolves the Incident route parameter
+→ Livewire eager loads its associated Kaiju
+→ display the current details, status, and timestamps in UTC
+→ navigate to the Kaiju or back to the Incident catalogue
+```
+
+An unknown Incident identifier returns Laravel's standard 404 response. The
+detail page is currently read-only; editing, status changes, and deletion are
+introduced in later roadmap items.
 
 The following authentication workflows remain as a technical foundation. They
 are not exposed in the current navigation and are not yet the final KERS role
