@@ -273,15 +273,20 @@ dependency and links to Kaiju registration instead of showing an unusable form.
 
 ```text
 Open the public Incident catalogue
-→ Livewire reads the requested page from the URL
-→ Eloquent loads incidents and their Kaijus
-→ order incidents by most recent occurrence
+→ Livewire restores search, filters, ordering, and page from the URL
+→ optionally search title or location
+→ optionally filter by status and Kaiju
+→ order incidents by newest or oldest occurrence
+→ Eloquent combines the criteria and eager loads matching Kaijus
 → display status, location, UTC occurrence time, and linked Kaiju
 → navigate between pages without a full browser reload
 ```
 
 The page size comes from KERS configuration and defaults to nine. The
 catalogue shows an explicit empty state when no incidents have been recorded.
+When active criteria have no matches, it instead explains that the catalogue
+is filtered and lets the user clear all criteria. Changing search, filters, or
+ordering resets pagination while navigation retains the active criteria.
 Each catalogue card links to its incident detail page and keeps the associated
 Kaiju available as a separate navigation target.
 
