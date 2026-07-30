@@ -16,7 +16,9 @@ criteria, testing expectations, dependencies, priority, and notes.
 ## Current delivery priority
 
 The temporary Railway deployment, Incident catalogue, and protected demo-data
-API are complete. INC-006 is in review; INC-007 follows after it is merged.
+API are complete. INC-006 and INC-007 are merged. INC-008 is the final Incident
+item, followed by the English and Spanish localization checkpoint before
+starting response teams.
 
 ## Phase 1 — Project foundations and documentation
 
@@ -53,9 +55,15 @@ API are complete. INC-006 is in review; INC-007 follows after it is merged.
 | INC-004A — List and paginate incidents | Completed | Review recorded incidents and their associated kaijus. | Public single-file Livewire catalogue, eager loading, configurable pagination, UTC date formatting, navigation, and configured domain badge colors. | Incidents appear newest first with status, location, date, and Kaiju; empty and paginated states work; relationship queries do not repeat; feature and Livewire tests pass. | INC-003; High; merged in PR #21; split from INC-004 to keep listing separate from route model binding and details. |
 | INC-004B — View incident details | Completed | Inspect one recorded incident before managing it. | Livewire page route, route model binding, eager loading, configured status badge, UTC detail rendering, and catalogue-to-detail navigation. | Each catalogue record links to the correct detail page; current Incident and Kaiju fields render; missing records return 404; feature and Livewire tests pass. | INC-004A; High; merged in PR #24. |
 | INC-005 — Edit incidents and change status | Completed | Correct incident data and manage its lifecycle. | Prefilled Livewire state, route model binding, enum and relationship validation, Eloquent updates, and explicit UTC conversion. | All current fields and the associated Kaiju can be updated; every supported status transition persists; invalid values preserve the record; feature and Livewire tests pass. | INC-004B; High; merged in PR #25; status transitions are unrestricted until a business rule requires otherwise. |
-| INC-006 — Delete incidents safely | In review | Delete an incident only after confirmation. | Livewire confirmation state, Flux modal, guarded action, Eloquent deletion, redirect, and toast feedback. | Opening or cancelling confirmation preserves data; deletion without confirmation is ignored; confirmation deletes only the selected Incident while preserving its Kaiju and other Incidents; Livewire and database tests pass. | INC-005; High; implemented independently in PR #26. |
-| INC-007 — Search, filter, and order incidents | In review | Locate relevant incidents efficiently. | Grouped conditional Eloquent queries, reactive Livewire state, query-string synchronization, pagination resets, and deterministic occurrence ordering. | Case-insensitive title/location search, status and Kaiju filters, and newest/oldest ordering combine correctly, restore from a URL, reset and retain pagination appropriately, clear together, and display a filtered empty state; feature and Livewire tests pass. | INC-004A; Medium; developed independently from INC-006 to allow parallel review. |
+| INC-006 — Delete incidents safely | Completed | Delete an incident only after confirmation. | Livewire confirmation state, Flux modal, guarded action, Eloquent deletion, redirect, and toast feedback. | Opening or cancelling confirmation preserves data; deletion without confirmation is ignored; confirmation deletes only the selected Incident while preserving its Kaiju and other Incidents; Livewire and database tests pass. | INC-005; High; merged in PR #26. |
+| INC-007 — Search, filter, and order incidents | Completed | Locate relevant incidents efficiently. | Grouped conditional Eloquent queries, reactive Livewire state, query-string synchronization, pagination resets, and deterministic occurrence ordering. | Case-insensitive title/location search, status and Kaiju filters, and newest/oldest ordering combine correctly, restore from a URL, reset and retain pagination appropriately, clear together, and display a filtered empty state; feature and Livewire tests pass. | INC-004A; Medium; merged in PR #27. |
 | INC-008 — Show incident history on kaiju details | Planned | Review a Kaiju's incidents from its existing detail page. | Eager loading, occurrence ordering, and relationship rendering. | Kaiju details show the correct incidents in occurrence order without repeated relationship queries; feature tests cover populated and empty histories. | INC-007, INC-002B; High; the cascade constraint is covered by INC-001 and its exact warning is brought forward to INC-002B. |
+
+## Learning checkpoint — English and Spanish localization
+
+| ID and title | Status | Objective and user value | Concepts and scope | Acceptance and testing | Dependencies, priority, and notes |
+| --- | --- | --- | --- | --- | --- |
+| LOC-001 — Internationalize the current KERS interface | Planned | Explore Laravel localization and let users operate the current public interface in English or Spanish. | English fallback configuration, English and Spanish translation resources, locale selection and session persistence, a minimal language selector, and current public KERS copy. | Users can switch between English and Spanish through a simple control; the choice persists during the session; invalid or unavailable locales fall back to English; feature and Livewire tests cover selection, persistence, fallback, and representative translated screens. | INC-008; High learning priority; implement immediately after Incident management and before Phase 4. Only `en` and `es` are in scope. Repository code and documentation remain in English; Spanish translation resources are the explicit exception. |
 
 ## Priority checkpoint — Temporary Railway demo
 
@@ -104,14 +112,13 @@ API are complete. INC-006 is in review; INC-007 follows after it is merged.
 | AUT-004 — Authorize team and assignment actions | Planned | Apply roles consistently to team management and assignments. | Policies and Livewire authorization checks. | Operators may assign teams but only admins manage team records; authorization tests pass. | AUT-003, ASN-004; High. |
 | AUT-005 — Verify the complete access model | Planned | Close authorization gaps across routes, navigation, and actions. | Middleware/policy integration and UI visibility. | Direct requests and Livewire calls cannot bypass policy decisions; email verification behavior is tested where enabled. | AUT-004; High. |
 
-## Phase 8 — Dashboard, localization, and visual refinement
+## Phase 8 — Dashboard and visual refinement
 
 | ID and title | Status | Objective and user value | Concepts and scope | Acceptance and testing | Dependencies, priority, and notes |
 | --- | --- | --- | --- | --- | --- |
 | UI-001 — Add operational dashboard summaries | Planned | Provide a concise view of kaijus, incident status, and team capacity. | Eloquent aggregates and derived Livewire state. | Counts and recent records are accurate without N+1 queries; feature and database tests pass. | AUT-005; Medium. |
 | UI-002 — Improve navigation and shared states | Planned | Make completed workflows coherent and accessible. | Reusable Blade/Livewire components, empty/loading/success states. | Navigation reflects authorization and common states are consistent, responsive, and keyboard accessible; relevant rendering tests pass. | UI-001; Medium. |
-| UI-003 — Internationalize the interface | Planned | Make KERS usable in selected locales without duplicating screens. | Laravel localization files, locale selection and persistence, and fallback behavior. | User-facing copy changes with the selected locale, invalid or unavailable locales fall back to English, and feature and Livewire tests cover selection and persistence. | UI-002; Low; target locales and any required exception to the repository language policy must be approved with the implementation proposal. |
-| UI-004 — Apply restrained visual refinement | Planned | Give KERS a readable command-centre identity. | Tailwind composition, responsive and dark-mode review. | Core pages are visually consistent and accessible without complex charts; frontend build and manual responsive review pass. | UI-003; Low. |
+| UI-003 — Apply restrained visual refinement | Planned | Give KERS a readable command-centre identity. | Tailwind composition, responsive and dark-mode review. | Core pages are visually consistent and accessible without complex charts; frontend build and manual responsive review pass. | UI-002, LOC-001; Low. |
 
 ## Phase 9 — Post-demo deployment follow-up
 
