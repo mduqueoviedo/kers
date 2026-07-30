@@ -33,7 +33,7 @@ test('guests can view mapped recent usgs events', function () {
         ->assertSee('M 5.6 - 10 km south of Example')
         ->assertSee('10 km south of Example')
         ->assertSee('5.6')
-        ->assertSee('Jul 30, 2026, 12:00 UTC')
+        ->assertSee('July 30, 2026 12:00 PM UTC')
         ->assertSee('View USGS details')
         ->assertSee('USGS events');
 

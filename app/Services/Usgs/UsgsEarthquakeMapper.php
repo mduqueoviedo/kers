@@ -66,7 +66,6 @@ class UsgsEarthquakeMapper
             'title' => $properties['title'],
             'magnitude' => is_numeric($properties['mag'] ?? null) ? (float) $properties['mag'] : null,
             'location' => is_string($properties['place'] ?? null) ? $properties['place'] : null,
-            'occurred_at' => $occurredAt->format('M j, Y, H:i').' UTC',
             'occurred_at_iso' => $occurredAt->toIso8601String(),
             'url' => is_string($properties['url'] ?? null) ? $properties['url'] : null,
             'longitude' => is_numeric($coordinates[0] ?? null) ? (float) $coordinates[0] : null,

@@ -9,7 +9,7 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-new #[Title('Kaiju catalogue')] class extends Component {
+new #[Title('kaijus.index.title')] class extends Component {
     use WithPagination;
 
     #[Url(as: 'q', except: '')]
@@ -99,17 +99,17 @@ new #[Title('Kaiju catalogue')] class extends Component {
 <section class="mx-auto flex w-full max-w-6xl flex-col gap-6">
     <header class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div class="space-y-2">
-            <flux:heading size="xl">{{ __('Kaiju catalogue') }}</flux:heading>
-            <flux:text>{{ __('Known creatures monitored by the Kaiju Emergency Response System.') }}</flux:text>
+            <flux:heading size="xl">{{ __('kaijus.index.title') }}</flux:heading>
+            <flux:text>{{ __('kaijus.index.description') }}</flux:text>
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
             <flux:button :href="route('incidents.create')" variant="outline" wire:navigate>
-                {{ __('Record incident') }}
+                {{ __('incidents.create.title') }}
             </flux:button>
 
             <flux:button :href="route('kaijus.create')" variant="primary" wire:navigate>
-                {{ __('Register kaiju') }}
+                {{ __('kaijus.create.title') }}
             </flux:button>
         </div>
     </header>
@@ -117,27 +117,27 @@ new #[Title('Kaiju catalogue')] class extends Component {
     <div class="grid gap-4 rounded-xl border border-teal-200 bg-white p-5 md:grid-cols-3 dark:border-teal-900 dark:bg-zinc-900">
         <flux:input
             wire:model.live.debounce.300ms="search"
-            :label="__('Search')"
+            :label="__('common.fields.search')"
             type="search"
-            :placeholder="__('Search by name')"
+            :placeholder="__('kaijus.filters.search_placeholder')"
         />
 
-        <flux:select wire:model.live="category" :label="__('Category')">
-            <flux:select.option value="">{{ __('All categories') }}</flux:select.option>
+        <flux:select wire:model.live="category" :label="__('common.fields.category')">
+            <flux:select.option value="">{{ __('kaijus.filters.all_categories') }}</flux:select.option>
 
             @foreach (KaijuCategory::cases() as $categoryOption)
                 <flux:select.option :value="$categoryOption->value">
-                    {{ ucfirst($categoryOption->value) }}
+                    {{ __('kaijus.categories.'.$categoryOption->value) }}
                 </flux:select.option>
             @endforeach
         </flux:select>
 
-        <flux:select wire:model.live="threatLevel" :label="__('Threat level')">
-            <flux:select.option value="">{{ __('All threat levels') }}</flux:select.option>
+        <flux:select wire:model.live="threatLevel" :label="__('common.fields.threat_level')">
+            <flux:select.option value="">{{ __('kaijus.filters.all_threat_levels') }}</flux:select.option>
 
             @foreach (range(1, 5) as $threatLevelOption)
                 <flux:select.option :value="$threatLevelOption">
-                    {{ __('Level :level', ['level' => $threatLevelOption]) }}
+                    {{ __('kaijus.level', ['level' => $threatLevelOption]) }}
                 </flux:select.option>
             @endforeach
         </flux:select>
@@ -145,7 +145,7 @@ new #[Title('Kaiju catalogue')] class extends Component {
         @if ($this->hasActiveFilters)
             <div class="md:col-span-3">
                 <flux:button wire:click="clearFilters" variant="ghost">
-                    {{ __('Clear filters') }}
+                    {{ __('common.actions.clear_filters') }}
                 </flux:button>
             </div>
         @endif
@@ -154,11 +154,11 @@ new #[Title('Kaiju catalogue')] class extends Component {
     @if ($this->kaijus->total() === 0)
         <div class="rounded-xl border border-dashed border-zinc-300 px-6 py-12 text-center dark:border-zinc-700">
             @if ($this->hasActiveFilters)
-                <flux:heading size="lg">{{ __('No kaijus match the current search and filters.') }}</flux:heading>
-                <flux:text class="mt-2">{{ __('Try different criteria or clear the current filters.') }}</flux:text>
+                <flux:heading size="lg">{{ __('kaijus.index.empty_filtered_heading') }}</flux:heading>
+                <flux:text class="mt-2">{{ __('kaijus.index.empty_filtered_description') }}</flux:text>
             @else
-                <flux:heading size="lg">{{ __('No kaijus have been catalogued.') }}</flux:heading>
-                <flux:text class="mt-2">{{ __('Known creatures will appear here once they are registered.') }}</flux:text>
+                <flux:heading size="lg">{{ __('kaijus.index.empty_heading') }}</flux:heading>
+                <flux:text class="mt-2">{{ __('kaijus.index.empty_description') }}</flux:text>
             @endif
         </div>
     @else
@@ -168,20 +168,20 @@ new #[Title('Kaiju catalogue')] class extends Component {
                     <div class="flex items-start justify-between gap-4">
                         <div class="space-y-1">
                             <p class="text-xs font-semibold tracking-wider text-teal-700 uppercase dark:text-teal-300">
-                                {{ __('Known creature') }}
+                                {{ __('kaijus.index.known_creature') }}
                             </p>
                             <flux:heading size="lg">{{ $kaiju->name }}</flux:heading>
                         </div>
 
                         <flux:badge :color="config()->string('kers.badges.kaiju_categories.'.$kaiju->category->value)">
-                            {{ ucfirst($kaiju->category->value) }}
+                            {{ __('kaijus.categories.'.$kaiju->category->value) }}
                         </flux:badge>
                     </div>
 
-                    <flux:text>{{ __('Threat level :level of 5', ['level' => $kaiju->threat_level]) }}</flux:text>
+                    <flux:text>{{ __('kaijus.level_of_five', ['level' => $kaiju->threat_level]) }}</flux:text>
 
                     <flux:text>
-                        {{ $kaiju->description ?? __('No description provided.') }}
+                        {{ $kaiju->description ?? __('common.empty_description') }}
                     </flux:text>
 
                     <flux:button
@@ -190,7 +190,7 @@ new #[Title('Kaiju catalogue')] class extends Component {
                         class="mt-auto self-start"
                         wire:navigate
                     >
-                        {{ __('View details') }}
+                        {{ __('common.actions.view_details') }}
                     </flux:button>
                 </article>
             @endforeach

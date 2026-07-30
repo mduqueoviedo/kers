@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Incident;
+use App\Models\Kaiju;
+
 test('the application defaults to English and renders the locale selector', function () {
     $this->get(route('kaijus.index'))
         ->assertOk()
@@ -33,4 +36,21 @@ test('an unsupported locale falls back to English', function () {
         ->assertDontSee('Operaciones de incidentes');
 
     expect(session('locale'))->toBe('en');
+});
+
+test('Spanish renders translated Kaiju and Incident catalogue copy without changing domain data', function () {
+    $kaiju = Kaiju::factory()->create(['name' => 'Stormwing']);
+    Incident::factory()->for($kaiju)->create(['title' => 'Harbour alert']);
+
+    $this->withSession(['locale' => 'es'])
+        ->get(route('kaijus.index'))
+        ->assertOk()
+        ->assertSee('Catálogo de kaijus')
+        ->assertSee('Stormwing');
+
+    $this->withSession(['locale' => 'es'])
+        ->get(route('incidents.index'))
+        ->assertOk()
+        ->assertSee('Catálogo de incidentes')
+        ->assertSee('Harbour alert');
 });

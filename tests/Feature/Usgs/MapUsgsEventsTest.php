@@ -31,7 +31,6 @@ test('it maps the fields needed to display a usgs earthquake event', function ()
             'latitude' => 40.4,
             'depth' => 12.5,
         ])
-        ->and($events[0]['occurred_at'])->toBe('Jul 30, 2026, 12:00 UTC')
         ->and($events[0]['occurred_at_iso'])->toBe('2026-07-30T12:00:00+00:00');
 });
 
