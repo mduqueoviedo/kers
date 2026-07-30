@@ -1,8 +1,11 @@
 <?php
 
 use App\Enums\KaijuCategory;
+use App\Models\Incident;
 use App\Models\Kaiju;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
 
 test('guests can view the correct kaiju details', function () {
@@ -61,4 +64,72 @@ test('catalogue cards link to their own detail pages', function () {
         ->assertOk()
         ->assertSee(route('kaijus.show', $firstKaiju), escape: false)
         ->assertSee(route('kaijus.show', $secondKaiju), escape: false);
+});
+
+test('a kaiju detail page shows its incident history newest first', function () {
+    $kaiju = Kaiju::factory()->create(['name' => 'Leviathan']);
+    $otherKaiju = Kaiju::factory()->create();
+
+    $olderIncident = Incident::factory()->for($kaiju)->open()->create([
+        'title' => 'Atlantic shelf disturbance',
+        'location' => 'North Atlantic',
+        'occurred_at' => CarbonImmutable::parse('2026-07-28 08:15', 'UTC'),
+    ]);
+    $newerIncident = Incident::factory()->for($kaiju)->contained()->create([
+        'title' => 'Reykjavik coastal alert',
+        'location' => 'Reykjavik, Iceland',
+        'occurred_at' => CarbonImmutable::parse('2026-07-29 12:30', 'UTC'),
+    ]);
+    Incident::factory()->for($otherKaiju)->closed()->create([
+        'title' => 'Unrelated incident',
+    ]);
+
+    $this->get(route('kaijus.show', $kaiju))
+        ->assertOk()
+        ->assertSee('Incident history')
+        ->assertSeeInOrder([
+            'Reykjavik coastal alert',
+            'Atlantic shelf disturbance',
+        ])
+        ->assertSee('Contained')
+        ->assertSee('Open')
+        ->assertSee('Reykjavik, Iceland')
+        ->assertSee('North Atlantic')
+        ->assertSee('Jul 29, 2026, 12:30 UTC')
+        ->assertSee('Jul 28, 2026, 08:15 UTC')
+        ->assertSee(route('incidents.show', $newerIncident), escape: false)
+        ->assertSee(route('incidents.show', $olderIncident), escape: false)
+        ->assertDontSee('Unrelated incident');
+});
+
+test('a kaiju detail page explains when its incident history is empty', function () {
+    $kaiju = Kaiju::factory()->create();
+
+    $this->get(route('kaijus.show', $kaiju))
+        ->assertOk()
+        ->assertSee('No incidents have been recorded for this Kaiju.')
+        ->assertSee('New activity involving this creature will appear here.');
+});
+
+test('a kaiju detail page eager loads its incident history in one relationship query', function () {
+    $kaiju = Kaiju::factory()->create();
+    Incident::factory()->count(3)->for($kaiju)->create();
+
+    DB::flushQueryLog();
+    DB::enableQueryLog();
+
+    $this->get(route('kaijus.show', $kaiju))->assertOk();
+
+    $incidentRelationshipQueries = collect(DB::getQueryLog())
+        ->filter(
+            fn (array $query): bool => str_contains(
+                $query['query'],
+                'from "incidents" where "incidents"."kaiju_id" in',
+            ),
+        )
+        ->count();
+
+    DB::disableQueryLog();
+
+    expect($incidentRelationshipQueries)->toBe(1);
 });

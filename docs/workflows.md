@@ -198,12 +198,17 @@ search is partial and case-insensitive. No authentication is required.
 ```text
 Follow a detail link from the public catalogue
 → Laravel resolves the Kaiju route parameter
-→ Livewire receives the Eloquent model in mount()
+→ Livewire receives the Eloquent model and eagerly loads its incidents
 → display its category, threat level, description, and friendly timestamps
+→ review its incident history from newest to oldest
+→ optionally follow an Incident detail link
 → return to the catalogue
 ```
 
-An unknown route key returns Laravel's standard 404 response.
+Each history entry shows its current status, location, and UTC occurrence time.
+Only incidents belonging to the selected Kaiju appear, and an explicit empty
+state is shown when it has no recorded activity. An unknown route key returns
+Laravel's standard 404 response.
 
 ### Register a kaiju
 

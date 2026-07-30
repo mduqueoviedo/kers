@@ -12,11 +12,15 @@ new #[Title('Kaiju details')] class extends Component {
     public bool $confirmingDeletion = false;
 
     /**
-     * Initialize the page with the route-bound Kaiju.
+     * Initialize the page with the route-bound Kaiju and its incident history.
      */
     public function mount(Kaiju $kaiju): void
     {
-        $this->kaiju = $kaiju;
+        $this->kaiju = $kaiju->load([
+            'incidents' => fn ($query) => $query
+                ->orderByDesc('occurred_at')
+                ->orderByDesc('id'),
+        ]);
     }
 
     /**
@@ -25,7 +29,7 @@ new #[Title('Kaiju details')] class extends Component {
     #[Computed]
     public function incidentCount(): int
     {
-        return $this->kaiju->incidents()->count();
+        return $this->kaiju->incidents->count();
     }
 
     /**
@@ -129,6 +133,48 @@ new #[Title('Kaiju details')] class extends Component {
             </div>
         </dl>
     </article>
+
+    <section class="flex flex-col gap-4">
+        <div class="space-y-1">
+            <flux:heading size="lg">{{ __('Incident history') }}</flux:heading>
+            <flux:text>{{ __('Recorded activity involving this Kaiju, newest first.') }}</flux:text>
+        </div>
+
+        @if ($kaiju->incidents->isEmpty())
+            <div class="rounded-xl border border-dashed border-zinc-300 px-6 py-10 text-center dark:border-zinc-700">
+                <flux:heading size="lg">{{ __('No incidents have been recorded for this Kaiju.') }}</flux:heading>
+                <flux:text class="mt-2">{{ __('New activity involving this creature will appear here.') }}</flux:text>
+            </div>
+        @else
+            <div class="grid gap-4 md:grid-cols-2">
+                @foreach ($kaiju->incidents as $incident)
+                    <article wire:key="kaiju-incident-{{ $incident->id }}" class="flex flex-col gap-4 rounded-xl border border-zinc-200 p-5 dark:border-zinc-700">
+                        <div class="flex items-start justify-between gap-4">
+                            <flux:heading size="lg">{{ $incident->title }}</flux:heading>
+                            <flux:badge :color="config()->string('kers.badges.incident_statuses.'.$incident->status->value)">
+                                {{ ucfirst($incident->status->value) }}
+                            </flux:badge>
+                        </div>
+
+                        <div class="space-y-1">
+                            <flux:text>{{ $incident->location }}</flux:text>
+                            <flux:text>
+                                <time datetime="{{ $incident->occurred_at->toIso8601String() }}">
+                                    {{ __('Occurred :date', ['date' => $incident->occurred_at->format('M j, Y, H:i').' UTC']) }}
+                                </time>
+                            </flux:text>
+                        </div>
+
+                        <div class="mt-auto">
+                            <flux:button :href="route('incidents.show', $incident)" variant="outline" wire:navigate>
+                                {{ __('View incident') }}
+                            </flux:button>
+                        </div>
+                    </article>
+                @endforeach
+            </div>
+        @endif
+    </section>
 
     <flux:modal wire:model="confirmingDeletion" name="confirm-kaiju-deletion" class="md:w-120">
         <div class="space-y-6">
