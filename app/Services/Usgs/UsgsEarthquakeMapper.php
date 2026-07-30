@@ -58,14 +58,16 @@ class UsgsEarthquakeMapper
             return null;
         }
 
+        $occurredAt = CarbonImmutable::createFromTimestampMs((int) $timestamp)
+            ->utc();
+
         return [
             'id' => $eventId,
             'title' => $properties['title'],
             'magnitude' => is_numeric($properties['mag'] ?? null) ? (float) $properties['mag'] : null,
             'location' => is_string($properties['place'] ?? null) ? $properties['place'] : null,
-            'occurred_at' => CarbonImmutable::createFromTimestampMs((int) $timestamp)
-                ->utc()
-                ->format('M j, Y, H:i').' UTC',
+            'occurred_at' => $occurredAt->format('M j, Y, H:i').' UTC',
+            'occurred_at_iso' => $occurredAt->toIso8601String(),
             'url' => is_string($properties['url'] ?? null) ? $properties['url'] : null,
             'longitude' => is_numeric($coordinates[0] ?? null) ? (float) $coordinates[0] : null,
             'latitude' => is_numeric($coordinates[1] ?? null) ? (float) $coordinates[1] : null,
