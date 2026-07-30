@@ -318,6 +318,22 @@ The current workflow permits transitions between any of the `open`,
 unknown Kaijus do not update the record. Cancelling returns to the detail page
 without saving.
 
+### Delete an incident
+
+```text
+Open an Incident detail page
+→ request deletion
+→ Livewire opens a permanent-deletion confirmation
+→ cancel and preserve the Incident, or explicitly confirm
+→ Eloquent deletes only the selected Incident
+→ keep its associated Kaiju and other Incidents
+→ redirect to the Incident catalogue with confirmation feedback
+```
+
+The delete action ignores calls made before confirmation. Deletion is currently
+permanent and public, consistently with the other Incident workflows.
+Role-based authorization will be added in its later roadmap phase.
+
 The following authentication workflows remain as a technical foundation. They
 are not exposed in the current navigation and are not yet the final KERS role
 and authorization model.
