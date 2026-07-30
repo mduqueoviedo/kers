@@ -17,9 +17,10 @@ These choices must not be replaced without explicit approval.
 
 ## Language
 
-Everything stored in the repository is written in English, including source
-code, user-facing copy, tests, documentation, branches, commits, and pull
-requests.
+Source code, identifiers, tests, documentation, branches, commits, and pull
+requests are written in English. The delivered interface supports English and
+Spanish, so keyed Spanish translation resources and rendered Spanish
+user-facing copy are the explicit exceptions.
 
 ## Runtime and configuration
 
@@ -49,8 +50,8 @@ middleware. Its safeguards are:
 - GitHub Actions does not require this secret because tests override Laravel
   configuration and do not call the deployed environment.
 
-This API is temporary demo tooling, not a replacement for the planned user,
-role, policy, and authorization model.
+This API is temporary demo tooling and is independent of the deliberately
+excluded granular role, policy, and user-management model.
 
 ## Application architecture
 
@@ -62,7 +63,7 @@ abstractions:
 - PHP enums and model casts
 - Factories and seeders
 - Livewire validation and state
-- Policies and middleware when authorization is introduced
+- Middleware and server-side action guards for demo authentication
 - Laravel's HTTP client and configuration for USGS
 
 Do not introduce repository layers, DTO frameworks, generic action systems,
@@ -78,8 +79,8 @@ or repeated.
 - Kaiju names use an exact unique constraint.
 - Kaiju deletion cascades to associated incidents.
 - Incident occurrence times use UTC throughout the application.
-- Response-team capacity is enforced using current incident state.
-- USGS source identifiers use an appropriate uniqueness constraint.
+- USGS source identifiers use a composite uniqueness constraint across source
+  and external event identifier.
 - Indexes support actual search, filtering, relationships, and uniqueness
   requirements.
 - Migrations are reversible unless an irreversible change is explicitly
@@ -89,27 +90,13 @@ or repeated.
 ## Livewire and interface rules
 
 - Domain pages use single-file Livewire components.
-- Early interfaces remain simple, accessible, and functional.
+- Interfaces remain simple, accessible, and functional.
 - Forms provide clear validation errors.
 - Lists provide simple empty states.
 - Destructive actions require explicit confirmation.
 - Pagination precedes reactive search and filtering.
 - Reusable components are extracted only after meaningful repetition exists.
-- Final command-centre styling must remain restrained and readable.
-
-The intended progression is:
-
-```text
-Basic pages and navigation
-→ lists
-→ forms and validation
-→ pagination
-→ search and filters
-→ reusable components
-→ feedback states
-→ dashboard
-→ visual refinement
-```
+- The final demo presentation remains restrained and readable.
 
 ## Testing
 
@@ -124,8 +111,8 @@ Pest is the primary test syntax.
 - Tests assert observable behavior and business rules rather than framework
   internals.
 
-Every functional acceptance criterion requires meaningful automated coverage
-in the same pull request.
+During delivery, every functional acceptance criterion required meaningful
+automated coverage in the same pull request.
 
 The primary command is:
 
@@ -135,7 +122,7 @@ php artisan test
 
 ## Quality
 
-At minimum, every pull request runs:
+At minimum, every delivery pull request ran:
 
 ```bash
 php artisan test
@@ -180,6 +167,15 @@ Public catalogue and detail pages remain readable. Route middleware and
 server-side Livewire checks protect every Kaiju, Incident, and USGS-import
 mutation; hiding a control is never the sole authorization measure.
 
+## Final scope exclusions
+
+Response Team persistence, assignment, and capacity enforcement; granular
+operator and administrator roles and policies; registration and user
+administration; dashboard functionality; multi-event USGS import; and
+additional visual refinement beyond the current final presentation are outside
+the final technical-demo delivery. They are hypothetical extensions rather
+than pending technical requirements.
+
 ## External HTTP
 
 USGS integration uses Laravel's HTTP client, configuration, environment
@@ -190,28 +186,28 @@ not added merely because an HTTP request is involved.
 
 ## Git and pull requests
 
-Each iteration uses one focused branch, one primary learning objective, clear
-imperative commits, and one reviewable pull request.
+Each delivery iteration used one focused branch, one primary learning
+objective, clear imperative commits, and one reviewable pull request.
 
-Before implementation, the proposal must describe objective, value, concepts,
-scope, files, acceptance criteria, testing, risks, and split decisions. Material
-scope changes require renewed approval.
+Before implementation, each proposal described its objective, value, concepts,
+scope, files, acceptance criteria, testing, risks, and split decisions.
+Material scope changes required renewed approval.
 
-Codex may create branches, commit, push, and open pull requests. The owner
-reviews and merges through squash merge. Codex never merges, pushes directly to
-`main`, force-pushes without permission, or starts the next item automatically.
+Delivery work used focused branches, imperative commits, and reviewable pull
+requests. The owner reviewed and merged changes through squash merge. Codex did
+not merge, push directly to `main`, force-push without permission, or start the
+next item automatically.
 
-Every pull request describes its summary, Laravel concepts, main changes,
-testing, review guide, documentation impact, and roadmap status.
+Every delivery pull request described its summary, Laravel concepts, main
+changes, testing, review guide, documentation impact, and roadmap status.
 
 ## Portability and deployment
 
-Railway is the confirmed provider for the initial temporary technical demo.
-This is a high-priority delivery checkpoint rather than the final product
-deployment. It does not select a provider for any future long-lived
-environment.
+Railway is the confirmed provider for the temporary technical demo. It was a
+high-priority delivery checkpoint rather than a permanent product deployment
+and does not select a provider for any future long-lived environment.
 
-The initial deployment uses one Railway project containing:
+The temporary deployment uses one Railway project containing:
 
 - A Laravel application service connected directly to this GitHub repository
 - A Railway PostgreSQL service
@@ -219,8 +215,8 @@ The initial deployment uses one Railway project containing:
 - A public Railway URL for the current application
 
 Railway observes `main` and automatically builds and deploys after merges.
-GitHub Actions remains an independent validation gate and does not initially
-deploy the application. Railway's `Wait for CI` option is enabled manually.
+GitHub Actions remains an independent validation gate and does not deploy the
+application. Railway's `Wait for CI` option is enabled manually.
 
 Railpack handles dependency installation, the Vite build, and the Laravel web
 server automatically. The repository does not define custom build or start

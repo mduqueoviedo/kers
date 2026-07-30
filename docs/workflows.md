@@ -2,9 +2,9 @@
 
 ## Purpose
 
-This document summarizes meaningful current workflows and clearly labels
-planned product workflows. It does not attempt to document every route,
-component method, or screen.
+This document summarizes meaningful workflows in the final technical demo and
+clearly labels capabilities outside its scope. It does not attempt to document
+every route, component method, or screen.
 
 ## Current development workflows
 
@@ -73,8 +73,7 @@ Complete the deployment-readiness audit
 → let Railpack install dependencies, build Vite, and serve Laravel
 → railway.json runs pending migrations and seeds only the demo user during pre-deploy
 → expose and smoke-test the public Railway URL
-→ merge a later change into main
-→ verify Railway automatically deploys that revision
+→ verify Railway automatically deploys revisions merged into main
 ```
 
 GitHub Actions continues to run the test and quality pipeline. Railway observes
@@ -206,7 +205,8 @@ Laravel's standard 404 response.
 ### Register a kaiju
 
 ```text
-Open the public Kaiju registration form
+Log in with the disposable demo account
+→ open the Kaiju registration form
 → enter name, category, threat level, and optional description
 → Livewire validates the submitted state
 → Eloquent stores the Kaiju
@@ -230,7 +230,8 @@ Open a Kaiju detail page
 
 The current Kaiju is excluded from the unique-name check, so its name may
 remain unchanged. An exact name already used by another Kaiju is rejected.
-Eloquent preserves `created_at` and updates `updated_at` automatically.
+The edit route and action require the disposable demo login. Eloquent preserves
+`created_at` and updates `updated_at` automatically.
 
 ### Delete a kaiju
 
@@ -247,14 +248,14 @@ Open a Kaiju detail page
 
 The warning distinguishes zero, one, and multiple incidents. The delete action
 ignores calls made before confirmation, and cancellation preserves both the
-Kaiju and its incidents. Deletion is currently permanent and public,
-consistently with the other Kaiju workflows. Role-based authorization will be
-added in its later roadmap phase.
+Kaiju and its incidents. Deletion is permanent and requires an authenticated
+demo session.
 
 ### Create a manual incident
 
 ```text
-Open the public Incident form from the Kaiju catalogue
+Log in with the disposable demo account
+→ open the Incident form from the Kaiju catalogue
 → select one known Kaiju
 → enter required incident details and a UTC occurrence time
 → Livewire validates the submitted state
@@ -321,7 +322,7 @@ Open an Incident detail page
 The current workflow permits transitions between any of the `open`,
 `contained`, and `closed` statuses. Invalid fields, unsupported statuses, and
 unknown Kaijus do not update the record. Cancelling returns to the detail page
-without saving.
+without saving. The edit route and action require the disposable demo login.
 
 ### Delete an incident
 
@@ -355,19 +356,28 @@ the root URL to the catalogue.
 Guests may browse public catalogues and details, but Laravel middleware and
 Livewire action checks require login for every mutation.
 
-## Planned product workflows
-
-The following workflows are requirements, not implemented behavior.
-
-### Change incident status
+### Create an Incident from a USGS event
 
 ```text
-Open an incident
-→ choose open, contained, or closed
-→ validate the status
-→ persist the change
-→ recalculate whether assigned-team capacity is consumed
+Log in with the disposable demo account
+→ open the public USGS events page
+→ Laravel fetches and maps the current event catalogue
+→ select one event and one existing Kaiju
+→ submit the import
+→ Laravel fetches the current catalogue again and validates the selection
+→ reject a duplicate source identifier or create one editable Incident
 ```
+
+USGS events remain transient; only the generated Incident and its relevant
+source metadata are persisted. Automated tests replace external requests with
+Laravel HTTP fakes. The import action requires an authenticated demo session,
+and PostgreSQL uniqueness prevents the same USGS event from being imported
+twice.
+
+## Outside the final delivery
+
+The following workflows belong to the original broader product concept or to
+hypothetical future improvements. They are not unfinished committed work.
 
 ### Assign a response team
 
@@ -380,21 +390,7 @@ Open an incident
 → show updated workload
 ```
 
-### Create incidents from USGS events
-
-```text
-Request recent USGS events
-→ Laravel HTTP client fetches and maps current results
-→ display results without persistence
-→ select one or more events
-→ select an existing kaiju
-→ reject duplicate source identifiers
-→ create one incident per accepted event
-```
-
-Automated tests replace the external HTTP request with Laravel HTTP fakes.
-
-### Apply role authorization
+### Apply granular role authorization
 
 ```text
 Authenticate a user
@@ -404,5 +400,5 @@ Authenticate a user
 → allow the action or return a forbidden response
 ```
 
-These workflows become current only after their roadmap pull requests are
-merged.
+Multi-event USGS import is also excluded. The delivered workflow intentionally
+imports one selected event at a time.
