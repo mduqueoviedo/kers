@@ -68,14 +68,18 @@ build or start command. `railway.json` configures `/up` as the deployment
 healthcheck and runs this explicit pre-deploy command:
 
 ```text
-php artisan migrate --force --no-interaction && php artisan db:seed --force --no-interaction
+php artisan migrate:fresh --seed --force --no-interaction
 ```
 
 The Railway application service must set
 `RAILPACK_SKIP_MIGRATIONS=true` so Railpack does not repeat migration and
-seeding during startup. The current seeders use `updateOrCreate`: redeployments
-do not delete unrelated data, but may restore the canonical values of
-predefined demo records.
+seeding during startup. The pre-deploy command intentionally drops every
+existing table and record, then reruns migrations and seeds the canonical demo
+dataset. This prevents `updateOrCreate` seeders from creating a new canonical
+Kaiju after an editable seeded record has been renamed, which would otherwise
+leave the old Kaiju and attach seeded Incidents to the new ID. This destructive
+policy applies only to the temporary disposable demo; a persistent production
+environment requires a separate, non-destructive deployment strategy.
 
 Laravel trusts Railway's reverse proxy and its standard forwarded headers,
 including `X-Forwarded-Proto`, so generated asset URLs retain the public HTTPS
